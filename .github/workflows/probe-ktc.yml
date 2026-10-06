@@ -1,0 +1,39 @@
+name: Probe KeepTradeCut page
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch and summarize the page
+        run: |
+          mkdir out
+          curl -sS -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36" \
+            -o page.html -w "%{http_code} %{size_download}\n" \
+            "https://keeptradecut.com/dynasty-rankings?page=0&filters=QB|WR|RB|TE|RDP&format=1" > out/status.txt
+          python3 - <<'PY'
+          import re
+          html = open("page.html", encoding="utf-8", errors="replace").read()
+          out = open("out/summary.txt", "w")
+          out.write(f"length {len(html)}\n<title>: {re.findall(r'<title>(.*?)</title>', html, re.S)[:1]}\n\n")
+          out.write("var names: " + ", ".join(sorted(set(re.findall(r'(?:var|let|const)\s+(\w+)\s*=', html)))) + "\n\n")
+          for word in ("playersArray", "oneQBValues", "Ja'Marr Chase", "Chase", "__NEXT_DATA__", "application/json", "data-player"):
+              for m in list(re.finditer(re.escape(word), html))[:2]:
+                  s = max(0, m.start() - 300)
+                  out.write(f"=== {word} at {m.start()} ===\n{html[s:m.start() + 700]}\n\n")
+          scripts = re.findall(r'<script[^>]*src="([^"]+)"', html)
+          out.write("script srcs: " + "\n".join(scripts) + "\n")
+          PY
+          head -c 3000 page.html > out/head.html
+      - name: Push results to the probe branch
+        run: |
+          cd out
+          git init -q -b probe-ktc
+          git -c user.name=probe -c user.email=probe@example.com add .
+          git -c user.name=probe -c user.email=probe@example.com commit -qm "KTC probe"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" probe-ktc
