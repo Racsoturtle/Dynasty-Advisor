@@ -139,3 +139,60 @@ def test_missing_source_still_builds():
     rep = main.analyze(raw, today=TODAY)
     assert [n for n, _ in rep["consensus"].dropped] == ["KeepTradeCut"]
     assert len(rep["consensus"].used) == 2
+
+
+def test_lineup_fills_every_slot_and_skips_out_players(report):
+    a = report["advice"]
+    assert [s.slot for s in a.slots] == ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "FLEX", "K", "DEF"]
+    db = report["players_db"]
+    assert all(s.pid for s in a.slots)
+    assert not any(db[s.pid].get("injury_status") == "Out" for s in a.slots)
+
+
+def test_lineup_changes_swap_within_eligible_slots(report):
+    db = report["players_db"]
+    for start, sit, gain in report["advice"].changes:
+        assert gain >= 0
+        if sit:
+            assert db[sit]["position"] in ("RB", "WR", "TE") or db[sit]["position"] == db[start]["position"]
+
+
+def test_odds_are_probabilities(report):
+    o = report["odds"]
+    assert sum(o.playoff.values()) == pytest.approx(6)
+    assert all(0 <= p <= 1 for p in o.playoff.values())
+    assert report["call"][0] in ("Contend", "Hold", "Retool")
+
+
+def test_stronger_team_has_better_odds(report):
+    o = report["odds"]
+    best = max(o.weekly_mean, key=o.weekly_mean.get)
+    worst = min(o.weekly_mean, key=o.weekly_mean.get)
+    assert o.playoff[best] >= o.playoff[worst]
+
+
+def test_projection_scoring_uses_league_rules():
+    from advisor.projections import score
+    assert score({"pass_yd": 250, "pass_td": 2, "pass_int": 1, "gp": 1}, {"pass_yd": 0.04, "pass_td": 4, "pass_int": -1}) == pytest.approx(17)
+
+
+def test_waiver_flags_need_real_gain(report):
+    from advisor import config
+    for f in report["waivers"]:
+        if f.kind == "this week":
+            assert f.gain >= config.WAIVER_WEEKLY_GAIN
+        else:
+            assert f.gain >= config.WAIVER_VALUE_GAIN
+
+
+def test_summary_mentions_call_and_link(report):
+    assert "Playoff odds" in report["summary"]
+    assert "racsoturtle.github.io" in report["summary"]
+
+
+def test_offseason_skips_weekly_parts():
+    raw = build()
+    raw["sleeper"]["state"]["season_type"] = "off"
+    rep = main.analyze(raw, today=TODAY)
+    assert rep["week"] is None
+    assert not rep["odds"].playoff

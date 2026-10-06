@@ -12,19 +12,29 @@ import traceback
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from . import config, consensus, render, sleeper, teams
+from . import config, consensus, lineup, odds, projections, render, sleeper, summary, teams, waivers
 from .sources import dynastyprocess, fantasycalc, ktc
 from .sources.common import NameIndex
 
 
 def collect_live():
-    raw = {"sleeper": sleeper.fetch(config.LEAGUE_ID).__dict__}
-    for name, fn in (
+    league = sleeper.fetch(config.LEAGUE_ID)
+    raw = {"sleeper": league.__dict__}
+    season = league.league["season"]
+    week = sleeper.current_week(league.league, league.state)
+    fetchers = [
         ("fantasycalc", fantasycalc.fetch),
         ("ktc", ktc.fetch),
         ("dp_values", dynastyprocess.fetch_values),
         ("dp_ids", dynastyprocess.fetch_ids),
-    ):
+    ]
+    if week:
+        fetchers += [
+            ("sleeper_week_proj", lambda: projections.fetch_sleeper_week(season, week)),
+            ("sleeper_season_proj", lambda: projections.fetch_sleeper_season(season)),
+            ("fp_week", projections.fetch_fp_week),
+        ]
+    for name, fn in fetchers:
         try:
             raw[name] = fn()
         except Exception as exc:  # one broken source must not stop the run
@@ -89,7 +99,20 @@ def analyze(raw, today=None):
     cons = consensus.build(results, failures, today)
     league_teams = teams.build(data, cons)
     me = _find_me(data, league_teams)
-    return {
+
+    week = sleeper.current_week(data.league, data.state)
+    week_proj = projections.build(
+        week, raw.get("sleeper_week_proj"), raw.get("sleeper_season_proj"), raw.get("fp_week"),
+        data.league.get("scoring_settings") or {}, data.players, names, fp_ids)
+    for key, label in (("sleeper_week_proj", "Sleeper"), ("fp_week", "FantasyPros")):
+        if key in errors:
+            week_proj.sources = [(n, st) if n != label else (n, f"unavailable: {errors[key]}") for n, st in week_proj.sources]
+    my_roster = next(r for r in data.rosters if r["roster_id"] == me.roster_id)
+    advice = lineup.advise(my_roster, data.players, week_proj, data.league.get("roster_positions", []))
+    league_odds = odds.simulate(data, league_teams, week_proj, week, seed=int(today.strftime("%Y%m%d")))
+    deadline = int((data.league.get("settings") or {}).get("trade_deadline") or 0)
+    my_odds = league_odds.playoff.get(me.roster_id, 0.0)
+    report = {
         "league": data.league,
         "state": data.state,
         "teams": league_teams,
@@ -97,7 +120,16 @@ def analyze(raw, today=None):
         "consensus": cons,
         "completed_weeks": sleeper.completed_weeks(data.league, data.state),
         "generated": datetime.now(timezone.utc),
+        "week": week,
+        "week_proj": week_proj,
+        "players_db": data.players,
+        "advice": advice,
+        "odds": league_odds,
+        "call": odds.call(my_odds, week, deadline),
+        "waivers": waivers.find(data, my_roster, me, advice, week_proj, cons),
     }
+    report["summary"] = summary.build(report)
+    return report
 
 
 def _find_me(data, league_teams):
@@ -119,6 +151,7 @@ def main():
         save_snapshot(raw, args.snapshot)
     report = analyze(raw)
     render.write_site(report, args.out)
+    Path(args.out, "summary.md").write_text(report["summary"])
     used = ", ".join(s.name for s in report["consensus"].used)
     print(f"Built {args.out} for {report['me'].team_name}; sources used: {used}")
     for name, reason in report["consensus"].dropped:

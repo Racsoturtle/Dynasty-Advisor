@@ -2,6 +2,15 @@
 {% block body %}
 {% set n = teams | length %}
 {% set luck = me.wins - me.expected_wins %}
+{% set my_odds = odds.playoff.get(me.roster_id) %}
+{% if my_odds is not none %}
+<div class="card call">
+  <div class="k">The call for week {{ week }}</div>
+  <div class="v">{{ call[0] }}</div>
+  <div>{{ call[1] }}</div>
+  <div class="muted small">Playoff odds {{ (my_odds * 100) | round | int }}% from {{ "{:,}".format(cfg.SIMULATIONS) }} simulations of the remaining {{ odds.weeks_left }} weeks. Projected {{ odds.wins[me.roster_id] | num(1) }} wins. Contend at {{ (cfg.CONTEND_ODDS * 100) | int }}% or higher, retool under {{ (cfg.RETOOL_ODDS * 100) | int }}%.</div>
+</div>
+{% endif %}
 <p class="lead">
   You're {{ me.wins }}-{{ me.losses }}{% if me.ties %}-{{ me.ties }}{% endif %}.
   {% if completed_weeks %}Against every team every week you'd be {{ me.allplay_wins }}-{{ me.allplay_losses }}, worth about {{ me.expected_wins | num(1) }} wins,

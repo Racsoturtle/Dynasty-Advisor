@@ -3,13 +3,14 @@
 {% set ordered = teams | sort(attribute="total_value", reverse=True) %}
 <p class="lead">Every team ranked by dynasty value, players plus picks. Weak spots are where a team's starters rank in the bottom half of the league, which is what it should pay for in a trade.</p>
 <div class="card scroll"><table>
-<tr><th class="n">#</th><th>Team</th><th class="n">Dynasty value</th><th>Record</th><th>All-play</th><th class="n">Points</th>
+<tr><th class="n">#</th><th>Team</th><th class="n">Dynasty value</th><th class="n">Playoff odds</th><th>Record</th><th>All-play</th><th class="n">Points</th>
 <th class="n">Lineup rank</th><th>Weak spots</th><th>Strengths</th><th class="n">Age</th><th class="n">1sts</th></tr>
 {% for t in ordered %}
 <tr{% if t.roster_id == me.roster_id %} class="me"{% endif %}>
   <td class="n">{{ loop.index }}</td>
   <td>{{ t.team_name }}{% if t.team_name != t.owner %} <span class="muted small">{{ t.owner }}</span>{% endif %}</td>
   <td class="n">{{ t.total_value | num }}</td>
+  <td class="n">{% if odds.playoff %}{{ (odds.playoff[t.roster_id] * 100) | round | int }}%{% endif %}</td>
   <td>{{ t.wins }}-{{ t.losses }}{% if t.ties %}-{{ t.ties }}{% endif %}</td>
   <td>{{ t.allplay_wins }}-{{ t.allplay_losses }}</td>
   <td class="n">{{ t.points_for | num(1) }}</td>

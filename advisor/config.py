@@ -20,3 +20,17 @@ PICK_YEARS_AHEAD = 3
 
 HTTP_TIMEOUT = 30
 USER_AGENT = "dynasty-advisor (personal league dashboard)"
+
+# Contend / hold / retool thresholds on playoff odds.
+CONTEND_ODDS = 0.35
+RETOOL_ODDS = 0.15
+SIMULATIONS = 10_000
+
+# A start/sit decision is a close call inside this many projected points.
+CLOSE_CALL_POINTS = 1.5
+# A free agent must beat your current option by this much to be flagged.
+WAIVER_WEEKLY_GAIN = 2.0
+WAIVER_VALUE_GAIN = 150
+
+# Injury designations that mean a player won't play.
+OUT_STATUSES = {"Out", "IR", "PUP", "Sus", "NA", "COV", "DNR"}

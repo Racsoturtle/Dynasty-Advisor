@@ -9,6 +9,8 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 PAGES = (
     ("index.html", "Home"),
+    ("lineup.html", "Lineup"),
+    ("waivers.html", "Waivers"),
     ("league.html", "League"),
 )
 
@@ -47,8 +49,15 @@ def write_site(report, out_dir):
     out.mkdir(parents=True)
     env = _env()
     local = report["generated"].astimezone(ZoneInfo("America/New_York"))
+    db = report.get("players_db") or {}
+
+    def player(pid):
+        p = db.get(pid) or {}
+        return {"name": p.get("full_name") or pid or "Empty", "pos": p.get("position") or "",
+                "team": p.get("team") or "FA", "injury": p.get("injury_status")}
+
     ctx = dict(report, pick_years=config.PICK_YEARS_AHEAD, updated=local.strftime("%a %b %-d, %-I:%M %p ET"),
-               sources=[s.name for s in report["consensus"].used])
+               sources=[s.name for s in report["consensus"].used], player=player, cfg=config)
     for filename, title in PAGES:
         html = env.get_template(filename).render(ctx, page=filename, title=title)
         (out / filename).write_text(html)

@@ -2,8 +2,15 @@ name: Daily dashboard
 
 on:
   schedule:
-    - cron: "0 11 * * *"  # 7 AM Eastern (6 AM in winter)
+    - cron: "0 11 * * *"   # daily rebuild, 7 AM Eastern (6 AM in winter)
+    - cron: "0 14 * * 4"   # Thursday summary, 10 AM Eastern
+    - cron: "0 14 * * 0"   # Sunday summary, 10 AM Eastern
   workflow_dispatch:
+    inputs:
+      send_summary:
+        description: "Also post the weekly summary"
+        type: boolean
+        default: false
   push:
     branches: [main]
 
@@ -11,6 +18,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  issues: write
 
 concurrency:
   group: pages
@@ -38,6 +46,17 @@ jobs:
           path: snapshot
           retention-days: 14
           if-no-files-found: ignore
+      - name: Post the weekly summary
+        if: github.event.schedule == '0 14 * * 4' || github.event.schedule == '0 14 * * 0' || inputs.send_summary
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create summary --color 2f6fdb --description "Weekly summary" --force
+          for n in $(gh issue list --label summary --state open --json number --jq '.[].number'); do
+            gh issue close "$n" --reason completed
+          done
+          day=$(TZ=America/New_York date +%A)
+          gh issue create --label summary --title "$day summary: $(TZ=America/New_York date '+%b %-d')" --body-file site/summary.md
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

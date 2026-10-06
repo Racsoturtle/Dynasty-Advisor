@@ -1,7 +1,12 @@
 # Dynasty Advisor
 
 A personal dashboard for Racsoturtle's team in the Skulls Super Dynasty League on Sleeper.
-It rebuilds every morning on GitHub and publishes to GitHub Pages.
+It rebuilds every morning on GitHub and publishes to GitHub Pages, and posts a short summary as a
+GitHub issue on Thursday and Sunday mornings.
+
+Pages: Home (contend, hold or retool call; record and luck; roster values; picks), Lineup (best
+lineup by consensus projection, changes, close calls, injuries and byes), Waivers (free agents that
+clearly beat what you have), League (every team's value, needs and playoff odds).
 
 Player and pick values come only from outside sources, averaged with equal weight:
 
@@ -12,6 +17,10 @@ Player and pick values come only from outside sources, averaged with equal weigh
 
 Each source is turned into ranks and read off one shared 0 to 10,000 curve, so no source counts
 for more because its numbers are bigger. A source with data older than 14 days is left out.
+
+Weekly projections average Sleeper's projections (scored with the league's own settings) and
+FantasyPros weekly expert ranks (turned into points at the same position rank). Playoff odds come
+from 10,000 simulations of the remaining schedule.
 
 ## Run it
 

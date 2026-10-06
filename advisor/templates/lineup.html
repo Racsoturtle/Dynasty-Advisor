@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block body %}
+{% set a = advice %}
+{% set wp = week_proj %}
+{% if week is none %}
+<p class="lead">There are no regular-season games this week.</p>
+{% else %}
+<p class="lead">
+  {% if a.changes %}Make {{ a.changes | length }} change{{ "s" if a.changes | length > 1 }} for week {{ week }}. Your best lineup projects {{ a.projected | num(1) }} points, {{ (a.projected - a.current_projected) | num(1) }} more than the one set in Sleeper now.
+  {% else %}Your lineup for week {{ week }} is already the best one by consensus projection, at {{ a.projected | num(1) }} points.{% endif %}
+</p>
+
+{% if a.changes %}
+<h2>Changes to make in Sleeper</h2>
+<div class="card scroll"><table>
+<tr><th>Start</th><th>Instead of</th><th class="n">Gain</th></tr>
+{% for start, sit, gain in a.changes %}
+<tr><td><b>{{ player(start).name }}</b> <span class="muted small">{{ player(start).pos }}</span></td>
+<td>{% if sit %}{{ player(sit).name }} <span class="muted small">{{ player(sit).pos }}</span>{% else %}<span class="muted">an empty slot</span>{% endif %}</td>
+<td class="n">+{{ gain | num(1) }}</td></tr>
+{% endfor %}
+</table></div>
+{% endif %}
+
+{% if a.warnings %}
+<h2>Starters to watch</h2>
+<div class="card scroll"><table>
+{% for pid, why in a.warnings %}
+<tr><td>{{ player(pid).name }} <span class="muted small">{{ player(pid).pos }} {{ player(pid).team }}</span></td>
+<td><span class="pill {{ 'bad' if why in cfg.OUT_STATUSES or why == 'on bye' else 'warn' }}">{{ why }}</span></td></tr>
+{% endfor %}
+</table></div>
+{% endif %}
+
+<h2>Best lineup</h2>
+<div class="card scroll"><table>
+<tr><th>Slot</th><th>Player</th><th class="n">Projection</th><th class="n">Sleeper</th><th class="n">FantasyPros</th><th>Opp</th><th></th></tr>
+{% for s in a.slots %}
+{% set pr = wp.players.get(s.pid) %}
+<tr><td class="muted">{{ s.slot }}</td>
+<td>{{ player(s.pid).name }} <span class="muted small">{{ player(s.pid).team }}</span></td>
+<td class="n"><b>{{ s.points | num(1) }}</b></td>
+<td class="n muted">{{ pr.by_source.get("Sleeper") | num(1) if pr else "" }}</td>
+<td class="n muted">{{ pr.by_source.get("FantasyPros") | num(1) if pr else "" }}</td>
+<td class="muted">{{ pr.opponent or "" if pr else "" }}</td>
+<td>{% if player(s.pid).injury %}<span class="pill {{ 'bad' if player(s.pid).injury in cfg.OUT_STATUSES else 'warn' }}">{{ player(s.pid).injury }}</span>{% endif %}</td></tr>
+{% endfor %}
+</table></div>
+
+{% if a.close_calls %}
+<h2>Close calls</h2>
+<div class="card scroll"><table>
+<tr><th>Starting</th><th>Over</th><th class="n">By</th><th>Why it's close</th></tr>
+{% for s, b, gap, disagree in a.close_calls %}
+<tr><td>{{ player(s).name }}</td><td>{{ player(b).name }}</td><td class="n">{{ gap | num(1) }}</td>
+<td>{% if disagree %}<span class="pill warn">sources disagree on the order</span>{% else %}<span class="pill">within {{ cfg.CLOSE_CALL_POINTS }} points</span>{% endif %}</td></tr>
+{% endfor %}
+</table></div>
+{% endif %}
+
+<h2>Bench</h2>
+<div class="card scroll"><table>
+<tr><th>Player</th><th class="n">Projection</th><th>Pos</th><th></th></tr>
+{% for pid, pts in a.bench %}
+<tr><td>{{ player(pid).name }} <span class="muted small">{{ player(pid).team }}</span></td><td class="n">{{ pts | num(1) }}</td><td>{{ player(pid).pos }}</td>
+<td>{% if player(pid).injury %}<span class="pill {{ 'bad' if player(pid).injury in cfg.OUT_STATUSES else 'warn' }}">{{ player(pid).injury }}</span>{% elif player(pid).team not in wp.teams_playing and wp.teams_playing %}<span class="pill">bye</span>{% endif %}</td></tr>
+{% endfor %}
+</table></div>
+{% endif %}
+<p class="muted small">Projections are the average of {% for name, status in wp.sources %}{{ name }} ({{ status }}){{ ", " if not loop.last }}{% endfor %}. FantasyPros ranks are turned into points using Sleeper's projection at the same position rank, scored with this league's rules. Players ruled out are projected at zero.</p>
+{% endblock %}
