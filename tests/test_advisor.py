@@ -322,3 +322,71 @@ def test_ktc_slug():
     from advisor.sources.ktc import slug_for
     assert slug_for("De'Von Achane", 1398) == "de-von-achane-1398"
     assert slug_for("Marvin Harrison Jr.", 1585) == "marvin-harrison-jr-1585"
+
+
+def _day(raw, d, denied=None, log=None):
+    raw = dict(raw, denied=denied, trade_log=log)
+    return main.analyze(raw, today=d)
+
+
+def test_trade_log_counts_days_and_revalues():
+    from datetime import timedelta
+    raw = build()
+    one = _day(raw, TODAY)
+    ideas = one["trade_ideas"]
+    log = one["trade_log"]
+    assert set(log["ideas"]) == {i.key for i in ideas}
+    assert all(e["days_recommended"] == 1 for e in log["ideas"].values())
+    again = _day(raw, TODAY, log=log)  # a second build the same day
+    assert all(e["days_recommended"] == 1 for e in again["trade_log"]["ideas"].values())
+    nxt = _day(raw, TODAY + timedelta(days=1), log=again["trade_log"])
+    e = nxt["trade_log"]["ideas"][ideas[0].key]
+    assert e["days_recommended"] == 2 and e["first_seen"] == TODAY.isoformat()
+    assert [c[0] for c in e["checks"]] == [TODAY.isoformat(), (TODAY + timedelta(days=1)).isoformat()]
+    top = next(r for r in nxt["log_rows"] if r.key == ideas[0].key)
+    assert top.status == "recommended" and top.edge == pytest.approx(ideas[0].edge)
+
+
+def test_denied_offer_is_kept_but_not_suggested():
+    raw = build()
+    one = _day(raw, TODAY)
+    key = one["trade_ideas"][0].key
+    two = _day(raw, TODAY, denied={key: "https://github.com/x/issues/5"}, log=one["trade_log"])
+    assert key not in {i.key for i in two["trade_ideas"]}
+    row = next(r for r in two["log_rows"] if r.key == key)
+    assert row.status == "denied" and row.entry["issue"].endswith("/5")
+    # GitHub unreachable: the mark in the log still holds.
+    three = _day(raw, TODAY, denied=None, log=two["trade_log"])
+    assert key not in {i.key for i in three["trade_ideas"]}
+    # Issue closed: the offer can come back.
+    four = _day(raw, TODAY, denied={}, log=three["trade_log"])
+    assert key in {i.key for i in four["trade_ideas"]}
+
+
+def test_offer_with_a_moved_player_is_marked_gone():
+    raw = build()
+    one = _day(raw, TODAY)
+    log = one["trade_log"]
+    old = dict(next(iter(log["ideas"].values())), get=[["nobody", "Long Gone"]])
+    log["ideas"]["0000000000"] = old
+    two = _day(raw, TODAY, log=log)
+    row = next(r for r in two["log_rows"] if r.key == "0000000000")
+    assert row.status == "gone" and "Long Gone" in row.note and row.edge is None
+
+
+def test_deny_link_round_trips_through_issue_title(monkeypatch):
+    from urllib.parse import parse_qs, urlparse
+    from advisor import github
+    url = github.deny_url("abc123def0", "Team 2", ["Puka Nacua"], ["James Cook", "2029 1st"])
+    title = parse_qs(urlparse(url).query)["title"][0]
+    assert github._KEY.match(title).group(1) == "abc123def0"
+
+    class Resp:
+        def json(self):
+            return [{"title": title, "user": {"login": "Racsoturtle"}, "html_url": "u1"},
+                    {"title": title.replace("abc123def0", "fff123def0"), "user": {"login": "someone"}, "html_url": "u2"},
+                    {"title": "Thursday summary", "user": {"login": "Racsoturtle"}, "html_url": "u3"}]
+
+    monkeypatch.setenv("GITHUB_TOKEN", "t")
+    monkeypatch.setattr(github.http, "get", lambda *a, **k: Resp())
+    assert github.denied_issues() == {"abc123def0": "u1"}

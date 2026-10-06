@@ -2,6 +2,7 @@
 
 import json
 import shutil
+from datetime import date
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -13,6 +14,7 @@ PAGES = (
     ("lineup.html", "Lineup"),
     ("trades.html", "Trades"),
     ("checker.html", "Trade checker"),
+    ("log.html", "Trade log"),
     ("waivers.html", "Waivers"),
     ("league.html", "League"),
 )
@@ -36,10 +38,20 @@ def num(x, digits=0):
     return f"{x:,.{digits}f}"
 
 
+def day(iso):
+    return date.fromisoformat(iso).strftime("%b %-d") if iso else ""
+
+
+def pct(x):
+    return "" if x is None else f"{'+' if x >= 0 else ''}{x * 100:.1f}%"
+
+
 def _env():
     env = Environment(loader=PackageLoader("advisor", "templates"), autoescape=select_autoescape())
     env.filters["ordinal"] = ordinal
     env.filters["num"] = num
+    env.filters["day"] = day
+    env.filters["pct"] = pct
     env.globals["SHORT_SOURCE"] = SHORT_SOURCE
     env.globals["PAGES"] = PAGES
     return env
@@ -60,7 +72,8 @@ def write_site(report, out_dir):
                 "team": p.get("team") or "FA", "injury": p.get("injury_status")}
 
     ctx = dict(report, pick_years=config.PICK_YEARS_AHEAD, updated=local.strftime("%a %b %-d, %-I:%M %p ET"),
-               sources=[s.name for s in report["consensus"].used], player=player, cfg=config)
+               sources=[s.name for s in report["consensus"].used], player=player, cfg=config,
+               log_by_key={r.key: r for r in report.get("log_rows") or []})
     for filename, title in PAGES:
         html = env.get_template(filename).render(ctx, page=filename, title=title)
         (out / filename).write_text(html)

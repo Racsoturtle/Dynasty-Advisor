@@ -13,9 +13,11 @@ on:
         default: false
   push:
     branches: [main]
+  issues:
+    types: [opened, closed, reopened]  # "They said no" marks
 
 permissions:
-  contents: read
+  contents: write  # saves the trade log to the data branch
   pages: write
   id-token: write
   issues: write
@@ -26,6 +28,8 @@ concurrency:
 
 jobs:
   build:
+    # Other people's issues on this public repo don't trigger a rebuild.
+    if: github.event_name != 'issues' || (startsWith(github.event.issue.title, 'Denied:') && github.event.issue.user.login == github.repository_owner)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,10 +40,25 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Test
         run: python -m pytest -q
+      - name: Load the trade log
+        run: |
+          if git fetch -q origin data:refs/remotes/origin/data; then
+            git worktree add -q -B data logbook origin/data
+          else
+            git worktree add -q --orphan -b data logbook
+          fi
       - name: Pull league and values, build site
         env:
-          GITHUB_TOKEN: ${{ github.token }}  # reads DynastyProcess's file history
-        run: python -m advisor.main --out site --snapshot snapshot
+          GITHUB_TOKEN: ${{ github.token }}  # reads DynastyProcess's file history and "Denied" issues
+        run: python -m advisor.main --out site --snapshot snapshot --log logbook/trade_log.json
+      - name: Save the trade log
+        run: |
+          cd logbook
+          git add trade_log.json
+          if ! git diff --cached --quiet; then
+            git -c user.name="dynasty-advisor" -c user.email="actions@users.noreply.github.com" commit -qm "Trade log $(TZ=America/New_York date '+%Y-%m-%d %H:%M')"
+            git push -q origin data
+          fi
       - name: Keep today's raw data for debugging
         if: always()
         uses: actions/upload-artifact@v4
@@ -48,6 +67,10 @@ jobs:
           path: snapshot
           retention-days: 14
           if-no-files-found: ignore
+      - name: Keep the "denied" label for They-said-no issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh label create denied --color c0392b --description "Trade offer they turned down" --force
       - name: Post the weekly summary
         if: github.event.schedule == '0 14 * * 4' || github.event.schedule == '0 14 * * 0' || inputs.send_summary
         env:

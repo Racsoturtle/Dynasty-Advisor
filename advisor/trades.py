@@ -10,6 +10,7 @@ Every number here is consensus value. A deal is a candidate when:
   - it fits the contend / hold / retool call.
 """
 
+import hashlib
 from dataclasses import dataclass, field
 from itertools import combinations
 
@@ -40,8 +41,15 @@ class Idea:
     their_lineup_change: float
     reason: str
     league_edge: float = 0.0
+    key: str = ""
     score: float = 0.0
     tags: list = field(default_factory=list)
+
+
+def idea_key(partner_roster_id, give_keys, get_keys):
+    """A short id that stays the same for the same offer on any day."""
+    text = f"{partner_roster_id}|{'+'.join(sorted(give_keys))}|{'+'.join(sorted(get_keys))}"
+    return hashlib.sha1(text.encode()).hexdigest()[:10]
 
 
 def league_value(asset, premium):
@@ -167,7 +175,8 @@ def fits_direction(call, give, get, numbers):
     return True
 
 
-def find(league_teams, me_team, call, roster_positions, per_game=None, premium=1.0):
+def find(league_teams, me_team, call, roster_positions, per_game=None, premium=1.0, exclude=()):
+    """Best offers to send. `exclude` holds idea keys Oscar marked as denied."""
     roster_size = sum(1 for s in roster_positions if s not in ("IR", "TAXI"))
     me = TeamState(me_team, roster_positions, roster_size, per_game)
     mine = assets_for(me_team)[: config.TRADE_POOL]
@@ -197,6 +206,8 @@ def find(league_teams, me_team, call, roster_positions, per_game=None, premium=1
                         continue
                     if not fits_direction(call, give, get, nums):
                         continue
+                    if idea_key(partner.roster_id, [a.key for a in give], [a.key for a in get]) in exclude:
+                        continue
                     found.append(_idea(partner, give, get, nums, call, premium))
         found.sort(key=lambda i: -i.score)
         ideas += _distinct(found)[: config.TRADE_IDEAS_PER_PARTNER]
@@ -222,7 +233,8 @@ def _spread(ideas):
 def _idea(partner, give, get, nums, call, premium=1.0):
     idea = Idea(partner, give, get, nums["give_value"], nums["get_value"], nums["edge"],
                 nums["my_lineup_change"], nums["my_points_change"], nums["their_lineup_change"], "",
-                league_edge=nums["league_edge"])
+                league_edge=nums["league_edge"],
+                key=idea_key(partner.roster_id, [a.key for a in give], [a.key for a in get]))
     gained = sorted({a.pos for a in give if a.pos and a.pos in partner.needs})
     if gained:
         idea.reason = f"Fills their {' and '.join(gained)} need; their starting lineup value rises {nums['their_lineup_change']:,.0f}."

@@ -11,8 +11,10 @@ import json
 import traceback
 from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
-from . import config, consensus, history, lineup, odds, projections, render, sleeper, summary, teams, trades, waivers
+from . import (config, consensus, github, history, lineup, odds, projections, render, sleeper, summary, teams,
+               tradelog, trades, waivers)
 from .sources import dynastyprocess, fantasycalc, ktc
 from .sources.common import NameIndex
 
@@ -42,6 +44,12 @@ def collect_live():
             traceback.print_exc()
             raw[name] = None
             raw.setdefault("errors", {})[name] = f"{type(exc).__name__}: {exc}"
+    try:
+        raw["denied"] = github.denied_issues()
+    except Exception as exc:
+        traceback.print_exc()
+        raw["denied"] = None  # keep the marks already in the trade log
+        raw.setdefault("errors", {})["denied"] = f"{type(exc).__name__}: {exc}"
     # Price the league's past 1st-round trades on their trade dates. Only new
     # trades are fetched; yesterday's readings come from the live site.
     try:
@@ -143,8 +151,16 @@ def analyze(raw, today=None):
     report["trade_prices"] = raw.get("trade_prices") or {}
     premium = history.measure(raw.get("league_trades") or [], report["trade_prices"], data.players)
     report["pick_premium"] = premium
+    denied = raw.get("denied")
+    if denied is None:
+        denied = {k: e.get("issue") for k, e in ((raw.get("trade_log") or {}).get("ideas") or {}).items()
+                  if e.get("denied")}
     report["trade_ideas"] = trades.find(league_teams, me, call, roster_positions, week_proj.per_game,
-                                        premium.multiplier) if call not in ("Past deadline", "Offseason") else []
+                                        premium.multiplier, exclude=set(denied)) \
+        if call not in ("Past deadline", "Offseason") else []
+    report["trade_log"], report["log_rows"] = tradelog.update(
+        raw.get("trade_log"), today, report["trade_ideas"], league_teams, me, roster_positions,
+        week_proj.per_game, premium.multiplier, raw.get("denied"))
     report["checker"] = trades.checker_data(league_teams, me, call, roster_positions, week_proj.per_game,
                                             premium.multiplier)
     report["summary"] = summary.build(report)
@@ -163,13 +179,18 @@ def main():
     ap.add_argument("--out", default="site")
     ap.add_argument("--offline")
     ap.add_argument("--snapshot")
+    ap.add_argument("--log", help="trade log JSON file, read and then updated in place")
     args = ap.parse_args()
 
     raw = load_snapshot(args.offline) if args.offline else collect_live()
+    if args.log and Path(args.log).exists():
+        raw["trade_log"] = json.loads(Path(args.log).read_text())
     if args.snapshot:
         save_snapshot(raw, args.snapshot)
-    report = analyze(raw)
+    report = analyze(raw, today=datetime.now(ZoneInfo("America/New_York")).date())
     render.write_site(report, args.out)
+    if args.log:
+        Path(args.log).write_text(json.dumps(report["trade_log"], indent=1))
     Path(args.out, "summary.md").write_text(report["summary"])
     used = ", ".join(s.name for s in report["consensus"].used)
     print(f"Built {args.out} for {report['me'].team_name}; sources used: {used}")

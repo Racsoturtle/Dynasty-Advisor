@@ -3,7 +3,7 @@
 {% if not trade_ideas %}
 <p class="lead">{% if call[0] in ("Past deadline", "Offseason") %}{{ call[1] }}{% else %}No trade passes every test today. Each idea has to win you {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% to {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in consensus value, improve the other team's starting lineup, and fit the {{ call[0] | lower }} call.{% endif %}</p>
 {% else %}
-<p class="lead">{{ trade_ideas | length }} offers to send, best first. Each wins you at least {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% in consensus value but looks no more than {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in your favor at this league's prices, makes the other team's starting lineup better, and fits the <b>{{ call[0] | lower }}</b> call. Send them yourself in the Sleeper app.</p>
+<p class="lead">{{ trade_ideas | length }} offers to send, best first. If you send one and they turn it down, tap <b>They said no</b> and it stops being suggested (see the <a href="log.html">Trade log</a>). Each wins you at least {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% in consensus value but looks no more than {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in your favor at this league's prices, makes the other team's starting lineup better, and fits the <b>{{ call[0] | lower }}</b> call. Send them yourself in the Sleeper app.</p>
 {% for i in trade_ideas %}
 <div class="card idea">
   <div class="idea-head"><b>{{ loop.index }}. To {{ i.partner.team_name }}</b>{% if i.partner.team_name != i.partner.owner %} <span class="muted small">{{ i.partner.owner }}</span>{% endif %}
@@ -16,6 +16,9 @@
     Your weekly points {{ "rise" if i.my_points_change >= 0 else "drop" }} {{ i.my_points_change | abs | num(1) }}.
     {% for t in i.tags %}<span class="pill">{{ t }}</span> {% endfor %}</div>
   <div class="muted small">Package value {{ i.give_value | num }} given for {{ i.get_value | num }}.{% if (i.league_edge - i.edge) | abs > 0.005 %} At league prices for 1sts it looks like {{ "+" if i.league_edge >= 0 else "" }}{{ (i.league_edge * 100) | round(1) }}% for you.{% endif %}</div>
+  {% set lr = log_by_key.get(i.key) %}
+  <div class="idea-foot"><span class="muted small">{% if lr and lr.entry.days_recommended > 1 %}Suggested {{ lr.entry.days_recommended }} days since {{ lr.entry.first_seen | day }}.{% else %}New today.{% endif %}</span>
+    {% if lr %}<a class="btn" href="{{ lr.deny_url }}" target="_blank" rel="noopener">They said no</a>{% endif %}</div>
 </div>
 {% endfor %}
 {% endif %}
@@ -30,11 +33,11 @@
 {% endif %}
 {% if pp.trades %}
   <div class="scroll"><table>
-    <thead><tr><th>Date</th><th>Sold the 1st</th><th>Gave</th><th>Got</th><th class="num">1st sold at</th><th>Sources</th></tr></thead>
+    <thead><tr><th>Date</th><th>Sold the 1st</th><th>Gave</th><th>Got</th><th class="n">1st sold at</th><th>Sources</th></tr></thead>
     <tbody>
     {% for t in pp.trades %}
       <tr><td class="small">{{ t.when.strftime("%b %-d, %Y") }}</td><td>{{ t.seller }}</td><td class="small">{{ t.gave | join(", ") }}</td><td class="small">{{ t.got | join(", ") }}</td>
-        <td class="num">{% if t.multiplier %}{{ "%.2f" | format(t.multiplier) }}x{% else %}<span class="muted">n/a</span>{% endif %}</td>
+        <td class="n">{% if t.multiplier %}{{ "%.2f" | format(t.multiplier) }}x{% else %}<span class="muted">n/a</span>{% endif %}</td>
         <td class="small muted">{% for s, m in t.by_source.items() %}{{ SHORT_SOURCE.get(s, s) }} {{ "%.2f" | format(m) }}x{% if not loop.last %}, {% endif %}{% else %}no source had values for that date{% endfor %}</td></tr>
     {% endfor %}
     </tbody>

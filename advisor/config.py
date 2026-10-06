@@ -3,6 +3,8 @@
 LEAGUE_ID = "1327317900188487680"
 MY_USERNAME = "Racsoturtle"
 SITE_URL = "https://racsoturtle.github.io/Dynasty-Advisor/"
+GITHUB_REPO = "Racsoturtle/Dynasty-Advisor"
+GITHUB_OWNER = "Racsoturtle"  # only this account's issues can mark an offer as denied
 
 # Value sources are asked for this format where they support it.
 NUM_TEAMS = 16
@@ -60,3 +62,6 @@ PREMIUM_RANGE = (0.8, 1.5)
 # With the premium, Oscar's real edge can top TRADE_MAX_EDGE while the deal
 # still looks fair at league prices. Never more than this, though.
 TRADE_MAX_TRUE_EDGE = 0.25
+
+# Trade log: ideas not recommended for this long drop off the log.
+LOG_KEEP_DAYS = 120

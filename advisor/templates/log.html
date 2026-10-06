@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% macro row(r) %}
+<div class="card logrow">
+  <div class="idea-head"><b>To {{ r.entry.partner }}</b>
+    {% if r.status == "recommended" %}<span class="pill good">Suggested today</span>
+    {% elif r.status == "denied" %}<span class="pill bad">They said no</span>
+    {% elif r.status == "gone" %}<span class="pill">Can't be made now</span>
+    {% else %}<span class="pill warn">Not suggested today</span>{% endif %}</div>
+  <div class="sides">
+    <div><div class="k">You give</div>{% for k, label in r.entry["give"] %}<div>{{ label }}</div>{% endfor %}</div>
+    <div><div class="k">You get</div>{% for k, label in r.entry["get"] %}<div>{{ label }}</div>{% endfor %}</div>
+  </div>
+  <div class="small">First suggested {{ r.entry.first_seen | day }} at {{ r.entry.first_edge | pct }}{% if r.edge is not none %}; worth {{ r.edge | pct }} to you today{% if (r.league_edge - r.edge) | abs > 0.005 %} ({{ r.league_edge | pct }} at league prices){% endif %}{% endif %}.
+    Suggested on {{ r.entry.days_recommended }} day{{ "" if r.entry.days_recommended == 1 else "s" }}{% if r.entry.last_recommended and r.status != "recommended" %}, last on {{ r.entry.last_recommended | day }}{% endif %}.
+    {% if r.note %}<span class="muted">{{ r.note }}</span>{% endif %}</div>
+  <div class="idea-foot"><span></span>
+    {% if r.status == "denied" %}{% if r.entry.issue %}<a class="btn" href="{{ r.entry.issue }}" target="_blank" rel="noopener">Undo (close the issue)</a>{% endif %}
+    {% elif r.status != "gone" %}<a class="btn" href="{{ r.deny_url }}" target="_blank" rel="noopener">They said no</a>{% endif %}</div>
+</div>
+{% endmacro %}
+{% block body %}
+{% set today_rows = log_rows | selectattr("status", "equalto", "recommended") | list %}
+{% set earlier = log_rows | selectattr("status", "in", ["dropped", "gone"]) | list %}
+{% set denied = log_rows | selectattr("status", "equalto", "denied") | list %}
+<p class="lead">Every offer the dashboard has suggested, re-valued with today's consensus. Good offers keep coming back each day until you mark that they said no.</p>
+<p class="small muted"><b>They said no</b> opens a short GitHub issue that's already filled in; submit it and the dashboard rebuilds in about a minute without that offer. Close the issue to undo it. Only issues from your GitHub account count.</p>
+{% if not log_rows %}<p>No offers logged yet.</p>{% endif %}
+{% if today_rows %}<h2>Suggested today ({{ today_rows | length }})</h2>{% for r in today_rows %}{{ row(r) }}{% endfor %}{% endif %}
+{% if earlier %}<h2>Earlier offers ({{ earlier | length }})</h2>{% for r in earlier %}{{ row(r) }}{% endfor %}{% endif %}
+{% if denied %}<h2>They said no ({{ denied | length }})</h2>{% for r in denied %}{{ row(r) }}{% endfor %}{% endif %}
+<p class="muted small">Percentages are how much more consensus value you get than you give. Offers not suggested for {{ cfg.LOG_KEEP_DAYS }} days drop off the log.</p>
+{% endblock %}
