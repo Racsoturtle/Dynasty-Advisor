@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body %}
+{% set ordered = teams | sort(attribute="total_value", reverse=True) %}
+<p class="lead">Every team ranked by dynasty value, players plus picks. Weak spots are where a team's starters rank in the bottom half of the league, which is what it should pay for in a trade.</p>
+<div class="card scroll"><table>
+<tr><th class="n">#</th><th>Team</th><th class="n">Dynasty value</th><th>Record</th><th>All-play</th><th class="n">Points</th>
+<th class="n">Lineup rank</th><th>Weak spots</th><th>Strengths</th><th class="n">Age</th><th class="n">1sts</th></tr>
+{% for t in ordered %}
+<tr{% if t.roster_id == me.roster_id %} class="me"{% endif %}>
+  <td class="n">{{ loop.index }}</td>
+  <td>{{ t.team_name }}{% if t.team_name != t.owner %} <span class="muted small">{{ t.owner }}</span>{% endif %}</td>
+  <td class="n">{{ t.total_value | num }}</td>
+  <td>{{ t.wins }}-{{ t.losses }}{% if t.ties %}-{{ t.ties }}{% endif %}</td>
+  <td>{{ t.allplay_wins }}-{{ t.allplay_losses }}</td>
+  <td class="n">{{ t.points_for | num(1) }}</td>
+  <td class="n">{{ t.ranks.lineup_value | ordinal }}</td>
+  <td>{% for p in t.needs %}<span class="pill bad">{{ p }}</span> {% else %}<span class="muted">none</span>{% endfor %}</td>
+  <td>{% for p in t.strengths %}<span class="pill good">{{ p }}</span> {% endfor %}</td>
+  <td class="n">{{ t.avg_age | num(1) }}</td>
+  <td class="n">{{ t.picks | selectattr("round", "equalto", 1) | list | length }}</td>
+</tr>
+{% endfor %}
+</table></div>
+<p class="muted small">Age is weighted by value, so a team's stars count more than its depth. 1sts counts first-round picks owned over the next {{ pick_years }} drafts.</p>
+{% endblock %}

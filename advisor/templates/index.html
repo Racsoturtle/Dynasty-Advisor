@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block body %}
+{% set n = teams | length %}
+{% set luck = me.wins - me.expected_wins %}
+<p class="lead">
+  You're {{ me.wins }}-{{ me.losses }}{% if me.ties %}-{{ me.ties }}{% endif %}.
+  {% if completed_weeks %}Against every team every week you'd be {{ me.allplay_wins }}-{{ me.allplay_losses }}, worth about {{ me.expected_wins | num(1) }} wins,
+  so you're {% if luck < -0.5 %}{{ (-luck) | num(1) }} wins unlucky{% elif luck > 0.5 %}{{ luck | num(1) }} wins lucky{% else %}about where you should be{% endif %}.{% endif %}
+  Your roster is {{ me.ranks.total_value | ordinal }} of {{ n }} in dynasty value and {{ me.ranks.lineup_value | ordinal }} in starting lineup value.
+</p>
+
+<div class="tiles">
+  <div class="tile"><div class="k">Record</div><div class="v">{{ me.wins }}-{{ me.losses }}</div><div class="s">{{ me.ranks.standings | ordinal }} in standings</div></div>
+  <div class="tile"><div class="k">All-play</div><div class="v">{{ me.allplay_wins }}-{{ me.allplay_losses }}</div><div class="s">{{ me.expected_wins | num(1) }} expected wins</div></div>
+  <div class="tile"><div class="k">Points for</div><div class="v">{{ me.points_for | num(1) }}</div><div class="s">{{ me.ranks.points_for | ordinal }} of {{ n }}</div></div>
+  <div class="tile"><div class="k">Points against</div><div class="v">{{ me.points_against | num(1) }}</div><div class="s">{{ me.ranks.points_against | ordinal }} most</div></div>
+  <div class="tile"><div class="k">Dynasty value</div><div class="v">{{ me.ranks.total_value | ordinal }}</div><div class="s">{{ me.total_value | num }} incl. picks</div></div>
+  <div class="tile"><div class="k">Lineup value</div><div class="v">{{ me.ranks.lineup_value | ordinal }}</div><div class="s">best starters by value</div></div>
+</div>
+
+<h2>Starting lineup strength by position</h2>
+<div class="pos">
+{% for pos, r in me.position_rank.items() %}
+  <div class="tile"><div class="k">{{ pos }}</div><div class="v">{{ r | ordinal }}</div>
+  <div class="s">{% if r <= 4 %}<span class="pill good">strength</span>{% elif r > n / 2 %}<span class="pill bad">need</span>{% else %}middle{% endif %}</div></div>
+{% endfor %}
+</div>
+
+<h2>Roster by consensus value</h2>
+<div class="card scroll"><table>
+<tr><th>Player</th><th class="n">Value</th><th>Pos</th><th class="n">Age</th><th>Slot</th>
+{% for s in sources %}<th class="n">{{ SHORT_SOURCE.get(s, s) }}</th>{% endfor %}<th>Notes</th></tr>
+{% for p in me.players %}
+<tr>
+  <td>{{ p.name }} <span class="muted small">{{ p.team }}</span></td>
+  <td class="n"><b>{{ p.value | num }}</b></td>
+  <td>{{ p.pos }}</td>
+  <td class="n">{{ p.age or "" }}</td>
+  <td>{{ {"starter": "Starter", "bench": "Bench", "taxi": "Taxi", "ir": "IR"}[p.status] }}</td>
+  {% for s in sources %}<td class="n muted">{{ p.by_source.get(s) | num }}</td>{% endfor %}
+  <td>
+    {% if p.injury %}<span class="pill warn">{{ p.injury }}</span>{% endif %}
+    {% if p.disagree %}<span class="pill">sources disagree</span>{% endif %}
+    {% if not p.by_source and p.pos in ("QB", "RB", "WR", "TE") %}<span class="pill">no source values</span>{% endif %}
+  </td>
+</tr>
+{% endfor %}
+</table></div>
+
+<h2>Draft picks</h2>
+<div class="card scroll"><table>
+<tr><th>Pick</th><th>Originally</th><th>Priced as</th><th class="n">Value</th></tr>
+{% for pk in me.picks %}
+<tr><td>{{ pk.year }} round {{ pk.round }}</td>
+<td>{% if pk.original_roster_id == me.roster_id %}Yours{% else %}{{ pk.original_owner }}{% endif %}</td>
+<td>{{ {"early": "Early", "mid": "Mid", "late": "Late", "any": "Average"}[pk.tier] }}</td>
+<td class="n">{{ pk.value | num }}</td></tr>
+{% else %}
+<tr><td colspan="4" class="muted">You don't own any picks in the next few drafts.</td></tr>
+{% endfor %}
+</table></div>
+<p class="muted small">Next year's picks are priced early, mid or late by how strong the original team looks today. Later years are priced as an average pick.</p>
+
+<h2>Value sources today</h2>
+<div class="card scroll"><table>
+<tr><th>Source</th><th>Status</th><th>Data as of</th><th class="n">Players matched</th></tr>
+{% for s in consensus.used %}
+<tr><td>{{ s.name }}</td><td><span class="pill good">in the average</span></td><td>{{ s.as_of }}</td><td class="n">{{ s.players | length }}</td></tr>
+{% endfor %}
+{% for name, reason in consensus.dropped %}
+<tr><td>{{ name }}</td><td><span class="pill bad">left out: {{ reason }}</span></td><td></td><td></td></tr>
+{% endfor %}
+</table></div>
+{% endblock %}
