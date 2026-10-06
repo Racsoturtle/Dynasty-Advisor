@@ -2,8 +2,7 @@
 
 A personal dashboard for Racsoturtle's team in the Skulls Super Dynasty League on Sleeper.
 It rebuilds every day by 7 AM Eastern (6:45 AM run, adjusted for daylight saving) and publishes to
-GitHub Pages, and with the Thursday and Sunday builds it posts a short summary as a
-GitHub issue on Thursday and Sunday mornings.
+GitHub Pages. The Thursday and Sunday builds also post a short summary as a GitHub issue.
 
 Pages: Home (contend, hold or retool call; record and luck; roster values; picks), Lineup (best
 lineup by consensus projection, changes, close calls, injuries and byes), Trades (offers to send:
