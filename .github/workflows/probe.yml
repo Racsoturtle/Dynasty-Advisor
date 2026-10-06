@@ -1,0 +1,66 @@
+name: Probe data sources
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch and summarize
+        run: |
+          mkdir out
+          cat > probe.py <<'PY'
+          import json, re, urllib.request
+          UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36"}
+          def get(url):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40) as r:
+                      return r.status, r.read().decode("utf-8", "replace")
+              except Exception as e:
+                  return getattr(e, "code", 0), str(e)
+          out = open("out/summary.txt", "w")
+          def w(*a): out.write(" ".join(str(x) for x in a) + "\n")
+          code, body = get("https://api.sleeper.app/v1/state/nfl"); w("STATE", code, body[:400])
+          week = json.loads(body)["week"]
+          L = "1327317900188487680"
+          for wk in (week, week + 1, 14):
+              code, body = get(f"https://api.sleeper.app/v1/league/{L}/matchups/{wk}")
+              rows = json.loads(body) if code == 200 else []
+              w("MATCHUPS week", wk, code, "rows", len(rows), "sample", json.dumps([{k: r.get(k) for k in ("roster_id", "matchup_id", "points")} for r in rows[:4]]))
+          code, body = get(f"https://api.sleeper.app/projections/nfl/2026/{week}?season_type=regular&position[]=QB&position[]=RB&position[]=WR&position[]=TE&position[]=K&position[]=DEF")
+          rows = json.loads(body) if code == 200 else []
+          w("PROJ week", week, code, "rows", len(rows))
+          for pos in ("QB", "WR", "K", "DEF"):
+              r = next((r for r in rows if (r.get("player") or {}).get("position") == pos and (r.get("stats") or {}).get("pts_ppr")), None)
+              if r:
+                  w("PROJ", pos, json.dumps({k: v for k, v in r.items() if k not in ("stats", "player")}), "| stats:", json.dumps(r["stats"])[:900], "| player:", json.dumps(r["player"])[:400])
+          code, body = get("https://api.sleeper.app/projections/nfl/2026?season_type=regular&position[]=WR")
+          rows = json.loads(body) if code == 200 else []
+          w("SEASON PROJ", code, len(rows), json.dumps(rows[0])[:900] if rows else body[:300])
+          code, body = get(f"https://api.sleeper.app/v1/league/{L}")
+          w("SCORING", json.dumps(json.loads(body).get("scoring_settings")))
+          for page in ("ppr-qb", "ppr-rb", "ppr-wr", "ppr-te", "k", "dst", "ppr-flex"):
+              code, body = get(f"https://www.fantasypros.com/nfl/rankings/{page}.php")
+              m = re.search(r"var\s+ecrData\s*=\s*(\{.*?\});", body, re.S)
+              w("FP", page, code, len(body), "ecrData:", bool(m))
+              if m:
+                  d = json.loads(m.group(1))
+                  w("  top keys:", list(d.keys()))
+                  w("  meta:", json.dumps({k: d[k] for k in d if k != "players"})[:700])
+                  ps = d.get("players", [])
+                  w("  players", len(ps), "first:", json.dumps(ps[0])[:900] if ps else "")
+              else:
+                  w("  vars:", sorted(set(re.findall(r"var\s+(\w+)\s*=", body)))[:40])
+          PY
+          python3 probe.py
+      - name: Push results
+        run: |
+          cd out
+          git init -q -b probe
+          git -c user.name=probe -c user.email=probe@example.com add .
+          git -c user.name=probe -c user.email=probe@example.com commit -qm probe
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" probe
