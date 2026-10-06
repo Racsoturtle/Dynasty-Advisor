@@ -33,8 +33,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.219742,
-     0.035077
+     0.156452,
+     -0.02793
     ]
    ],
    "issue": "https://github.com/Racsoturtle/Dynasty-Advisor/issues/2",
@@ -72,8 +72,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.246383,
-     0.059953
+     0.239524,
+     0.053931
     ]
    ],
    "issue": null
@@ -106,8 +106,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.159915,
-     0.091334
+     0.159573,
+     0.091357
     ]
    ],
    "issue": null
@@ -140,8 +140,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.126028,
-     0.0491
+     0.127102,
+     0.050508
     ]
    ],
    "issue": null
@@ -178,8 +178,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.238568,
-     0.086697
+     0.248311,
+     0.095573
     ]
    ],
    "issue": null
@@ -216,8 +216,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.22508,
-     0.077882
+     0.124916,
+     -0.02282
     ]
    ],
    "issue": null
@@ -254,8 +254,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.24989,
-     0.087956
+     0.256523,
+     0.094617
     ]
    ],
    "issue": null
@@ -292,8 +292,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.075696,
-     0.075696
+     0.072903,
+     0.072903
     ]
    ],
    "issue": null
@@ -330,8 +330,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.242854,
-     0.090983
+     0.251197,
+     0.098459
     ]
    ],
    "issue": null
@@ -368,8 +368,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.22724,
-     0.082692
+     0.117927,
+     -0.025905
     ]
    ],
    "issue": null
@@ -406,8 +406,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.216357,
-     0.078786
+     0.225411,
+     0.086828
     ]
    ],
    "issue": null
@@ -444,8 +444,198 @@
    "checks": [
     [
      "2026-10-06",
-     0.058,
-     0.068614
+     0.057264,
+     0.067766
+    ]
+   ],
+   "issue": null
+  },
+  "1054ac1ed3": {
+   "partner_id": 2,
+   "partner": "NabersThinkImSellinDope",
+   "give": [
+    [
+     "4984",
+     "Josh Allen"
+    ],
+    [
+     "pick:2029:2:7",
+     "Racsoturtle's 2029 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:2",
+     "jdshorsey's 2027 1st (early)"
+    ],
+    [
+     "11564",
+     "Drake Maye"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.113141,
+   "first_league_edge": -0.021231,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.113141,
+     -0.021231
+    ]
+   ],
+   "issue": null
+  },
+  "473b390087": {
+   "partner_id": 2,
+   "partner": "NabersThinkImSellinDope",
+   "give": [
+    [
+     "7611",
+     "Rhamondre Stevenson"
+    ],
+    [
+     "9754",
+     "Quentin Johnston"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:2",
+     "jdshorsey's 2028 1st"
+    ],
+    [
+     "6806",
+     "J.K. Dobbins"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.249364,
+   "first_league_edge": 0.079244,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.249364,
+     0.079244
+    ]
+   ],
+   "issue": null
+  },
+  "dbab887320": {
+   "partner_id": 12,
+   "partner": "BigDawgSP26",
+   "give": [
+    [
+     "13269",
+     "Fernando Mendoza"
+    ],
+    [
+     "7611",
+     "Rhamondre Stevenson"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:12",
+     "BigDawgSP26's 2027 1st (late)"
+    ],
+    [
+     "4199",
+     "Aaron Jones"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.245027,
+   "first_league_edge": 0.089626,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.245027,
+     0.089626
+    ]
+   ],
+   "issue": null
+  },
+  "b738876b7e": {
+   "partner_id": 5,
+   "partner": "Monkey Neva Cramp",
+   "give": [
+    [
+     "5947",
+     "Jakobi Meyers"
+    ],
+    [
+     "pick:2028:2:7",
+     "Racsoturtle's 2028 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2029:1:5",
+     "bmatthews31's 2029 1st"
+    ],
+    [
+     "9480",
+     "Brenton Strange"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.238828,
+   "first_league_edge": 0.085342,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.238828,
+     0.085342
+    ]
+   ],
+   "issue": null
+  },
+  "5df36dd300": {
+   "partner_id": 16,
+   "partner": "Is dewalt a lesbian?",
+   "give": [
+    [
+     "9754",
+     "Quentin Johnston"
+    ],
+    [
+     "pick:2028:2:7",
+     "Racsoturtle's 2028 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2029:1:16",
+     "Xinwen's 2029 1st"
+    ],
+    [
+     "13317",
+     "Ted Hurst"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.218225,
+   "first_league_edge": 0.061254,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.218225,
+     0.061254
     ]
    ],
    "issue": null
