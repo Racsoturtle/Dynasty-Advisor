@@ -1,0 +1,263 @@
+{
+ "version": 1,
+ "ideas": {
+  "9c3e4a8392": {
+   "partner_id": 2,
+   "partner": "NabersThinkImSellinDope",
+   "give": [
+    [
+     "12512",
+     "Quinshon Judkins"
+    ],
+    [
+     "13269",
+     "Fernando Mendoza"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:2",
+     "jdshorsey's 2027 1st (early)"
+    ],
+    [
+     "6806",
+     "J.K. Dobbins"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.220285,
+   "first_league_edge": 0.035458,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.220285,
+     0.035458
+    ]
+   ],
+   "issue": null
+  },
+  "14e53de365": {
+   "partner_id": 15,
+   "partner": "DeFootball Team",
+   "give": [
+    [
+     "12512",
+     "Quinshon Judkins"
+    ],
+    [
+     "pick:2027:2:7",
+     "Racsoturtle's 2027 2nd (early)"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:15",
+     "dewaltjack's 2027 1st (early)"
+    ],
+    [
+     "12489",
+     "RJ Harvey"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.247268,
+   "first_league_edge": 0.06069,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.247268,
+     0.06069
+    ]
+   ],
+   "issue": null
+  },
+  "179346b52e": {
+   "partner_id": 1,
+   "partner": "Sparvero\u2019s Soldiers",
+   "give": [
+    [
+     "9493",
+     "Puka Nacua"
+    ]
+   ],
+   "get": [
+    [
+     "8138",
+     "James Cook"
+    ],
+    [
+     "pick:2027:1:1",
+     "amilardo's 2027 1st (late)"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.159727,
+   "first_league_edge": 0.091187,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.159727,
+     0.091187
+    ]
+   ],
+   "issue": null
+  },
+  "c39ef68ff6": {
+   "partner_id": 6,
+   "partner": "Golden Shower",
+   "give": [
+    [
+     "4984",
+     "Josh Allen"
+    ]
+   ],
+   "get": [
+    [
+     "4881",
+     "Lamar Jackson"
+    ],
+    [
+     "pick:2027:1:6",
+     "mattswider's 2027 1st (late)"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.126022,
+   "first_league_edge": 0.049118,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.126022,
+     0.049118
+    ]
+   ],
+   "issue": null
+  },
+  "bda0e099fb": {
+   "partner_id": 16,
+   "partner": "Is dewalt a lesbian?",
+   "give": [
+    [
+     "13269",
+     "Fernando Mendoza"
+    ],
+    [
+     "5947",
+     "Jakobi Meyers"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:16",
+     "Xinwen's 2028 1st"
+    ],
+    [
+     "pick:2029:2:16",
+     "Xinwen's 2029 2nd"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.244552,
+   "first_league_edge": 0.092704,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.244552,
+     0.092704
+    ]
+   ],
+   "issue": null
+  },
+  "d1eb6a9d30": {
+   "partner_id": 2,
+   "partner": "NabersThinkImSellinDope",
+   "give": [
+    [
+     "5947",
+     "Jakobi Meyers"
+    ],
+    [
+     "9754",
+     "Quentin Johnston"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2029:1:2",
+     "jdshorsey's 2029 1st"
+    ],
+    [
+     "7567",
+     "Kenny Gainwell"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.223414,
+   "first_league_edge": 0.076243,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.223414,
+     0.076243
+    ]
+   ],
+   "issue": null
+  },
+  "cd0b09bd3d": {
+   "partner_id": 16,
+   "partner": "Is dewalt a lesbian?",
+   "give": [
+    [
+     "9754",
+     "Quentin Johnston"
+    ],
+    [
+     "pick:2029:2:7",
+     "Racsoturtle's 2029 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2029:1:16",
+     "Xinwen's 2029 1st"
+    ],
+    [
+     "13317",
+     "Ted Hurst"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.248596,
+   "first_league_edge": 0.086726,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.248596,
+     0.086726
+    ]
+   ],
+   "issue": null
+  }
+ }
+}
