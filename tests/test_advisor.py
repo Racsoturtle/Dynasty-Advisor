@@ -196,3 +196,39 @@ def test_offseason_skips_weekly_parts():
     rep = main.analyze(raw, today=TODAY)
     assert rep["week"] is None
     assert not rep["odds"].playoff
+
+
+def test_trade_ideas_follow_the_rules(report):
+    from advisor import config
+    ideas = report["trade_ideas"]
+    assert ideas
+    for i in ideas:
+        assert config.TRADE_MIN_EDGE <= i.edge <= config.TRADE_MAX_EDGE
+        assert i.their_lineup_change > 0
+        assert i.partner.roster_id != report["me"].roster_id
+        if report["call"][0] == "Hold":
+            assert i.my_points_change >= -config.HOLD_MAX_POINTS_LOSS
+
+
+def test_package_value_discounts_depth():
+    from advisor.trades import Asset, package_value
+    star = [Asset("a", "Star", 6000)]
+    two = [Asset("b", "Mid", 3000), Asset("c", "Mid", 3000)]
+    assert package_value(two) < 6000 == package_value(star)
+
+
+def test_trade_ideas_by_call_differ(report):
+    from advisor import trades
+    args = (report["teams"], report["me"])
+    rp = report["league"]["roster_positions"]
+    pg = report["week_proj"].per_game
+    for i in trades.find(*args, "Contend", rp, pg):
+        assert i.my_points_change >= 0
+
+
+def test_checker_data_is_complete(report):
+    d = report["checker"]
+    assert d["me"] == report["me"].roster_id
+    assert len(d["teams"]) == 16
+    assert all(t["players"] for t in d["teams"])
+    assert sum(len(t["picks"]) for t in d["teams"]) == 16 * 3 * 3

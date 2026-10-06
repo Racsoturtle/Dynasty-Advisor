@@ -1,5 +1,6 @@
 """Writes the static dashboard site."""
 
+import json
 import shutil
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -10,6 +11,8 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 PAGES = (
     ("index.html", "Home"),
     ("lineup.html", "Lineup"),
+    ("trades.html", "Trades"),
+    ("checker.html", "Trade checker"),
     ("waivers.html", "Waivers"),
     ("league.html", "League"),
 )
@@ -61,4 +64,5 @@ def write_site(report, out_dir):
     for filename, title in PAGES:
         html = env.get_template(filename).render(ctx, page=filename, title=title)
         (out / filename).write_text(html)
+    (out / "checker.json").write_text(json.dumps(report["checker"]))
     (out / ".nojekyll").write_text("")

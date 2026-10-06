@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block body %}
+{% if not trade_ideas %}
+<p class="lead">{% if call[0] in ("Past deadline", "Offseason") %}{{ call[1] }}{% else %}No trade passes every test today. Each idea has to win you {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% to {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in consensus value, improve the other team's starting lineup, and fit the {{ call[0] | lower }} call.{% endif %}</p>
+{% else %}
+<p class="lead">{{ trade_ideas | length }} offers to send, best first. Each wins you {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% to {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in consensus value, makes the other team's starting lineup better, and fits the <b>{{ call[0] | lower }}</b> call. Send them yourself in the Sleeper app.</p>
+{% for i in trade_ideas %}
+<div class="card idea">
+  <div class="idea-head"><b>{{ loop.index }}. To {{ i.partner.team_name }}</b>{% if i.partner.team_name != i.partner.owner %} <span class="muted small">{{ i.partner.owner }}</span>{% endif %}
+    <span class="pill good">+{{ (i.edge * 100) | round(1) }}% value</span></div>
+  <div class="sides">
+    <div><div class="k">You give</div>{% for a in i.give %}<div>{{ a.label }} <span class="muted small">{{ a.pos or "pick" }} · {{ a.value | num }}</span></div>{% endfor %}</div>
+    <div><div class="k">You get</div>{% for a in i.get %}<div>{{ a.label }} <span class="muted small">{{ a.pos or "pick" }} · {{ a.value | num }}</span></div>{% endfor %}</div>
+  </div>
+  <div class="small">{{ i.reason }}
+    Your weekly points {{ "rise" if i.my_points_change >= 0 else "drop" }} {{ i.my_points_change | abs | num(1) }}.
+    {% for t in i.tags %}<span class="pill">{{ t }}</span> {% endfor %}</div>
+  <div class="muted small">Package value {{ i.give_value | num }} given for {{ i.get_value | num }}.</div>
+</div>
+{% endfor %}
+{% endif %}
+<p class="muted small">In a package the best piece counts fully and each next piece counts {{ (cfg.PACKAGE_WEIGHTS[1] * 100) | int }}%, then {{ (cfg.PACKAGE_WEIGHTS[2] * 100) | int }}%, so two mid players don't equal one star. When a deal adds players to a full roster, the cheapest bench player who has to be cut counts against that side. "Weekly points" uses Sleeper's rest-of-season projections.</p>
+{% endblock %}

@@ -5,8 +5,10 @@ It rebuilds every morning on GitHub and publishes to GitHub Pages, and posts a s
 GitHub issue on Thursday and Sunday mornings.
 
 Pages: Home (contend, hold or retool call; record and luck; roster values; picks), Lineup (best
-lineup by consensus projection, changes, close calls, injuries and byes), Waivers (free agents that
-clearly beat what you have), League (every team's value, needs and playoff odds).
+lineup by consensus projection, changes, close calls, injuries and byes), Trades (offers to send:
+3% to 10% in your favor by consensus value, better for the partner's starting lineup, and fitting
+the call), Trade checker (grade any offer in the browser and get a counter), Waivers (free agents
+that clearly beat what you have), League (every team's value, needs and playoff odds).
 
 Player and pick values come only from outside sources, averaged with equal weight:
 

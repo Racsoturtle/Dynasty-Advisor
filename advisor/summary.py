@@ -33,5 +33,11 @@ def build(r):
         f = weekly[0]
         drop = f" (drop {name(f.drop)})" if f.drop else ""
         lines.append(f"**Waivers:** add {name(f.pid)}{drop}, who {f.reason}.")
+    ideas = r.get("trade_ideas") or []
+    if ideas:
+        i = ideas[0]
+        give = " + ".join(a.label for a in i.give)
+        get = " + ".join(a.label for a in i.get)
+        lines.append(f"**Best trade idea:** to {i.partner.team_name}, {give} for {get} (+{i.edge:.0%} value).")
     lines.append(f"[Open the dashboard]({SITE})")
     return "\n\n".join(lines)

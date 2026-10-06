@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block body %}
+<p class="lead">Got an offer? Pick the other team, then tick what you'd give and what you'd get. The verdict uses the same consensus values and rules as the trade ideas.</p>
+<div class="card pad">
+  <label class="k" for="partner">Trade partner</label>
+  <select id="partner"></select>
+</div>
+<div class="grid2">
+  <div class="card pad"><div class="k">You give</div><div id="mine"></div></div>
+  <div class="card pad"><div class="k">You get</div><div id="theirs"></div></div>
+</div>
+<div class="card pad" id="verdict"><span class="muted">Tick at least one asset on each side.</span></div>
+<script>
+(async function () {
+  const D = await (await fetch("checker.json")).json();
+  const $ = (id) => document.getElementById(id);
+  const me = D.teams.find((t) => t.id === D.me);
+  const fmt = (x) => Math.round(x).toLocaleString();
+  const sel = $("partner");
+  D.teams.filter((t) => t.id !== D.me).forEach((t) => {
+    const o = document.createElement("option");
+    o.value = t.id; o.textContent = t.name + (t.name !== t.owner ? " (" + t.owner + ")" : "");
+    sel.appendChild(o);
+  });
+
+  function assets(team) {
+    const ps = team.players.filter((p) => D.positions.includes(p.pos))
+      .map((p) => ({ id: p.id, name: p.name, value: p.value, pos: p.pos, age: p.age, spot: true, label: p.pos + (p.status === "taxi" ? ", taxi" : "") }));
+    const pk = team.picks.map((p) => ({ id: p.id, name: p.name, value: p.value, pos: null, age: null, spot: false, label: "pick" }));
+    return ps.concat(pk).sort((a, b) => b.value - a.value);
+  }
+  function list(el, team) {
+    el.innerHTML = "";
+    assets(team).forEach((a) => {
+      const row = document.createElement("label");
+      row.className = "pickrow";
+      row.innerHTML = '<input type="checkbox" value="' + a.id + '"> <span>' + a.name +
+        ' <span class="muted small">' + a.label + " · " + fmt(a.value) + "</span></span>";
+      el.appendChild(row);
+    });
+    el.querySelectorAll("input").forEach((i) => i.addEventListener("change", update));
+  }
+  function packageValue(xs) {
+    const w = D.package_weights;
+    return xs.map((a) => a.value).sort((a, b) => b - a).reduce((s, v, i) => s + v * w[Math.min(i, w.length - 1)], 0);
+  }
+  function eligible(slot, pos) { return slot === pos || (D.flex[slot] || []).includes(pos); }
+  function lineup(players, key) {
+    const slots = D.roster_positions.filter((s) => D.positions.includes(s) || D.flex[s]);
+    const pool = players.filter((p) => p.status !== "taxi" && D.positions.includes(p.pos)).sort((a, b) => b[key] - a[key]);
+    const used = new Set(); let total = 0;
+    const order = slots.filter((s) => D.positions.includes(s)).concat(slots.filter((s) => !D.positions.includes(s)));
+    order.forEach((slot) => {
+      const p = pool.find((q) => !used.has(q.id) && eligible(slot, q.pos));
+      if (p) { used.add(p.id); total += p[key]; }
+    });
+    return total;
+  }
+  function after(team, outIds, incoming) {
+    const active = team.players.filter((p) => p.status !== "taxi" && p.status !== "ir");
+    let players = active.filter((p) => !outIds.has(p.id))
+      .concat(incoming.filter((a) => a.spot).map((a) => {
+        const src = D.teams.flatMap((t) => t.players).find((p) => p.id === a.id);
+        return { id: a.id, name: a.name, pos: a.pos, value: a.value, ppg: src ? src.ppg : 0, status: "bench" };
+      }));
+    const over = players.length - Math.max(D.roster_size, active.length);
+    let cut = [];
+    if (over > 0) {
+      const inLineup = new Set();
+      // Same rule as the server: cut the cheapest skill players outside the value lineup.
+      const slots = D.roster_positions.filter((s) => D.positions.includes(s) || D.flex[s]);
+      const pool = players.filter((p) => D.positions.includes(p.pos)).sort((a, b) => b.value - a.value);
+      const order = slots.filter((s) => D.positions.includes(s)).concat(slots.filter((s) => !D.positions.includes(s)));
+      order.forEach((slot) => { const p = pool.find((q) => !inLineup.has(q.id) && eligible(slot, q.pos)); if (p) inLineup.add(p.id); });
+      cut = players.filter((p) => !inLineup.has(p.id) && D.positions.includes(p.pos)).sort((a, b) => a.value - b.value).slice(0, over);
+      const cutIds = new Set(cut.map((p) => p.id));
+      players = players.filter((p) => !cutIds.has(p.id));
+    }
+    return { players, cut };
+  }
+  function avgAge(xs) {
+    const aged = xs.filter((a) => a.age); const w = aged.reduce((s, a) => s + a.value, 0);
+    return w ? aged.reduce((s, a) => s + a.age * a.value, 0) / w : null;
+  }
+  function evaluate(them, give, get) {
+    const mine = after(me, new Set(give.map((a) => a.id)), get);
+    const theirs = after(them, new Set(get.map((a) => a.id)), give);
+    const gv = packageValue(give) + mine.cut.reduce((s, p) => s + p.value, 0);
+    const tv = packageValue(get) + theirs.cut.reduce((s, p) => s + p.value, 0);
+    const active = (t) => t.players.filter((p) => p.status !== "taxi" && p.status !== "ir");
+    return {
+      gv, tv, edge: gv ? (tv - gv) / gv : 0, mine, theirs,
+      myPoints: lineup(mine.players, "ppg") - lineup(active(me), "ppg"),
+      myLineup: lineup(mine.players, "value") - lineup(active(me), "value"),
+      theirLineup: lineup(theirs.players, "value") - lineup(active(them), "value"),
+    };
+  }
+  function directionNote(give, get, r) {
+    if (D.call === "Contend" && r.myPoints < 0) return "You're contending, and this costs you " + r.myPoints.toFixed(1).replace("-", "") + " points a week.";
+    if (D.call === "Hold" && r.myPoints < -D.hold_max_points_loss) return "On hold, this costs more than " + D.hold_max_points_loss + " points a week.";
+    if (D.call === "Hold" && give.some((a) => !a.pos) && (avgAge(get) || 99) > D.hold_picks_for_age) return "On hold, don't spend picks on players older than " + D.hold_picks_for_age + ".";
+    if (D.call === "Retool") {
+      const picks = get.filter((a) => !a.pos).reduce((s, a) => s + a.value, 0);
+      const younger = (avgAge(get) || 99) < (avgAge(give) || 0);
+      if (!younger && picks < 0.25 * get.reduce((s, a) => s + a.value, 0)) return "You're retooling, and this doesn't get you younger or add picks.";
+    }
+    return null;
+  }
+  function counter(them, give, get) {
+    // One more of their assets, or one fewer of yours, that lands the deal in your favor range.
+    const opts = [];
+    const getIds = new Set(get.map((a) => a.id));
+    assets(them).filter((a) => !getIds.has(a.id)).forEach((a) => {
+      const r = evaluate(them, give, get.concat([a]));
+      if (r.edge >= D.min_edge && r.edge <= D.max_edge + 0.05) opts.push({ text: "Ask them to add " + a.name, r, cost: a.value });
+    });
+    if (give.length > 1) give.forEach((a) => {
+      const r = evaluate(them, give.filter((x) => x !== a), get);
+      if (r.edge >= D.min_edge && r.edge <= D.max_edge + 0.05) opts.push({ text: "Take " + a.name + " out of your side", r, cost: a.value });
+    });
+    opts.sort((a, b) => a.cost - b.cost);
+    return opts[0] || null;
+  }
+  function update() {
+    const them = D.teams.find((t) => t.id === Number(sel.value));
+    const pickFrom = (el, team) => {
+      const ids = new Set([...el.querySelectorAll("input:checked")].map((i) => i.value));
+      return assets(team).filter((a) => ids.has(a.id));
+    };
+    const give = pickFrom($("mine"), me), get = pickFrom($("theirs"), them);
+    const v = $("verdict");
+    if (!give.length || !get.length) { v.innerHTML = '<span class="muted">Tick at least one asset on each side.</span>'; return; }
+    const r = evaluate(them, give, get);
+    const note = directionNote(give, get, r);
+    let word, cls;
+    if (r.edge >= 0 && !note) { word = "Accept"; cls = "good"; }
+    else if (r.edge >= -0.10) { word = "Counter"; cls = "warn"; }
+    else { word = "Decline"; cls = "bad"; }
+    const c = word === "Accept" ? null : counter(them, give, get);
+    const pct = (x) => (x >= 0 ? "+" : "") + (x * 100).toFixed(1) + "%";
+    v.innerHTML =
+      '<div class="k">Verdict</div><div class="verdict ' + cls + '">' + word + "</div>" +
+      "<div>You give " + fmt(r.gv) + " and get " + fmt(r.tv) + " in consensus value (" + pct(r.edge) + ").</div>" +
+      "<div>Your weekly points " + (r.myPoints >= 0 ? "rise " : "drop ") + Math.abs(r.myPoints).toFixed(1) +
+      ". Their starting lineup value " + (r.theirLineup >= 0 ? "rises " : "drops ") + fmt(Math.abs(r.theirLineup)) + ".</div>" +
+      (note ? '<div class="small"><span class="pill warn">' + note + "</span></div>" : "") +
+      (r.mine.cut.length ? '<div class="small muted">You would cut ' + r.mine.cut.map((p) => p.name).join(", ") + " to make room.</div>" : "") +
+      (c ? '<div class="small"><b>Counter:</b> ' + c.text + " (" + pct(c.r.edge) + ").</div>" : "");
+  }
+  sel.addEventListener("change", () => { list($("theirs"), D.teams.find((t) => t.id === Number(sel.value))); update(); });
+  list($("mine"), me);
+  list($("theirs"), D.teams.find((t) => t.id === Number(sel.value)));
+})();
+</script>
+{% endblock %}

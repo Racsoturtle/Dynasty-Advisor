@@ -35,3 +35,16 @@ WAIVER_DYNASTY_MAX = 3
 
 # Injury designations that mean a player won't play.
 OUT_STATUSES = {"Out", "IR", "PUP", "Sus", "NA", "COV", "DNR"}
+
+# Trade ideas: Oscar gets this much more consensus value than they give.
+TRADE_MIN_EDGE = 0.03
+TRADE_MAX_EDGE = 0.10
+# In a package, the best piece counts fully and each next piece a bit less,
+# so two mid players don't add up to one star.
+PACKAGE_WEIGHTS = (1.0, 0.85, 0.75, 0.70)
+TRADE_POOL = 14  # most valuable assets per side considered in each search
+TRADE_IDEAS = 10
+TRADE_IDEAS_PER_PARTNER = 2
+TRADE_MIN_ASSET = 300  # assets below this value don't move a trade
+HOLD_MAX_POINTS_LOSS = 3.0  # weekly points a Hold trade may cost
+HOLD_PICKS_FOR_AGE = 25.5  # on Hold, picks only buy players this young or younger

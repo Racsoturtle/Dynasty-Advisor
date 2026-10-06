@@ -12,7 +12,7 @@ import traceback
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from . import config, consensus, lineup, odds, projections, render, sleeper, summary, teams, waivers
+from . import config, consensus, lineup, odds, projections, render, sleeper, summary, teams, trades, waivers
 from .sources import dynastyprocess, fantasycalc, ktc
 from .sources.common import NameIndex
 
@@ -128,6 +128,11 @@ def analyze(raw, today=None):
         "call": odds.call(my_odds, week, deadline),
         "waivers": waivers.find(data, my_roster, me, advice, week_proj, cons),
     }
+    call = report["call"][0]
+    roster_positions = data.league.get("roster_positions", [])
+    report["trade_ideas"] = trades.find(league_teams, me, call, roster_positions, week_proj.per_game) \
+        if call not in ("Past deadline", "Offseason") else []
+    report["checker"] = trades.checker_data(league_teams, me, call, roster_positions, week_proj.per_game)
     report["summary"] = summary.build(report)
     return report
 
