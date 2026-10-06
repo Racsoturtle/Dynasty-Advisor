@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
 {% if waivers %}
-<p class="lead">{{ waivers | length }} free agent{{ "s are" if waivers | length > 1 else " is" }} worth a claim. Each one clearly beats a player you have now.</p>
+<p class="lead">{{ waivers | length }} free agent{{ "s are" if waivers | length > 1 else " is" }} worth a claim. Each one clearly beats a player you have now. Dynasty adds all replace the same bench player, so claim the top one first.</p>
 <div class="card scroll"><table>
 <tr><th>Add</th><th>Why</th><th>Drop</th></tr>
 {% for f in waivers %}

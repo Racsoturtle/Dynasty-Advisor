@@ -48,17 +48,19 @@ def find(data, my_roster, my_team, advice, week_proj, cons):
             flags.append(Flag(pid, "this week", f"projects {gain:.1f} more points than {who} at {s.slot}",
                               gain, same_slot_drop))
 
-    # Dynasty: a free agent the consensus values above your least valuable rostered player.
+    # Dynasty: a free agent the consensus values above your least valuable
+    # bench player. Only the best few, since each claim costs the same spot.
     if drop:
         floor = cons.player(drop)
+        dynasty = []
         for pid in fas:
-            if db[pid].get("position") not in SKILL:
+            if db[pid].get("position") not in SKILL or pid in {f.pid for f in flags}:
                 continue
             gain = cons.player(pid) - floor
-            if gain >= config.WAIVER_VALUE_GAIN and pid not in {f.pid for f in flags}:
-                flags.append(Flag(pid, "dynasty", f"consensus value {cons.player(pid):,.0f} against {floor:,.0f}", gain, drop))
-    flags.sort(key=lambda f: (f.kind != "this week", -f.gain))
-    return flags[:8]
+            if gain >= config.WAIVER_VALUE_GAIN:
+                dynasty.append(Flag(pid, "dynasty", f"consensus value {cons.player(pid):,.0f} against {floor:,.0f}", gain, drop))
+        flags += sorted(dynasty, key=lambda f: -f.gain)[:config.WAIVER_DYNASTY_MAX]
+    return flags
 
 
 def _drop_candidate(my_team, advice):

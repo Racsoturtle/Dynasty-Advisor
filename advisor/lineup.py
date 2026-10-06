@@ -66,7 +66,8 @@ def advise(roster, players_db, week_proj, roster_positions):
         if not s.pid:
             continue
         for b, b_pts in out.bench:
-            if not eligible(s.slot, positions.get(b)):
+            # A bench player who is out or on bye isn't a real option.
+            if not eligible(s.slot, positions.get(b)) or b_pts <= 0:
                 continue
             gap = s.points - b_pts
             disagree = _order_flips(week_proj, s.pid, b)

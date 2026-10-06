@@ -31,6 +31,7 @@ CLOSE_CALL_POINTS = 1.5
 # A free agent must beat your current option by this much to be flagged.
 WAIVER_WEEKLY_GAIN = 2.0
 WAIVER_VALUE_GAIN = 150
+WAIVER_DYNASTY_MAX = 3
 
 # Injury designations that mean a player won't play.
 OUT_STATUSES = {"Out", "IR", "PUP", "Sus", "NA", "COV", "DNR"}
