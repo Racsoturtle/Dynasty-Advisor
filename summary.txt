@@ -1,0 +1,135 @@
+length 2698572
+<title>: ['Dynasty Rankings - KeepTradeCut']
+
+var names: beta, blendRatio, currentHideAlertBannerCookieName, filteredPlayersIds, formatCookie, gtag, historiesVersion, isBlendSliderEnabled, lastProcessedTimes, leagueType, n, oneQBPlayers, oneQBSC, playersArray, rookieOverall, rookiePage, rookiePositional, s, sfAlert, sfSC, showModal, singlePositionString, superflexPlayers, t, top5BlendFallersOneQB, top5BlendFallersSuperflex, top5BlendRisersOneQB, top5BlendRisersSuperflex, top5FallersOneQB, top5FallersSuperflex, top5RisersOneQB, top5RisersSuperflex, top5VftFallersOneQB, top5VftFallersSuperflex, top5VftRisersOneQB, top5VftRisersSuperflex
+
+=== playersArray at 2360499 ===
+endPositionalTier":21,"blendRookieTier":18,"blendRookiePositionalTier":4},"number":18,"teamLongName":"Philadelphia Eagles","birthday":"1035604800","draftYear":2026,"college":"North Dakota State","byeWeek":10,"injury":{"injuryCode":1},"mflid":17654}]</script>
+<script>
+    var leagueType = 1;
+    var playersArray = JSON.parse(document.getElementById('ktc-players').textContent);
+    var oneQBSC = false;
+    var sfSC = false;
+    var oneQBPlayers = [{"playerName":"Jalen Milroe","playerID":1733,"slug":"jalen-milroe-1733","position":"QB","positionID":1,"team":"SEA","rookie":false,"age":23.8,"heightFeet":6,"heightInches":2,"weight":216,"seasonsExperience":1,"pickRound":3,"pickNum":28,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTrend":20,"positionalTrend":-2,"vftOverallTrend":41,"vftPositionalTrend":0,"blendOverallTrend":-11,"blendPositionalTrend":-1,"overall7DayTrend":-10,
+
+=== oneQBValues at 5889 ===
+son-1414","position":"RB","positionID":2,"team":"ATL","rookie":false,"age":24.7,"heightFeet":5,"heightInches":11,"weight":215,"seasonsExperience":3,"pickRound":1,"pickNum":8,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTrend":0,"positionalTrend":0,"vftOverallTrend":0,"vftPositionalTrend":0,"blendOverallTrend":0,"blendPositionalTrend":0,"overall7DayTrend":2,"positional7DayTrend":1,"kept":48635,"traded":22855,"cut":36930,"diff":0,"isOutThisWeek":false,"tep":{"value":9999,"rank":1,"pickRank":1,"positionalRank":1,"history":[],"overallTier":1,"positionalTier":1,"vftValue":9885,"vftRank":2,"vftPickRank":2,"vftPositionalRank":2,"vftHistory":[],"vftOverallTier":1,"vftPositionalTier":1,"blendValue":9942,"blendRank":2,"blendPickRank":2,"blendPositionalRank":2,"blendHistory":[],"blendOverallTier":1,"blendPositionalTier":1},"tepp":{"value":9999,"rank":1,"pickRank":1,"positionalR
+
+=== oneQBValues at 10216 ===
+gba-1437","position":"WR","positionID":3,"team":"SEA","rookie":false,"age":24.6,"heightFeet":6,"heightInches":0,"weight":197,"seasonsExperience":3,"pickRound":1,"pickNum":20,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTrend":2,"positionalTrend":1,"vftOverallTrend":1,"vftPositionalTrend":1,"blendOverallTrend":1,"blendPositionalTrend":1,"overall7DayTrend":-1,"positional7DayTrend":0,"kept":36438,"traded":29043,"cut":30759,"diff":0,"isOutThisWeek":false,"tep":{"value":9997,"rank":2,"pickRank":2,"positionalRank":1,"history":[],"overallTier":1,"positionalTier":1,"vftValue":9666,"vftRank":3,"vftPickRank":3,"vftPositionalRank":1,"vftHistory":[],"vftOverallTier":1,"vftPositionalTier":1,"blendValue":9832,"blendRank":3,"blendPickRank":3,"blendPositionalRank":1,"blendHistory":[],"blendOverallTier":1,"blendPositionalTier":1},"tepp":{"value":9997,"rank":2,"pickRank":2,"positional
+
+=== Chase at 18524 ===
+ndRank":1,"blendPickRank":1,"blendPositionalRank":1,"blendHistory":[],"blendOverallTier":1,"blendPositionalTier":1},"number":0,"teamLongName":"Detroit Lions","birthday":"1016600400","draftYear":2023,"college":"Alabama","byeWeek":6,"injury":{"injuryCode":1},"mflid":16162},{"playerName":"Ja\u0027Marr Chase","playerID":1004,"slug":"ja-marr-chase-1004","position":"WR","positionID":3,"team":"CIN","rookie":false,"age":26.6,"heightFeet":6,"heightInches":0,"weight":205,"seasonsExperience":5,"pickRound":1,"pickNum":5,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTrend":-1,"positionalTrend":-1,"vftOverallTrend":-1,"vftPositionalTrend":-1,"blendOverallTrend":-1,"blendPositionalTrend":-1,"overall7DayTrend":0,"positional7DayTrend":0,"kept":87021,"traded":23000,"cut":48420,"diff":0,"isOutThisWeek":false,"tep":{"value":9071,"rank":4,"pickRank":4,"positionalRank":2,"history":[],"over
+
+=== Chase at 124611 ===
+754,"blendRank":34,"blendPickRank":35,"blendPositionalRank":14,"blendHistory":[],"blendOverallTier":10,"blendPositionalTier":5},"number":3,"teamLongName":"Dallas Cowboys","birthday":"983682000","draftYear":2022,"college":"Georgia","byeWeek":14,"injury":{"injuryCode":1},"mflid":15762},{"playerName":"Chase Brown","playerID":1396,"slug":"chase-brown-1396","position":"RB","positionID":2,"team":"CIN","rookie":false,"age":26.5,"heightFeet":5,"heightInches":10,"weight":210,"seasonsExperience":3,"pickRound":5,"pickNum":28,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTrend":-2,"positionalTrend":1,"vftOverallTrend":3,"vftPositionalTrend":0,"blendOverallTrend":-1,"blendPositionalTrend":0,"overall7DayTrend":-1,"positional7DayTrend":1,"kept":25431,"traded":23815,"cut":22598,"diff":0,"isOutThisWeek":false,"tep":{"value":6225,"rank":29,"pickRank":30,"positionalRank":8,"history":[],
+
+=== application/json at 5487 ===
+ipt" />
+    
+    
+        <link rel="preload" href="/js/site.min.js?v=q_FrAXDmPCSBij8MDiPA1mxk_RQ17dn3TxS0QPcvRHk" as="script" />
+        <link rel="preconnect" href="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=keeptradecut.com" as="script"/>
+    
+
+</head>
+<body>
+    <script type="application/json" id="ktc-players">[{"playerName":"Bijan Robinson","playerID":1414,"slug":"bijan-robinson-1414","position":"RB","positionID":2,"team":"ATL","rookie":false,"age":24.7,"heightFeet":5,"heightInches":11,"weight":215,"seasonsExperience":3,"pickRound":1,"pickNum":8,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTrend":0,"positionalTrend":0,"vftOverallTrend":0,"vftPositionalTrend":0,"blendOverallTrend":0,"blendPositionalTrend":0,"overall7DayTrend":2,"positional7DayTrend":1,"kept":48635,"traded":22855,"cut":36930,"diff":0,"isOutThisWeek":false,"tep":{"value":9999,"ra
+
+=== data-player at 2504212 ===
+   <div class="ktc-ktc-wrapper OneQB">
+                
+    <div class='ktc-ui-wrapper ktc-ui-oneQB'>
+        <div><input id="oneQBKtcSubmitToken" type="hidden" value="85ebf979-739a-4df3-af98-64d83fc64702||1733|2003|2036" /></div>
+        <div class="ktc-ui">
+                <div class="ktc-player" data-player-id="1733">
+                    <div class="status-num status-1"><p>1</p></div>
+                    <div class="status-num status-2"><p>2</p></div>
+                    <div class="status-num status-3"><p>3</p></div>
+
+                    <div class="player-details">
+                        <p class="player-name">
+                            Jalen Milroe
+                        </p>
+                        <p class="player-info">
+QB <span class="player-info-breaker">•</span>SEA<span><span class="player-info-breaker">•</span>23.8 y.o. </span>                        </p>
+                    </div>
+                    <div class="player-ktc-ui">
+                        <div class="ktc-
+
+=== data-player at 2507132 ===
+ <div class="ktc-option-text">
+                                <p>
+                                    CUT
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ktc-player" data-player-id="2003">
+                    <div class="status-num status-1"><p>1</p></div>
+                    <div class="status-num status-2"><p>2</p></div>
+                    <div class="status-num status-3"><p>3</p></div>
+
+                    <div class="player-details">
+                        <p class="player-name">
+                            Barion Brown
+                        </p>
+                        <p class="player-info">
+WR <span class="player-info-breaker">•</span>NOS<span><span class="player-info-breaker">•</span>22.8 y.o. </span>                        </p>
+                    </div>
+                    <div class="player-ktc-ui">
+                        <div class="ktc-
+
+ktc-players tag found: True
+tag: <script type="application/json" id="ktc-players">
+rows 500
+top keys: playerName, playerID, slug, position, positionID, team, rookie, age, heightFeet, heightInches, weight, seasonsExperience, pickRound, pickNum, isFeatured, isStartSitFeatured, isTrending, isDevyReturningToSchool, isDevyYearDecrement, oneQBValues, superflexValues, number, teamLongName, birthday, draftYear, college, byeWeek, injury, mflid
+oneQBValues keys: startSitValue=0, overallTrend=0, positionalTrend=0, vftOverallTrend=0, vftPositionalTrend=0, blendOverallTrend=0, blendPositionalTrend=0, overall7DayTrend=2, positional7DayTrend=1, kept=48635, traded=22855, cut=36930, diff=0, isOutThisWeek=False, adp=53.0, avgAuctionPercentage=0.0, startupAdp=3.0, startupAvgAuctionPercentage=3.0, rawLiquidity=0.0, stdLiquidity=21.0, tradeCount=56, value=9999, rank=1, pickRank=1, positionalRank=1, overallTier=1, positionalTier=1, vftValue=9885, vftRank=2, vftPickRank=2, vftPositionalRank=2, vftOverallTier=1, vftPositionalTier=1, blendValue=9942, blendRank=2, blendPickRank=2, blendPositionalRank=2, blendOverallTier=1, blendPositionalTier=1
+oneQBValues dict keys: tep, tepp, teppp
+nonplayer: 2027 Early 1st | RDP | value=7211
+nonplayer: 2027 Mid 1st | RDP | value=6160
+nonplayer: 2028 Early 1st | RDP | value=5982
+nonplayer: 2027 Late 1st | RDP | value=5673
+nonplayer: 2028 Mid 1st | RDP | value=5231
+nonplayer: 2029 Early 1st | RDP | value=5202
+nonplayer: 2028 Late 1st | RDP | value=4823
+nonplayer: 2029 Mid 1st | RDP | value=4669
+nonplayer: 2027 Early 2nd | RDP | value=4526
+nonplayer: 2029 Late 1st | RDP | value=4347
+nonplayer: 2027 Mid 2nd | RDP | value=4232
+nonplayer: 2028 Early 2nd | RDP | value=4022
+nonplayer: 2027 Late 2nd | RDP | value=3978
+nonplayer: 2028 Mid 2nd | RDP | value=3781
+nonplayer: 2029 Early 2nd | RDP | value=3617
+nonplayer: 2028 Late 2nd | RDP | value=3487
+nonplayer: 2029 Mid 2nd | RDP | value=3368
+nonplayer: 2027 Early 3rd | RDP | value=3118
+nonplayer: 2029 Late 2nd | RDP | value=3035
+nonplayer: 2027 Mid 3rd | RDP | value=2923
+nonplayer: 2028 Early 3rd | RDP | value=2841
+nonplayer: 2027 Late 3rd | RDP | value=2818
+nonplayer: 2028 Mid 3rd | RDP | value=2733
+nonplayer: 2029 Early 3rd | RDP | value=2508
+nonplayer: 2028 Late 3rd | RDP | value=2502
+nonplayer: 2029 Mid 3rd | RDP | value=2398
+nonplayer: 2027 Early 4th | RDP | value=2292
+nonplayer: 2029 Late 3rd | RDP | value=2263
+nonplayer: 2027 Mid 4th | RDP | value=2211
+nonplayer: 2028 Early 4th | RDP | value=2085
+nonplayer: 2027 Late 4th | RDP | value=2041
+nonplayer: 2028 Mid 4th | RDP | value=1939
+nonplayer: 2029 Early 4th | RDP | value=1838
+nonplayer: 2029 Mid 4th | RDP | value=1704
+nonplayer: 2028 Late 4th | RDP | value=1679
+nonplayer: 2029 Late 4th | RDP | value=1517
+top: Bijan Robinson RB 9999
+top: Jaxon Smith-Njigba WR 9997
+top: Jahmyr Gibbs RB 9995
+top: Ja'Marr Chase WR 9071
+top: Brock Bowers TE 8117
+script srcs: https://www.googletagmanager.com/gtag/js?id=UA-134209803-1
+https://cdn.usefathom.com/script.js
+https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
+/vendor/js/vendor.min.js?v=ezLPo6_6yQwCYRg6WAajE94LWiymwGS--P37-4wIuQo
+/js/site.min.js?v=q_FrAXDmPCSBij8MDiPA1mxk_RQ17dn3TxS0QPcvRHk
