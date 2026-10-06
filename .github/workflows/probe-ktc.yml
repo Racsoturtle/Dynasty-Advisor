@@ -26,6 +26,25 @@ jobs:
               for m in list(re.finditer(re.escape(word), html))[:2]:
                   s = max(0, m.start() - 300)
                   out.write(f"=== {word} at {m.start()} ===\n{html[s:m.start() + 700]}\n\n")
+          import json
+          m = re.search(r'<script[^>]*id="ktc-players"[^>]*>(.*?)</script>', html, re.S)
+          out.write(f"ktc-players tag found: {bool(m)}\n")
+          if m:
+              tag = re.search(r'<script[^>]*id="ktc-players"[^>]*>', html).group(0)
+              out.write(f"tag: {tag}\n")
+              rows = json.loads(m.group(1))
+              out.write(f"rows {len(rows)}\n")
+              r0 = rows[0]
+              out.write("top keys: " + ", ".join(r0.keys()) + "\n")
+              q = r0["oneQBValues"]
+              out.write("oneQBValues keys: " + ", ".join(f"{k}={v!r}" for k, v in q.items() if not isinstance(v, (dict, list))) + "\n")
+              out.write("oneQBValues dict keys: " + ", ".join(k for k, v in q.items() if isinstance(v, dict)) + "\n")
+              for r in rows:
+                  if r["position"] not in ("QB", "RB", "WR", "TE"):
+                      out.write(f"nonplayer: {r['playerName']} | {r['position']} | value={r['oneQBValues'].get('value')}\n")
+              ranked = sorted(rows, key=lambda r: -(r["oneQBValues"].get("value") or 0))
+              for r in ranked[:5]:
+                  out.write(f"top: {r['playerName']} {r['position']} {r['oneQBValues'].get('value')}\n")
           scripts = re.findall(r'<script[^>]*src="([^"]+)"', html)
           out.write("script srcs: " + "\n".join(scripts) + "\n")
           PY
