@@ -7,6 +7,7 @@ They count as ONE vote here, labelled "FantasyPros (via DynastyProcess)".
 
 import csv
 import io
+import os
 from datetime import date
 
 from .. import http
@@ -57,3 +58,28 @@ def parse(rows, names, fp_to_sleeper):
             continue
         out.players[pid] = value
     return out.finish()
+
+
+COMMITS_URL = "https://api.github.com/repos/dynastyprocess/data/commits"
+RAW_AT = "https://raw.githubusercontent.com/dynastyprocess/data/{sha}/files/values.csv"
+
+
+def fetch_versions(since):
+    """Past versions of values.csv since a date, newest first, as
+    (date, commit sha). DynastyProcess updates the file every week or so."""
+    headers = {"Accept": "application/vnd.github+json"}
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    out, page = [], 1
+    while True:
+        rows = http.get(COMMITS_URL, params={"path": "files/values.csv", "since": f"{since}T00:00:00Z",
+                                             "per_page": 100, "page": page}, headers=headers).json()
+        out += [(date.fromisoformat(r["commit"]["committer"]["date"][:10]), r["sha"]) for r in rows]
+        if len(rows) < 100:
+            return out
+        page += 1
+
+
+def fetch_values_at(sha):
+    return list(csv.DictReader(io.StringIO(http.get_text(RAW_AT.format(sha=sha)))))

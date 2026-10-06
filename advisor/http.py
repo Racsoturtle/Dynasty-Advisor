@@ -8,12 +8,19 @@ _session = requests.Session()
 _session.headers["User-Agent"] = config.USER_AGENT
 
 
-def get(url, params=None, retries=3):
-    """GET with a few retries. Raises on final failure."""
+class NotFound(Exception):
+    """The server says the page doesn't exist; retrying won't help."""
+
+
+def get(url, params=None, retries=3, headers=None):
+    """GET with a few retries. Raises NotFound on a 404, and the last error
+    on any other final failure."""
     last = None
     for attempt in range(retries):
         try:
-            resp = _session.get(url, params=params, timeout=config.HTTP_TIMEOUT)
+            resp = _session.get(url, params=params, timeout=config.HTTP_TIMEOUT, headers=headers)
+            if resp.status_code == 404:
+                raise NotFound(url)
             resp.raise_for_status()
             return resp
         except requests.RequestException as exc:

@@ -232,3 +232,93 @@ def test_checker_data_is_complete(report):
     assert len(d["teams"]) == 16
     assert all(t["players"] for t in d["teams"])
     assert sum(len(t["picks"]) for t in d["teams"]) == 16 * 3 * 3
+
+
+def test_implied_premium_balances_the_trade():
+    from advisor.history import implied
+    assert implied([(1000, True)], [1300]) == pytest.approx(1.3)
+    # A player thrown in with the 1st counts at full value, the 1st carries the rest.
+    from advisor import config
+    w = config.PACKAGE_WEIGHTS
+    m = implied([(3000, False), (2000, True)], [3000 + 0.85 * 2000 * 1.2])
+    assert m == pytest.approx(1.2, abs=1e-6) and w[1] == 0.85
+
+
+def test_only_clean_first_round_sales_measure_the_premium(report):
+    from advisor import history
+    trades = build()["league_trades"]
+    assert [t["transaction_id"] for t in history.measurable(trades)] == ["t1", "t2"]
+    three_way = dict(trades[0], roster_ids=[1, 2, 3])
+    three_way["adds"] = {"a": 1, "b": 2, "c": 3}
+    assert history.seller(three_way) is None
+
+
+def test_premium_uses_each_source_as_a_vote_and_shrinks(report):
+    from advisor import config
+    pp = report["pick_premium"]
+    t1 = next(t for t in pp.trades if t.seller == "Team 2")
+    t2 = next(t for t in pp.trades if t.seller == "Team 4")
+    assert len(t1.by_source) == 3
+    assert list(t2.by_source) == ["FantasyCalc"]  # KTC was missing a reading
+    assert pp.raw == pytest.approx(1.3, abs=0.01)
+    # Two trades worth 1 + 1/3 votes, pulled toward 1.0 by the prior.
+    assert pp.weight == pytest.approx(4 / 3)
+    assert 1.0 < pp.multiplier < pp.raw
+    assert config.PREMIUM_RANGE[0] <= pp.multiplier <= config.PREMIUM_RANGE[1]
+
+
+def test_no_history_means_no_premium():
+    raw = build()
+    raw["league_trades"] = []
+    rep = main.analyze(raw, today=TODAY)
+    assert rep["pick_premium"].multiplier == 1.0
+    assert all(i.league_edge == pytest.approx(i.edge) for i in rep["trade_ideas"])
+
+
+def test_trade_ideas_look_fair_at_league_prices(report):
+    from advisor import config
+    for i in report["trade_ideas"]:
+        assert i.edge >= config.TRADE_MIN_EDGE
+        assert i.edge <= config.TRADE_MAX_TRUE_EDGE
+        assert i.league_edge <= config.TRADE_MAX_EDGE + 1e-9
+
+
+def test_premium_lets_oscar_ask_more_for_a_first(report):
+    from advisor import trades
+    me = report["me"]
+    rp = report["league"]["roster_positions"]
+    pg = report["week_proj"].per_game
+    ideas = trades.find(report["teams"], me, "Retool", rp, pg, premium=1.4)
+    selling = [i for i in ideas if any(a.first for a in i.give) and not any(a.first for a in i.get)]
+    for i in selling:
+        assert i.league_edge < i.edge
+
+
+def test_price_reuses_cache_and_retries_failures(monkeypatch):
+    from advisor import history
+    raw = build()
+    calls = []
+
+    def fc(self, key, day):
+        calls.append(("fc", key))
+        return 100.0
+
+    def ktc(self, key, day):
+        raise ConnectionError("network")
+
+    monkeypatch.setattr(history.Pricer, "fc", fc)
+    monkeypatch.setattr(history.Pricer, "ktc", ktc)
+    monkeypatch.setattr(history.Pricer, "prime_dp", lambda self, earliest: None)
+    cache = {"t1": raw["trade_prices"]["t1"]}
+    out = history.price(raw["league_trades"], raw["sleeper"]["players"], raw["fantasycalc"], raw["ktc"],
+                        raw["dp_ids"], cache)
+    assert out["t1"] == cache["t1"]  # nothing fetched again
+    assert "FantasyCalc" in out["t2"]
+    assert "KeepTradeCut" not in out["t2"]  # network error: try again tomorrow
+    assert all(k in raw["trade_prices"]["t2"]["FantasyCalc"] for _, k in calls)
+
+
+def test_ktc_slug():
+    from advisor.sources.ktc import slug_for
+    assert slug_for("De'Von Achane", 1398) == "de-von-achane-1398"
+    assert slug_for("Marvin Harrison Jr.", 1585) == "marvin-harrison-jr-1585"

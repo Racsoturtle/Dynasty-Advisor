@@ -1,8 +1,11 @@
 """Trade ideas to propose, and the shared math the trade checker uses.
 
 Every number here is consensus value. A deal is a candidate when:
-  - Oscar comes out ahead by TRADE_MIN_EDGE to TRADE_MAX_EDGE after package
-    and roster-spot adjustments (slightly in Oscar's favor, per the plan),
+  - Oscar comes out ahead by at least TRADE_MIN_EDGE after package and
+    roster-spot adjustments, and by no more than TRADE_MAX_EDGE at league
+    prices, which count 1st-round picks at what this league actually pays
+    for them (history.py). Slightly in Oscar's favor, per the plan, as the
+    other team will see it.
   - the partner's starting lineup gets better, so the offer fixes a real need,
   - it fits the contend / hold / retool call.
 """
@@ -21,6 +24,7 @@ class Asset:
     pos: str | None = None  # None for picks
     age: float | None = None
     roster_spot: bool = True  # picks don't take a roster spot
+    first: bool = False  # a 1st-round pick, priced at the league premium
 
 
 @dataclass
@@ -35,12 +39,19 @@ class Idea:
     my_points_change: float
     their_lineup_change: float
     reason: str
+    league_edge: float = 0.0
     score: float = 0.0
     tags: list = field(default_factory=list)
 
 
-def package_value(assets):
-    vals = sorted((a.value for a in assets), reverse=True)
+def league_value(asset, premium):
+    return asset.value * premium if asset.first else asset.value
+
+
+def package_value(assets, premium=None):
+    """Package value at consensus, or at league prices when a 1st-round
+    premium is given."""
+    vals = sorted((league_value(a, premium) if premium else a.value for a in assets), reverse=True)
     weights = config.PACKAGE_WEIGHTS
     return sum(v * weights[min(i, len(weights) - 1)] for i, v in enumerate(vals))
 
@@ -53,7 +64,7 @@ def assets_for(team, min_value=config.TRADE_MIN_ASSET):
             nth = {1: "1st", 2: "2nd", 3: "3rd"}.get(pk.round, f"{pk.round}th")
             tier = "" if pk.tier == "any" else f" ({pk.tier})"
             out.append(Asset(f"pick:{pk.year}:{pk.round}:{pk.original_roster_id}",
-                             f"{pk.original_owner}'s {pk.year} {nth}{tier}", pk.value, None, None, False))
+                             f"{pk.original_owner}'s {pk.year} {nth}{tier}", pk.value, None, None, False, pk.round == 1))
     out.sort(key=lambda a: -a.value)
     return out
 
@@ -107,19 +118,23 @@ class _Pts:
         self.pid, self.pos, self.status, self.value = p.pid, p.pos, p.status, pts
 
 
-def evaluate(me, them, give, get):
+def evaluate(me, them, give, get, premium=1.0):
     """Oscar gives `give` to `them` and gets `get`. Returns the numbers the
-    finder and the checker both use."""
+    finder and the checker both use. `league_edge` is Oscar's edge with 1sts
+    at the league price, which is how the other team is likely to see it."""
     give_keys = {a.key for a in give}
     get_keys = {a.key for a in get}
     my_after, my_cut = me.after(give_keys, get)
     their_after, their_cut = them.after(get_keys, give)
     give_value = package_value(give) + sum(p.value for p in my_cut)
     get_value = package_value(get) + sum(p.value for p in their_cut)
+    give_league = package_value(give, premium) + sum(p.value for p in my_cut)
+    get_league = package_value(get, premium) + sum(p.value for p in their_cut)
     return {
         "give_value": give_value,
         "get_value": get_value,
         "edge": (get_value - give_value) / give_value if give_value else 0.0,
+        "league_edge": (get_league - give_league) / give_league if give_league else 0.0,
         "my_lineup_change": me.lineup_value(my_after) - me.base_lineup,
         "my_points_change": me.lineup_points(my_after) - me.base_points,
         "their_lineup_change": them.lineup_value(their_after) - them.base_lineup,
@@ -152,7 +167,7 @@ def fits_direction(call, give, get, numbers):
     return True
 
 
-def find(league_teams, me_team, call, roster_positions, per_game=None):
+def find(league_teams, me_team, call, roster_positions, per_game=None, premium=1.0):
     roster_size = sum(1 for s in roster_positions if s not in ("IR", "TAXI"))
     me = TeamState(me_team, roster_positions, roster_size, per_game)
     mine = assets_for(me_team)[: config.TRADE_POOL]
@@ -165,20 +180,24 @@ def find(league_teams, me_team, call, roster_positions, per_game=None):
         found = []
         for n_give, n_get in ((1, 1), (2, 1), (1, 2), (2, 2)):
             for give in combinations(mine, n_give):
-                gv = package_value(give)
+                gv, gl = package_value(give), package_value(give, premium)
                 for get in combinations(theirs, n_get):
                     # Cheap pre-check before the roster math.
                     raw_edge = (package_value(get) - gv) / gv
-                    if not -0.05 <= raw_edge <= config.TRADE_MAX_EDGE + 0.05:
+                    raw_league = (package_value(get, premium) - gl) / gl
+                    if raw_edge < -0.05 or raw_edge > config.TRADE_MAX_TRUE_EDGE + 0.05 \
+                            or raw_league > config.TRADE_MAX_EDGE + 0.05:
                         continue
-                    nums = evaluate(me, them, give, get)
-                    if not config.TRADE_MIN_EDGE <= nums["edge"] <= config.TRADE_MAX_EDGE:
+                    nums = evaluate(me, them, give, get, premium)
+                    if not config.TRADE_MIN_EDGE <= nums["edge"] <= config.TRADE_MAX_TRUE_EDGE:
+                        continue
+                    if nums["league_edge"] > config.TRADE_MAX_EDGE:
                         continue
                     if nums["their_lineup_change"] <= 0:
                         continue
                     if not fits_direction(call, give, get, nums):
                         continue
-                    found.append(_idea(partner, give, get, nums, call))
+                    found.append(_idea(partner, give, get, nums, call, premium))
         found.sort(key=lambda i: -i.score)
         ideas += _distinct(found)[: config.TRADE_IDEAS_PER_PARTNER]
     ideas.sort(key=lambda i: -i.score)
@@ -200,9 +219,10 @@ def _spread(ideas):
     return out
 
 
-def _idea(partner, give, get, nums, call):
+def _idea(partner, give, get, nums, call, premium=1.0):
     idea = Idea(partner, give, get, nums["give_value"], nums["get_value"], nums["edge"],
-                nums["my_lineup_change"], nums["my_points_change"], nums["their_lineup_change"], "")
+                nums["my_lineup_change"], nums["my_points_change"], nums["their_lineup_change"], "",
+                league_edge=nums["league_edge"])
     gained = sorted({a.pos for a in give if a.pos and a.pos in partner.needs})
     if gained:
         idea.reason = f"Fills their {' and '.join(gained)} need; their starting lineup value rises {nums['their_lineup_change']:,.0f}."
@@ -210,6 +230,10 @@ def _idea(partner, give, get, nums, call):
         idea.reason = f"Their starting lineup value rises {nums['their_lineup_change']:,.0f}."
     if any(a.pos is None for a in give):
         idea.tags.append("uses your picks")
+    if premium != 1.0 and any(a.first for a in give):
+        idea.tags.append("sells your 1st at the league price")
+    if premium != 1.0 and any(a.first for a in get):
+        idea.tags.append("buys a 1st at the league price")
     if nums["my_cut"]:
         idea.tags.append("you cut " + ", ".join(p.name for p in nums["my_cut"]))
     gain = nums["get_value"] - nums["give_value"]
@@ -232,14 +256,15 @@ def _distinct(ideas):
     return out
 
 
-def checker_data(league_teams, me_team, call, roster_positions, per_game):
+def checker_data(league_teams, me_team, call, roster_positions, per_game, premium=1.0):
     """Everything the in-browser trade checker needs, as plain JSON."""
     roster_size = sum(1 for s in roster_positions if s not in ("IR", "TAXI"))
     out_teams = []
     for t in league_teams:
         players = [{"id": p.pid, "name": p.name, "pos": p.pos, "age": p.age, "value": round(p.value),
                     "status": p.status, "ppg": round(per_game.get(p.pid, 0.0), 2)} for p in t.players]
-        picks = [{"id": a.key, "name": a.label, "value": round(a.value)} for a in assets_for(t, 0) if a.pos is None]
+        picks = [{"id": a.key, "name": a.label, "value": round(a.value), "first": a.first}
+                 for a in assets_for(t, 0) if a.pos is None]
         out_teams.append({"id": t.roster_id, "name": t.team_name, "owner": t.owner, "needs": t.needs,
                           "players": players, "picks": picks})
     return {
@@ -253,6 +278,8 @@ def checker_data(league_teams, me_team, call, roster_positions, per_game):
         "package_weights": list(config.PACKAGE_WEIGHTS),
         "min_edge": config.TRADE_MIN_EDGE,
         "max_edge": config.TRADE_MAX_EDGE,
+        "max_true_edge": config.TRADE_MAX_TRUE_EDGE,
+        "first_premium": premium,
         "hold_max_points_loss": config.HOLD_MAX_POINTS_LOSS,
         "hold_picks_for_age": config.HOLD_PICKS_FOR_AGE,
     }

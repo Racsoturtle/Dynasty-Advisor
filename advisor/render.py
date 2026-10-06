@@ -65,4 +65,6 @@ def write_site(report, out_dir):
         html = env.get_template(filename).render(ctx, page=filename, title=title)
         (out / filename).write_text(html)
     (out / "checker.json").write_text(json.dumps(report["checker"]))
+    # Tomorrow's run reuses these readings instead of re-pricing old trades.
+    (out / "trade_prices.json").write_text(json.dumps(report.get("trade_prices") or {}))
     (out / ".nojekyll").write_text("")

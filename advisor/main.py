@@ -12,7 +12,7 @@ import traceback
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from . import config, consensus, lineup, odds, projections, render, sleeper, summary, teams, trades, waivers
+from . import config, consensus, history, lineup, odds, projections, render, sleeper, summary, teams, trades, waivers
 from .sources import dynastyprocess, fantasycalc, ktc
 from .sources.common import NameIndex
 
@@ -27,6 +27,7 @@ def collect_live():
         ("ktc", ktc.fetch),
         ("dp_values", dynastyprocess.fetch_values),
         ("dp_ids", dynastyprocess.fetch_ids),
+        ("league_trades", lambda: sleeper.fetch_trades(config.LEAGUE_ID, config.HISTORY_SEASONS)),
     ]
     if week:
         fetchers += [
@@ -41,6 +42,15 @@ def collect_live():
             traceback.print_exc()
             raw[name] = None
             raw.setdefault("errors", {})[name] = f"{type(exc).__name__}: {exc}"
+    # Price the league's past 1st-round trades on their trade dates. Only new
+    # trades are fetched; yesterday's readings come from the live site.
+    try:
+        raw["trade_prices"] = history.price(raw.get("league_trades") or [], league.players, raw.get("fantasycalc"),
+                                            raw.get("ktc"), raw.get("dp_ids"), history.previous_prices())
+    except Exception as exc:
+        traceback.print_exc()
+        raw["trade_prices"] = history.previous_prices()
+        raw.setdefault("errors", {})["trade_prices"] = f"{type(exc).__name__}: {exc}"
     return raw
 
 
@@ -130,9 +140,13 @@ def analyze(raw, today=None):
     }
     call = report["call"][0]
     roster_positions = data.league.get("roster_positions", [])
-    report["trade_ideas"] = trades.find(league_teams, me, call, roster_positions, week_proj.per_game) \
-        if call not in ("Past deadline", "Offseason") else []
-    report["checker"] = trades.checker_data(league_teams, me, call, roster_positions, week_proj.per_game)
+    report["trade_prices"] = raw.get("trade_prices") or {}
+    premium = history.measure(raw.get("league_trades") or [], report["trade_prices"], data.players)
+    report["pick_premium"] = premium
+    report["trade_ideas"] = trades.find(league_teams, me, call, roster_positions, week_proj.per_game,
+                                        premium.multiplier) if call not in ("Past deadline", "Offseason") else []
+    report["checker"] = trades.checker_data(league_teams, me, call, roster_positions, week_proj.per_game,
+                                            premium.multiplier)
     report["summary"] = summary.build(report)
     return report
 
@@ -161,6 +175,10 @@ def main():
     print(f"Built {args.out} for {report['me'].team_name}; sources used: {used}")
     for name, reason in report["consensus"].dropped:
         print(f"  left out {name}: {reason}")
+    p = report["pick_premium"]
+    print(f"1st-round price: x{p.multiplier:.2f} (raw x{p.raw or 1:.2f}) from {len(p.counted)} of {len(p.trades)} trades")
+    for t in p.trades:
+        print(f"  {t.when} {t.seller}: {t.gave} for {t.got} -> {t.multiplier} {t.by_source}")
 
 
 if __name__ == "__main__":

@@ -37,6 +37,8 @@ jobs:
       - name: Test
         run: python -m pytest -q
       - name: Pull league and values, build site
+        env:
+          GITHUB_TOKEN: ${{ github.token }}  # reads DynastyProcess's file history
         run: python -m advisor.main --out site --snapshot snapshot
       - name: Keep today's raw data for debugging
         if: always()

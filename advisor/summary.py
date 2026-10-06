@@ -1,6 +1,8 @@
 """The short pre-game summary posted Thursday and Sunday mornings."""
 
-SITE = "https://racsoturtle.github.io/Dynasty-Advisor/"
+from . import config
+
+SITE = config.SITE_URL
 
 
 def build(r):

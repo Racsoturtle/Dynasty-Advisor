@@ -48,3 +48,26 @@ def parse(rows, names, ktc_to_sleeper, today=None):
             continue
         out.players[pid] = value
     return out.finish()
+
+
+PLAYER_URL = "https://keeptradecut.com/dynasty-rankings/players/{slug}"
+_PLAYER_TAG = re.compile(r'<script[^>]*id="pd-oneqb"[^>]*>(.*?)</script>', re.DOTALL)
+
+
+def fetch_history(slug):
+    """Daily 1QB values for one KTC player or pick page, as {date: value}."""
+    m = _PLAYER_TAG.search(http.get_text(PLAYER_URL.format(slug=slug)))
+    if not m:
+        raise ValueError(f"no value history on the KeepTradeCut page for {slug}")
+    out = {}
+    for row in json.loads(m.group(1)).get("overallValue") or []:
+        d = row["d"]  # YYMMDD
+        out[date(2000 + int(d[:2]), int(d[2:4]), int(d[4:]))] = row["v"]
+    return out
+
+
+def slug_for(name, ktc_id):
+    """KTC page slugs are the name's letters and digits in lowercase runs
+    joined by hyphens, then the KTC id: "De'Von Achane" -> de-von-achane-1398."""
+    words = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+    return f"{words}-{ktc_id}"

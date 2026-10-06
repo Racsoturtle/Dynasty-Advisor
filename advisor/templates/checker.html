@@ -26,7 +26,7 @@
   function assets(team) {
     const ps = team.players.filter((p) => D.positions.includes(p.pos))
       .map((p) => ({ id: p.id, name: p.name, value: p.value, pos: p.pos, age: p.age, spot: true, label: p.pos + (p.status === "taxi" ? ", taxi" : "") }));
-    const pk = team.picks.map((p) => ({ id: p.id, name: p.name, value: p.value, pos: null, age: null, spot: false, label: "pick" }));
+    const pk = team.picks.map((p) => ({ id: p.id, name: p.name, value: p.value, pos: null, age: null, spot: false, first: p.first, label: "pick" }));
     return ps.concat(pk).sort((a, b) => b.value - a.value);
   }
   function list(el, team) {
@@ -40,9 +40,11 @@
     });
     el.querySelectorAll("input").forEach((i) => i.addEventListener("change", update));
   }
-  function packageValue(xs) {
+  // At league prices a 1st counts at what this league actually pays for one.
+  function packageValue(xs, league) {
     const w = D.package_weights;
-    return xs.map((a) => a.value).sort((a, b) => b - a).reduce((s, v, i) => s + v * w[Math.min(i, w.length - 1)], 0);
+    return xs.map((a) => (league && a.first ? a.value * D.first_premium : a.value))
+      .sort((a, b) => b - a).reduce((s, v, i) => s + v * w[Math.min(i, w.length - 1)], 0);
   }
   function eligible(slot, pos) { return slot === pos || (D.flex[slot] || []).includes(pos); }
   function lineup(players, key) {
@@ -87,9 +89,11 @@
     const theirs = after(them, new Set(get.map((a) => a.id)), give);
     const gv = packageValue(give) + mine.cut.reduce((s, p) => s + p.value, 0);
     const tv = packageValue(get) + theirs.cut.reduce((s, p) => s + p.value, 0);
+    const gl = packageValue(give, true) + mine.cut.reduce((s, p) => s + p.value, 0);
+    const tl = packageValue(get, true) + theirs.cut.reduce((s, p) => s + p.value, 0);
     const active = (t) => t.players.filter((p) => p.status !== "taxi" && p.status !== "ir");
     return {
-      gv, tv, edge: gv ? (tv - gv) / gv : 0, mine, theirs,
+      gv, tv, edge: gv ? (tv - gv) / gv : 0, leagueEdge: gl ? (tl - gl) / gl : 0, mine, theirs,
       myPoints: lineup(mine.players, "ppg") - lineup(active(me), "ppg"),
       myLineup: lineup(mine.players, "value") - lineup(active(me), "value"),
       theirLineup: lineup(theirs.players, "value") - lineup(active(them), "value"),
@@ -106,17 +110,19 @@
     }
     return null;
   }
+  // A counter they might take: a win for you that looks only slightly in your favor at league prices.
+  function fits(r) { return r.edge >= D.min_edge && r.edge <= D.max_true_edge && r.leagueEdge <= D.max_edge + 0.05; }
   function counter(them, give, get) {
     // One more of their assets, or one fewer of yours, that lands the deal in your favor range.
     const opts = [];
     const getIds = new Set(get.map((a) => a.id));
     assets(them).filter((a) => !getIds.has(a.id)).forEach((a) => {
       const r = evaluate(them, give, get.concat([a]));
-      if (r.edge >= D.min_edge && r.edge <= D.max_edge + 0.05) opts.push({ text: "Ask them to add " + a.name, r, cost: a.value });
+      if (fits(r)) opts.push({ text: "Ask them to add " + a.name, r, cost: a.value });
     });
     if (give.length > 1) give.forEach((a) => {
       const r = evaluate(them, give.filter((x) => x !== a), get);
-      if (r.edge >= D.min_edge && r.edge <= D.max_edge + 0.05) opts.push({ text: "Take " + a.name + " out of your side", r, cost: a.value });
+      if (fits(r)) opts.push({ text: "Take " + a.name + " out of your side", r, cost: a.value });
     });
     opts.sort((a, b) => a.cost - b.cost);
     return opts[0] || null;
@@ -143,6 +149,8 @@
       "<div>You give " + fmt(r.gv) + " and get " + fmt(r.tv) + " in consensus value (" + pct(r.edge) + ").</div>" +
       "<div>Your weekly points " + (r.myPoints >= 0 ? "rise " : "drop ") + Math.abs(r.myPoints).toFixed(1) +
       ". Their starting lineup value " + (r.theirLineup >= 0 ? "rises " : "drops ") + fmt(Math.abs(r.theirLineup)) + ".</div>" +
+      (D.first_premium !== 1 && give.concat(get).some((a) => a.first) ?
+        '<div class="small muted">This league pays ' + D.first_premium.toFixed(2) + "x for 1sts (see Trades). At that price it looks like " + pct(r.leagueEdge) + " for you.</div>" : "") +
       (note ? '<div class="small"><span class="pill warn">' + note + "</span></div>" : "") +
       (r.mine.cut.length ? '<div class="small muted">You would cut ' + r.mine.cut.map((p) => p.name).join(", ") + " to make room.</div>" : "") +
       (c ? '<div class="small"><b>Counter:</b> ' + c.text + " (" + pct(c.r.edge) + ").</div>" : "");

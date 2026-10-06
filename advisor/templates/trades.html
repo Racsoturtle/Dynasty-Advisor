@@ -3,7 +3,7 @@
 {% if not trade_ideas %}
 <p class="lead">{% if call[0] in ("Past deadline", "Offseason") %}{{ call[1] }}{% else %}No trade passes every test today. Each idea has to win you {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% to {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in consensus value, improve the other team's starting lineup, and fit the {{ call[0] | lower }} call.{% endif %}</p>
 {% else %}
-<p class="lead">{{ trade_ideas | length }} offers to send, best first. Each wins you {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% to {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in consensus value, makes the other team's starting lineup better, and fits the <b>{{ call[0] | lower }}</b> call. Send them yourself in the Sleeper app.</p>
+<p class="lead">{{ trade_ideas | length }} offers to send, best first. Each wins you at least {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% in consensus value but looks no more than {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in your favor at this league's prices, makes the other team's starting lineup better, and fits the <b>{{ call[0] | lower }}</b> call. Send them yourself in the Sleeper app.</p>
 {% for i in trade_ideas %}
 <div class="card idea">
   <div class="idea-head"><b>{{ loop.index }}. To {{ i.partner.team_name }}</b>{% if i.partner.team_name != i.partner.owner %} <span class="muted small">{{ i.partner.owner }}</span>{% endif %}
@@ -15,9 +15,31 @@
   <div class="small">{{ i.reason }}
     Your weekly points {{ "rise" if i.my_points_change >= 0 else "drop" }} {{ i.my_points_change | abs | num(1) }}.
     {% for t in i.tags %}<span class="pill">{{ t }}</span> {% endfor %}</div>
-  <div class="muted small">Package value {{ i.give_value | num }} given for {{ i.get_value | num }}.</div>
+  <div class="muted small">Package value {{ i.give_value | num }} given for {{ i.get_value | num }}.{% if (i.league_edge - i.edge) | abs > 0.005 %} At league prices for 1sts it looks like {{ "+" if i.league_edge >= 0 else "" }}{{ (i.league_edge * 100) | round(1) }}% for you.{% endif %}</div>
 </div>
 {% endfor %}
 {% endif %}
+{% set pp = pick_premium %}
+<h2>What this league pays for 1sts</h2>
+<div class="card pad">
+{% if not pp.counted %}
+  <p>No trade in this league has sold a 1st-round pick in a way the tool can measure yet, so 1sts are priced at consensus value.</p>
+{% else %}
+  <p>{% if pp.multiplier > 1.005 %}This league pays <b>{{ "%.2f" | format(pp.multiplier) }}x</b> consensus value for 1st-round picks, so the trade ideas sell your 1sts at that price and only buy 1sts when that still wins.{% elif pp.multiplier < 0.995 %}This league pays only <b>{{ "%.2f" | format(pp.multiplier) }}x</b> consensus value for 1st-round picks, so 1sts are cheap to buy here and poor to sell.{% else %}This league pays about consensus value for 1st-round picks, so there's no premium to sell into yet.{% endif %}</p>
+  <p class="muted small">Measured from {{ pp.counted | length }} trade{{ "" if pp.counted | length == 1 else "s" }} where one team sold 1sts. Each source priced both sides on the trade date, and the multiplier is what the 1sts had to be worth for the two sides to match. Together those trades say {{ "%.2f" | format(pp.raw) }}x. With this few trades, the price is pulled toward 1.0x as if {{ cfg.PREMIUM_PRIOR_TRADES }} fair trades had also been seen{% if pp.raw != pp.multiplier %}, which gives {{ "%.2f" | format(pp.multiplier) }}x{% endif %}. Picks are priced as mid-round because the draft order wasn't known yet.</p>
+{% endif %}
+{% if pp.trades %}
+  <div class="scroll"><table>
+    <thead><tr><th>Date</th><th>Sold the 1st</th><th>Gave</th><th>Got</th><th class="num">1st sold at</th><th>Sources</th></tr></thead>
+    <tbody>
+    {% for t in pp.trades %}
+      <tr><td class="small">{{ t.when.strftime("%b %-d, %Y") }}</td><td>{{ t.seller }}</td><td class="small">{{ t.gave | join(", ") }}</td><td class="small">{{ t.got | join(", ") }}</td>
+        <td class="num">{% if t.multiplier %}{{ "%.2f" | format(t.multiplier) }}x{% else %}<span class="muted">n/a</span>{% endif %}</td>
+        <td class="small muted">{% for s, m in t.by_source.items() %}{{ SHORT_SOURCE.get(s, s) }} {{ "%.2f" | format(m) }}x{% if not loop.last %}, {% endif %}{% else %}no source had values for that date{% endfor %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+{% endif %}
+</div>
 <p class="muted small">In a package the best piece counts fully and each next piece counts {{ (cfg.PACKAGE_WEIGHTS[1] * 100) | int }}%, then {{ (cfg.PACKAGE_WEIGHTS[2] * 100) | int }}%, so two mid players don't equal one star. When a deal adds players to a full roster, the cheapest bench player who has to be cut counts against that side. "Weekly points" uses Sleeper's rest-of-season projections.</p>
 {% endblock %}

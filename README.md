@@ -6,8 +6,8 @@ GitHub issue on Thursday and Sunday mornings.
 
 Pages: Home (contend, hold or retool call; record and luck; roster values; picks), Lineup (best
 lineup by consensus projection, changes, close calls, injuries and byes), Trades (offers to send:
-3% to 10% in your favor by consensus value, better for the partner's starting lineup, and fitting
-the call), Trade checker (grade any offer in the browser and get a counter), Waivers (free agents
+at least 3% in your favor by consensus value but no more than 10% at league prices, better for the
+partner's starting lineup, and fitting the call; plus what this league pays for 1sts), Trade checker (grade any offer in the browser and get a counter), Waivers (free agents
 that clearly beat what you have), League (every team's value, needs and playoff odds).
 
 Player and pick values come only from outside sources, averaged with equal weight:
@@ -19,6 +19,12 @@ Player and pick values come only from outside sources, averaged with equal weigh
 
 Each source is turned into ranks and read off one shared 0 to 10,000 curve, so no source counts
 for more because its numbers are bigger. A source with data older than 14 days is left out.
+
+League prices: the league's own trades (this season and the last two) where one team sold 1st-round
+picks are priced with each source's values on the trade date. The multiplier that makes both sides
+equal is what the league paid for the 1sts; it's averaged over trades and pulled toward 1.0 while
+there are few of them. Trade ideas count your 1sts at that price when judging how a deal looks to
+the other team.
 
 Weekly projections average Sleeper's projections (scored with the league's own settings) and
 FantasyPros weekly expert ranks (turned into points at the same position rank). Playoff odds come

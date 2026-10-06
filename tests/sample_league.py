@@ -179,10 +179,44 @@ def build(weeks_played=4, seed=7):
         for i, p in enumerate(page["players"]):
             p["rank_ecr"] = i + 1
 
+    # Past league trades, and each source's readings on the trade dates. In two
+    # of them the 1st seller got about 30% more than the 1st was worth.
+    p = [r["players"][0] for r in rosters]
+    names = {str(i + 1): f"Team {i + 1}" for i in range(16)}
+
+    def trade(tid, ms, rosters_in, adds, picks):
+        drops = {pid: next(r for r in rosters_in if r != rid) for pid, rid in adds.items()}
+        return {"transaction_id": tid, "type": "trade", "status": "complete", "status_updated": ms,
+                "roster_ids": rosters_in, "adds": adds, "drops": drops, "draft_picks": picks,
+                "season": SEASON, "teams": names}
+
+    def pick(season, rnd, orig, frm, to):
+        return {"season": season, "round": rnd, "roster_id": orig, "previous_owner_id": frm, "owner_id": to}
+
+    league_trades = [
+        # Team 2 sells its 2027 1st for team 9's player.
+        trade("t1", 1788000000000, [2, 9], {p[8]: 2}, [pick("2027", 1, 2, 2, 9)]),
+        # Team 4 sells a 1st and a player for two of team 11's players.
+        trade("t2", 1789000000000, [4, 11], {p[10]: 4, p[3]: 11, p[11]: 4}, [pick("2027", 1, 4, 4, 11)]),
+        # No 1st: doesn't measure anything.
+        trade("t3", 1789500000000, [5, 6], {p[4]: 6, p[5]: 5}, []),
+        # 1sts both ways: can't tell who overpaid for which.
+        trade("t4", 1789600000000, [1, 8], {}, [pick("2027", 1, 1, 1, 8), pick("2028", 1, 8, 8, 1)]),
+    ]
+    prices = {
+        "t1": {"FantasyCalc": {"pick:2027:1:2": 4000, p[8]: 5200},
+               "KeepTradeCut": {"pick:2027:1:2": 5000, p[8]: 6500},
+               "FantasyPros (via DynastyProcess)": {"pick:2027:1:2": 2000, p[8]: 2600}},
+        "t2": {"FantasyCalc": {"pick:2027:1:4": 4000, p[3]: 3000, p[10]: 6000, p[11]: 2000},
+               # KTC has no reading for one of the players then, so it sits this one out.
+               "KeepTradeCut": {"pick:2027:1:4": 5000, p[3]: 3500, p[10]: None, p[11]: 2500}},
+    }
+
     sleeper = {
         "league": league, "rosters": rosters, "users": users, "players": players,
         "traded_picks": traded, "state": {"season": SEASON, "season_type": "regular", "week": weeks_played + 1},
         "matchups": matchups,
     }
     return {"sleeper": sleeper, "fantasycalc": fc, "ktc": ktc, "dp_values": dp_values, "dp_ids": dp_ids,
-            "sleeper_week_proj": week_rows, "sleeper_season_proj": season_rows, "fp_week": fp_pages}
+            "sleeper_week_proj": week_rows, "sleeper_season_proj": season_rows, "fp_week": fp_pages,
+            "league_trades": league_trades, "trade_prices": prices}
