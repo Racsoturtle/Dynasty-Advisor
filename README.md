@@ -1,7 +1,8 @@
 # Dynasty Advisor
 
 A personal dashboard for Racsoturtle's team in the Skulls Super Dynasty League on Sleeper.
-It rebuilds every morning on GitHub and publishes to GitHub Pages, and posts a short summary as a
+It rebuilds every day by 7 AM Eastern (6:45 AM run, adjusted for daylight saving) and publishes to
+GitHub Pages, and with the Thursday and Sunday builds it posts a short summary as a
 GitHub issue on Thursday and Sunday mornings.
 
 Pages: Home (contend, hold or retool call; record and luck; roster values; picks), Lineup (best

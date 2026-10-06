@@ -2,9 +2,11 @@ name: Daily dashboard
 
 on:
   schedule:
-    - cron: "0 11 * * *"   # daily rebuild, 7 AM Eastern (6 AM in winter)
-    - cron: "0 14 * * 4"   # Thursday summary, 10 AM Eastern
-    - cron: "0 14 * * 0"   # Sunday summary, 10 AM Eastern
+    # Ready by 7 AM Eastern every day. GitHub's cron is in UTC, so both times
+    # are scheduled and the "when" job keeps only the one that is 6:45 AM in
+    # New York (the first in summer, the second in winter).
+    - cron: "45 10 * * *"
+    - cron: "45 11 * * *"
   workflow_dispatch:
     inputs:
       send_summary:
@@ -27,9 +29,37 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  when:
+    runs-on: ubuntu-latest
+    outputs:
+      go: ${{ steps.check.outputs.go }}
+      summary: ${{ steps.check.outputs.summary }}
+    steps:
+      - id: check
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          EVENT: ${{ github.event_name }}
+          SEND_SUMMARY: ${{ inputs.send_summary }}
+        run: |
+          zone=$(TZ=America/New_York date +%Z)   # EDT in summer, EST in winter
+          go=true
+          if [ "$EVENT" = schedule ]; then
+            if [ "$SCHEDULE" = "45 10 * * *" ] && [ "$zone" != EDT ]; then go=false; fi
+            if [ "$SCHEDULE" = "45 11 * * *" ] && [ "$zone" != EST ]; then go=false; fi
+          fi
+          # The short summary goes out with the Thursday and Sunday morning builds.
+          day=$(TZ=America/New_York date +%u)   # 4 = Thursday, 7 = Sunday
+          summary=false
+          if [ "$EVENT" = schedule ] && { [ "$day" = 4 ] || [ "$day" = 7 ]; }; then summary=true; fi
+          if [ "$SEND_SUMMARY" = true ]; then summary=true; fi
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+          echo "summary=$summary" >> "$GITHUB_OUTPUT"
+          echo "$EVENT '$SCHEDULE' $zone day=$day -> go=$go summary=$summary"
+
   build:
+    needs: when
     # Other people's issues on this public repo don't trigger a rebuild.
-    if: github.event_name != 'issues' || (startsWith(github.event.issue.title, 'Denied:') && github.event.issue.user.login == github.repository_owner)
+    if: needs.when.outputs.go == 'true' && (github.event_name != 'issues' || (startsWith(github.event.issue.title, 'Denied:') && github.event.issue.user.login == github.repository_owner))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -72,7 +102,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh label create denied --color c0392b --description "Trade offer they turned down" --force
       - name: Post the weekly summary
-        if: github.event.schedule == '0 14 * * 4' || github.event.schedule == '0 14 * * 0' || inputs.send_summary
+        if: needs.when.outputs.summary == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
