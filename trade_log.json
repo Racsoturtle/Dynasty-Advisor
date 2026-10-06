@@ -29,15 +29,16 @@
    "first_league_edge": 0.035458,
    "days_recommended": 1,
    "last_recommended": "2026-10-06",
-   "denied": false,
+   "denied": true,
    "checks": [
     [
      "2026-10-06",
-     0.220285,
-     0.035458
+     0.220037,
+     0.035312
     ]
    ],
-   "issue": null
+   "issue": "https://github.com/Racsoturtle/Dynasty-Advisor/issues/2",
+   "denied_on": "2026-10-06"
   },
   "14e53de365": {
    "partner_id": 15,
@@ -71,8 +72,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.247268,
-     0.06069
+     0.246826,
+     0.060337
     ]
    ],
    "issue": null
@@ -105,8 +106,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.159727,
-     0.091187
+     0.159988,
+     0.091411
     ]
    ],
    "issue": null
@@ -139,8 +140,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.126022,
-     0.049118
+     0.125942,
+     0.049019
     ]
    ],
    "issue": null
@@ -177,8 +178,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.244552,
-     0.092704
+     0.240279,
+     0.088404
     ]
    ],
    "issue": null
@@ -215,8 +216,8 @@
    "checks": [
     [
      "2026-10-06",
-     0.223414,
-     0.076243
+     0.224846,
+     0.077647
     ]
    ],
    "issue": null
@@ -253,8 +254,198 @@
    "checks": [
     [
      "2026-10-06",
-     0.248596,
-     0.086726
+     0.249497,
+     0.087585
+    ]
+   ],
+   "issue": null
+  },
+  "9b6df21d5a": {
+   "partner_id": 5,
+   "partner": "Monkey Neva Cramp",
+   "give": [
+    [
+     "9493",
+     "Puka Nacua"
+    ],
+    [
+     "12512",
+     "Quinshon Judkins"
+    ]
+   ],
+   "get": [
+    [
+     "8112",
+     "Drake London"
+    ],
+    [
+     "9226",
+     "De'Von Achane"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.075642,
+   "first_league_edge": 0.075642,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.075642,
+     0.075642
+    ]
+   ],
+   "issue": null
+  },
+  "80add06d79": {
+   "partner_id": 16,
+   "partner": "Is dewalt a lesbian?",
+   "give": [
+    [
+     "13269",
+     "Fernando Mendoza"
+    ],
+    [
+     "5947",
+     "Jakobi Meyers"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:16",
+     "Xinwen's 2028 1st"
+    ],
+    [
+     "9758",
+     "C.J. Stroud"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.242909,
+   "first_league_edge": 0.091034,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.242909,
+     0.091034
+    ]
+   ],
+   "issue": null
+  },
+  "4085136ec7": {
+   "partner_id": 2,
+   "partner": "NabersThinkImSellinDope",
+   "give": [
+    [
+     "7611",
+     "Rhamondre Stevenson"
+    ],
+    [
+     "9754",
+     "Quentin Johnston"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2029:1:2",
+     "jdshorsey's 2029 1st"
+    ],
+    [
+     "6806",
+     "J.K. Dobbins"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.227257,
+   "first_league_edge": 0.082708,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.227257,
+     0.082708
+    ]
+   ],
+   "issue": null
+  },
+  "7b02d50380": {
+   "partner_id": 12,
+   "partner": "BigDawgSP26",
+   "give": [
+    [
+     "13269",
+     "Fernando Mendoza"
+    ],
+    [
+     "pick:2028:2:7",
+     "Racsoturtle's 2028 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:12",
+     "BigDawgSP26's 2028 1st"
+    ],
+    [
+     "13345",
+     "Jonah Coleman"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.216773,
+   "first_league_edge": 0.079163,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.216773,
+     0.079163
+    ]
+   ],
+   "issue": null
+  },
+  "6c9b345c24": {
+   "partner_id": 14,
+   "partner": "Big Backs",
+   "give": [
+    [
+     "pick:2027:1:7",
+     "Racsoturtle's 2027 1st (early)"
+    ],
+    [
+     "5947",
+     "Jakobi Meyers"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:14",
+     "Vollbs's 2027 1st (early)"
+    ],
+    [
+     "13414",
+     "Kaelon Black"
+    ]
+   ],
+   "first_seen": "2026-10-06",
+   "first_edge": 0.057996,
+   "first_league_edge": 0.06861,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-06",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-06",
+     0.057996,
+     0.06861
     ]
    ],
    "issue": null
