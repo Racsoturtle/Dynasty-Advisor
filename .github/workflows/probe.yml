@@ -1,0 +1,89 @@
+name: Probe data sources
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch and summarize
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir out
+          cat > probe.py <<'PY'
+          import json, os, re, urllib.request
+          UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36"}
+          def get(url, headers=None):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url, headers={**UA, **(headers or {})}), timeout=40) as r:
+                      return r.status, r.read().decode("utf-8", "replace")
+              except Exception as e:
+                  return getattr(e, "code", 0), str(e)
+          out = open("out/summary.txt", "w")
+          def w(*a): out.write(" ".join(str(x) for x in a) + "\n")
+          trades = []
+          lid = "1327317900188487680"
+          while lid and lid != "0":
+              code, body = get(f"https://api.sleeper.app/v1/league/{lid}")
+              lg = json.loads(body)
+              w("LEAGUE", lid, lg.get("season"), lg.get("status"), "prev", lg.get("previous_league_id"))
+              n = 0
+              for leg in range(0, 19):
+                  code, body = get(f"https://api.sleeper.app/v1/league/{lid}/transactions/{leg}")
+                  rows = json.loads(body) if code == 200 else []
+                  t = [r for r in rows if r.get("type") == "trade"]
+                  for r in t:
+                      r["_league"] = lid; r["_season"] = lg.get("season"); r["_leg"] = leg
+                  trades += t; n += len(t)
+              w("  trades", n)
+              lid = lg.get("previous_league_id")
+          json.dump(trades, open("out/trades.json", "w"))
+          w("TOTAL TRADES", len(trades), "statuses", sorted({t.get("status") for t in trades}))
+          if trades:
+              w("SAMPLE", json.dumps(trades[0])[:1500])
+          firsts = [t for t in trades if any(p.get("round") == 1 for p in t.get("draft_picks") or [])]
+          w("TRADES WITH A 1ST", len(firsts))
+          # DynastyProcess history
+          H = {"Authorization": "Bearer " + os.environ["GH_TOKEN"], "Accept": "application/vnd.github+json"}
+          code, body = get("https://api.github.com/repos/dynastyprocess/data/contents/files", H)
+          w("DP FILES", code, [f.get("name") for f in json.loads(body)] if code == 200 else body[:200])
+          for path in ("files/values.csv", "files/values-players.csv", "files/values-picks.csv"):
+              code, body = get(f"https://api.github.com/repos/dynastyprocess/data/commits?path={path}&per_page=100", H)
+              rows = json.loads(body) if code == 200 else []
+              w("DP COMMITS", path, code, len(rows), rows[0]["commit"]["committer"]["date"] if rows else "", rows[-1]["commit"]["committer"]["date"] if rows else "", rows[-1]["sha"] if rows else "")
+          # KTC: keys available per player
+          code, body = get("https://keeptradecut.com/dynasty-rankings?page=0&filters=QB|WR|RB|TE|RDP&format=1")
+          m = re.search(r'<script[^>]*id="ktc-players"[^>]*>(.*?)</script>', body, re.S)
+          if m:
+              ps = json.loads(m.group(1))
+              w("KTC keys", list(ps[0].keys()))
+              w("KTC oneQB", json.dumps(ps[0].get("oneQBValues"))[:1500])
+              slug = ps[0].get("slug"); w("KTC slug", slug)
+              code, body = get(f"https://keeptradecut.com/dynasty-rankings/players/{slug}")
+              w("KTC PLAYER PAGE", code, len(body), sorted(set(re.findall(r"var\s+(\w+)\s*=", body)))[:40], [m.group(0)[:80] for m in re.finditer(r'id="[^"]*"[^>]*type="application/json"|type="application/json"[^>]*id="[^"]*"', body)][:10])
+              i = body.find("History")
+              w("KTC History ctx", body[i-300:i+600] if i >= 0 else "none")
+          # FantasyCalc: what fields come with current values
+          code, body = get("https://api.fantasycalc.com/values/current?isDynasty=true&numQbs=1&numTeams=16&ppr=1")
+          rows = json.loads(body) if code == 200 else []
+          if rows:
+              w("FC keys", list(rows[0].keys())); w("FC player keys", list(rows[0]["player"].keys()))
+              pid = rows[0]["player"]["id"]
+              for url in (f"https://api.fantasycalc.com/trades/implied/{pid}?isDynasty=true&numQbs=1",
+                          f"https://api.fantasycalc.com/players/{pid}/history?isDynasty=true&numQbs=1",
+                          f"https://api.fantasycalc.com/values/history?isDynasty=true&numQbs=1&numTeams=16&ppr=1&date=2026-06-01"):
+                  code, body = get(url); w("FC TRY", url, code, body[:300])
+          PY
+          python3 probe.py
+      - name: Push results
+        run: |
+          cd out
+          git init -q -b probe
+          git -c user.name=probe -c user.email=probe@example.com add .
+          git -c user.name=probe -c user.email=probe@example.com commit -qm probe
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" probe
