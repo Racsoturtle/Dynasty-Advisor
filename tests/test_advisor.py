@@ -390,3 +390,13 @@ def test_deny_link_round_trips_through_issue_title(monkeypatch):
     monkeypatch.setenv("GITHUB_TOKEN", "t")
     monkeypatch.setattr(github.http, "get", lambda *a, **k: Resp())
     assert github.denied_issues() == {"abc123def0": "u1"}
+
+
+def test_backup_offers_follow_the_top_ideas(report, tmp_path):
+    from advisor import config
+    offers, ideas = report["trade_offers"], report["trade_ideas"]
+    assert offers[:len(ideas)] == ideas and len(ideas) <= config.TRADE_IDEAS
+    assert len(offers) <= config.TRADE_IDEAS + config.TRADE_BACKUPS
+    render.write_site(report, tmp_path)
+    page = (tmp_path / "trades.html").read_text()
+    assert page.count('class="btn deny"') == len(offers)

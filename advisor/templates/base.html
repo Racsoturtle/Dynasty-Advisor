@@ -66,6 +66,7 @@ select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid 
 .pos { display: flex; flex-wrap: wrap; gap: 8px; }
 .pos .tile { min-width: 120px; flex: 1; }
 .btn { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13px; border: 1px solid var(--line); color: var(--ink); text-decoration: none; white-space: nowrap; }
+button.btn { font: inherit; font-size: 13px; background: var(--card); cursor: pointer; }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 .idea-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; margin-top: 8px; }
 .logrow { padding: 10px 14px; margin-bottom: 8px; }
@@ -78,6 +79,19 @@ footer { color: var(--muted); font-size: 13px; padding: 24px 0; border-top: 1px 
   <div class="top"><h1>{{ me.team_name }}</h1><span class="meta">{{ league.name }} · updated {{ updated }}</span></div>
   <nav>{% for file, name in PAGES %}<a href="{{ file }}"{% if file == page %} class="on"{% endif %}>{{ name }}</a>{% endfor %}</nav>
 </div></header>
+<script>
+// Offers marked "They said no", kept in this browser.
+window.Denied = (function () {
+  const KEY = "dynasty-advisor:denied";
+  const read = () => { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } };
+  const write = (d) => { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} };
+  return {
+    all: read,
+    add(key) { const d = read(); d[key] = new Date().toISOString().slice(0, 10); write(d); },
+    remove(key) { const d = read(); delete d[key]; write(d); },
+  };
+})();
+</script>
 <main><div class="wrap">
 {% block body %}{% endblock %}
 </div></main>

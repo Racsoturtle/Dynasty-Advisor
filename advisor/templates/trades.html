@@ -3,10 +3,11 @@
 {% if not trade_ideas %}
 <p class="lead">{% if call[0] in ("Past deadline", "Offseason") %}{{ call[1] }}{% else %}No trade passes every test today. Each idea has to win you {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% to {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in consensus value, improve the other team's starting lineup, and fit the {{ call[0] | lower }} call.{% endif %}</p>
 {% else %}
-<p class="lead">{{ trade_ideas | length }} offers to send, best first. If you send one and they turn it down, tap <b>They said no</b> and it stops being suggested (see the <a href="log.html">Trade log</a>). Each wins you at least {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% in consensus value but looks no more than {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in your favor at this league's prices, makes the other team's starting lineup better, and fits the <b>{{ call[0] | lower }}</b> call. Send them yourself in the Sleeper app.</p>
-{% for i in trade_ideas %}
-<div class="card idea">
-  <div class="idea-head"><b>{{ loop.index }}. To {{ i.partner.team_name }}</b>{% if i.partner.team_name != i.partner.owner %} <span class="muted small">{{ i.partner.owner }}</span>{% endif %}
+<p class="lead"><span id="offer-count">{{ trade_ideas | length }}</span> offers to send, best first. If you send one and they turn it down, tap <b>They said no</b> and the next best offer takes its place. Each wins you at least {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% in consensus value but looks no more than {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in your favor at this league's prices, makes the other team's starting lineup better, and fits the <b>{{ call[0] | lower }}</b> call. Send them yourself in the Sleeper app.</p>
+<p class="small muted" id="hidden-note" hidden></p>
+{% for i in trade_offers %}
+<div class="card idea offer" data-key="{{ i.key }}"{% if loop.index > cfg.TRADE_IDEAS %} hidden{% endif %}>
+  <div class="idea-head"><b><span class="num">{{ loop.index }}</span>. To {{ i.partner.team_name }}</b>{% if i.partner.team_name != i.partner.owner %} <span class="muted small">{{ i.partner.owner }}</span>{% endif %}
     <span class="pill good">+{{ (i.edge * 100) | round(1) }}% value</span></div>
   <div class="sides">
     <div><div class="k">You give</div>{% for a in i.give %}<div>{{ a.label }} <span class="muted small">{{ a.pos or "pick" }} · {{ a.value | num }}</span></div>{% endfor %}</div>
@@ -17,10 +18,32 @@
     {% for t in i.tags %}<span class="pill">{{ t }}</span> {% endfor %}</div>
   <div class="muted small">Package value {{ i.give_value | num }} given for {{ i.get_value | num }}.{% if (i.league_edge - i.edge) | abs > 0.005 %} At league prices for 1sts it looks like {{ "+" if i.league_edge >= 0 else "" }}{{ (i.league_edge * 100) | round(1) }}% for you.{% endif %}</div>
   {% set lr = log_by_key.get(i.key) %}
-  <div class="idea-foot"><span class="muted small">{% if lr and lr.entry.days_recommended > 1 %}Suggested {{ lr.entry.days_recommended }} days since {{ lr.entry.first_seen | day }}.{% else %}New today.{% endif %}</span>
-    {% if lr %}<a class="btn" href="{{ lr.deny_url }}" target="_blank" rel="noopener">They said no</a>{% endif %}</div>
+  <div class="idea-foot"><span class="muted small">{% if lr and lr.entry.days_recommended > 1 %}Suggested {{ lr.entry.days_recommended }} days since {{ lr.entry.first_seen | day }}.{% elif lr %}New today.{% else %}Backup offer.{% endif %}</span>
+    <button class="btn deny" data-key="{{ i.key }}">They said no</button></div>
 </div>
 {% endfor %}
+<script>
+(function () {
+  const LIMIT = {{ cfg.TRADE_IDEAS }};
+  function apply() {
+    const d = Denied.all();
+    let shown = 0, hidden = 0;
+    document.querySelectorAll(".offer").forEach((card) => {
+      if (d[card.dataset.key]) { card.hidden = true; hidden++; return; }
+      shown++;
+      card.hidden = shown > LIMIT;
+      card.querySelector(".num").textContent = shown;
+    });
+    document.getElementById("offer-count").textContent = Math.min(shown, LIMIT);
+    const note = document.getElementById("hidden-note");
+    note.hidden = !hidden;
+    note.innerHTML = hidden + (hidden === 1 ? " offer they turned down is" : " offers they turned down are") +
+      ' hidden. Undo it on the <a href="log.html">Trade log</a>.';
+  }
+  document.querySelectorAll("button.deny").forEach((b) => b.addEventListener("click", () => { Denied.add(b.dataset.key); apply(); }));
+  apply();
+})();
+</script>
 {% endif %}
 {% set pp = pick_premium %}
 <h2>What this league pays for 1sts</h2>

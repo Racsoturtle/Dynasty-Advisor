@@ -47,6 +47,7 @@ TRADE_MAX_EDGE = 0.10
 PACKAGE_WEIGHTS = (1.0, 0.85, 0.75, 0.70)
 TRADE_POOL = 14  # most valuable assets per side considered in each search
 TRADE_IDEAS = 10
+TRADE_BACKUPS = 15  # held back on the page to fill in for offers marked "They said no"
 TRADE_IDEAS_PER_PARTNER = 2
 TRADE_MIN_ASSET = 300  # assets below this value don't move a trade
 HOLD_MAX_POINTS_LOSS = 3.0  # weekly points a Hold trade may cost

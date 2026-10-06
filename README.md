@@ -8,8 +8,9 @@ Pages: Home (contend, hold or retool call; record and luck; roster values; picks
 lineup by consensus projection, changes, close calls, injuries and byes), Trades (offers to send:
 at least 3% in your favor by consensus value but no more than 10% at league prices, better for the
 partner's starting lineup, and fitting the call; plus what this league pays for 1sts), Trade checker (grade any offer in the browser and get a counter), Trade log (every suggested offer,
-re-valued daily; "They said no" opens a GitHub issue that stops an offer being suggested, and closing
-the issue undoes it; the log is saved on the `data` branch), Waivers (free agents
+re-valued daily, saved on the `data` branch). "They said no" on an offer hides it in that browser and
+a backup offer takes its place; Claude can also mark one for every device by opening a "Denied: ... [id]"
+issue from Oscar's account, which the build skips), Waivers (free agents
 that clearly beat what you have), League (every team's value, needs and playoff odds).
 
 Player and pick values come only from outside sources, averaged with equal weight:

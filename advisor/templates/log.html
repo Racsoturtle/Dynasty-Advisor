@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% macro row(r) %}
-<div class="card logrow">
+<div class="card logrow" data-key="{{ r.key }}" data-status="{{ r.status }}">
   <div class="idea-head"><b>To {{ r.entry.partner }}</b>
     {% if r.status == "recommended" %}<span class="pill good">Suggested today</span>
     {% elif r.status == "denied" %}<span class="pill bad">They said no</span>
@@ -12,21 +12,48 @@
   </div>
   <div class="small">First suggested {{ r.entry.first_seen | day }} at {{ r.entry.first_edge | pct }}{% if r.edge is not none %}; worth {{ r.edge | pct }} to you today{% if (r.league_edge - r.edge) | abs > 0.005 %} ({{ r.league_edge | pct }} at league prices){% endif %}{% endif %}.
     Suggested on {{ r.entry.days_recommended }} day{{ "" if r.entry.days_recommended == 1 else "s" }}{% if r.entry.last_recommended and r.status != "recommended" %}, last on {{ r.entry.last_recommended | day }}{% endif %}.
-    {% if r.note %}<span class="muted">{{ r.note }}</span>{% endif %}</div>
+    {% if r.note %}<span class="muted note">{{ r.note }}</span>{% endif %}</div>
   <div class="idea-foot"><span></span>
-    {% if r.status == "denied" %}{% if r.entry.issue %}<a class="btn" href="{{ r.entry.issue }}" target="_blank" rel="noopener">Undo (close the issue)</a>{% endif %}
-    {% elif r.status != "gone" %}<a class="btn" href="{{ r.deny_url }}" target="_blank" rel="noopener">They said no</a>{% endif %}</div>
+    {% if r.status == "denied" %}{% if r.entry.issue %}<a class="btn" href="{{ r.entry.issue }}" target="_blank" rel="noopener">Undo</a>{% endif %}
+    {% elif r.status != "gone" %}<button class="btn deny" data-key="{{ r.key }}">They said no</button>{% endif %}</div>
 </div>
 {% endmacro %}
 {% block body %}
-{% set today_rows = log_rows | selectattr("status", "equalto", "recommended") | list %}
-{% set earlier = log_rows | selectattr("status", "in", ["dropped", "gone"]) | list %}
-{% set denied = log_rows | selectattr("status", "equalto", "denied") | list %}
-<p class="lead">Every offer the dashboard has suggested, re-valued with today's consensus. Good offers keep coming back each day until you mark that they said no.</p>
-<p class="small muted"><b>They said no</b> opens a short GitHub issue that's already filled in; submit it and the dashboard rebuilds in about a minute without that offer. Close the issue to undo it. Only issues from your GitHub account count.</p>
+<p class="lead">Every offer the dashboard has suggested, re-valued with today's consensus. Good offers keep coming back each day until you tap <b>They said no</b>.</p>
+<p class="small muted">"They said no" is saved in this browser. If you also use the dashboard on another device, tap it there too, or tell Claude in the project and it will be marked everywhere.</p>
 {% if not log_rows %}<p>No offers logged yet.</p>{% endif %}
-{% if today_rows %}<h2>Suggested today ({{ today_rows | length }})</h2>{% for r in today_rows %}{{ row(r) }}{% endfor %}{% endif %}
-{% if earlier %}<h2>Earlier offers ({{ earlier | length }})</h2>{% for r in earlier %}{{ row(r) }}{% endfor %}{% endif %}
-{% if denied %}<h2>They said no ({{ denied | length }})</h2>{% for r in denied %}{{ row(r) }}{% endfor %}{% endif %}
+{% for sec, title, statuses in (("today", "Suggested today", ["recommended"]), ("earlier", "Earlier offers", ["dropped", "gone"]), ("denied", "They said no", ["denied"])) %}
+<section data-sec="{{ sec }}">
+  <h2>{{ title }} (<span class="c"></span>)</h2>
+  <div class="list">{% for r in log_rows if r.status in statuses %}{{ row(r) }}{% endfor %}</div>
+</section>
+{% endfor %}
 <p class="muted small">Percentages are how much more consensus value you get than you give. Offers not suggested for {{ cfg.LOG_KEEP_DAYS }} days drop off the log.</p>
+<script>
+(function () {
+  const sec = (name) => document.querySelector('section[data-sec="' + name + '"]');
+  const d = Denied.all();
+  document.querySelectorAll(".logrow").forEach((row) => {
+    const key = row.dataset.key;
+    if (!d[key] || row.dataset.status === "denied") return;
+    row.querySelector(".pill").className = "pill bad";
+    row.querySelector(".pill").textContent = "They said no";
+    const when = new Date(d[key] + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    const note = row.querySelector(".note");
+    if (note) note.remove();
+    row.querySelector(".small").insertAdjacentHTML("beforeend", '<span class="muted">Marked ' + when + ".</span>");
+    const btn = row.querySelector("button.deny");
+    if (btn) { btn.className = "btn undo"; btn.textContent = "Undo"; }
+    else row.querySelector(".idea-foot").insertAdjacentHTML("beforeend", '<button class="btn undo" data-key="' + key + '">Undo</button>');
+    sec("denied").querySelector(".list").prepend(row);
+  });
+  document.querySelectorAll("button.deny").forEach((b) => b.addEventListener("click", () => { Denied.add(b.dataset.key); location.reload(); }));
+  document.querySelectorAll("button.undo").forEach((b) => b.addEventListener("click", () => { Denied.remove(b.dataset.key); location.reload(); }));
+  document.querySelectorAll("section[data-sec]").forEach((s) => {
+    const n = s.querySelectorAll(".logrow").length;
+    s.querySelector(".c").textContent = n;
+    s.hidden = !n;
+  });
+})();
+</script>
 {% endblock %}

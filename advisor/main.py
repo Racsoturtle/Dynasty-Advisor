@@ -155,9 +155,13 @@ def analyze(raw, today=None):
     if denied is None:
         denied = {k: e.get("issue") for k, e in ((raw.get("trade_log") or {}).get("ideas") or {}).items()
                   if e.get("denied")}
-    report["trade_ideas"] = trades.find(league_teams, me, call, roster_positions, week_proj.per_game,
-                                        premium.multiplier, exclude=set(denied)) \
+    # Backups beyond the top ideas stay hidden on the Trades page until offers
+    # above them are marked "They said no" in the browser.
+    report["trade_offers"] = trades.find(league_teams, me, call, roster_positions, week_proj.per_game,
+                                         premium.multiplier, exclude=set(denied),
+                                         limit=config.TRADE_IDEAS + config.TRADE_BACKUPS) \
         if call not in ("Past deadline", "Offseason") else []
+    report["trade_ideas"] = report["trade_offers"][:config.TRADE_IDEAS]
     report["trade_log"], report["log_rows"] = tradelog.update(
         raw.get("trade_log"), today, report["trade_ideas"], league_teams, me, roster_positions,
         week_proj.per_game, premium.multiplier, raw.get("denied"))

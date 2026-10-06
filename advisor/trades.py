@@ -175,7 +175,8 @@ def fits_direction(call, give, get, numbers):
     return True
 
 
-def find(league_teams, me_team, call, roster_positions, per_game=None, premium=1.0, exclude=()):
+def find(league_teams, me_team, call, roster_positions, per_game=None, premium=1.0, exclude=(),
+         limit=config.TRADE_IDEAS):
     """Best offers to send. `exclude` holds idea keys Oscar marked as denied."""
     roster_size = sum(1 for s in roster_positions if s not in ("IR", "TAXI"))
     me = TeamState(me_team, roster_positions, roster_size, per_game)
@@ -212,7 +213,7 @@ def find(league_teams, me_team, call, roster_positions, per_game=None, premium=1
         found.sort(key=lambda i: -i.score)
         ideas += _distinct(found)[: config.TRADE_IDEAS_PER_PARTNER]
     ideas.sort(key=lambda i: -i.score)
-    return _spread(ideas)[: config.TRADE_IDEAS]
+    return _spread(ideas)[:limit]
 
 
 def _spread(ideas):
