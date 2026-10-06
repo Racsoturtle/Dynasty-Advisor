@@ -65,9 +65,15 @@ def test_stale_source_is_left_out():
     assert c.dropped[0][0] == "Stale"
 
 
-def test_ktc_reads_players_array():
+def test_ktc_reads_json_tag():
+    html = ('<script type="application/json" id="ktc-players">[{"playerName": "A", "playerID": 1}]</script>'
+            "<script>var playersArray = JSON.parse(document.getElementById('ktc-players').textContent);</script>")
+    assert ktc.extract(html) == [{"playerName": "A", "playerID": 1}]
+
+
+def test_ktc_reads_old_players_array():
     html = '<script>var playersArray = [{"playerName": "A", "playerID": 1}];\nvar x = 1;</script>'
-    assert ktc._ARRAY.search(html).group(1) == '[{"playerName": "A", "playerID": 1}]'
+    assert ktc.extract(html) == [{"playerName": "A", "playerID": 1}]
 
 
 @pytest.fixture(scope="module")

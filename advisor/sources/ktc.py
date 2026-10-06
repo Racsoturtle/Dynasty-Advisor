@@ -1,7 +1,8 @@
 """KeepTradeCut: crowdsourced keep/trade/cut votes (https://keeptradecut.com).
 
-KTC has no public API. Its rankings page embeds every player as a
-`playersArray` JavaScript variable, which is what this reads.
+KTC has no public API. Its rankings page embeds the top 500 players and
+picks as JSON in a `<script id="ktc-players">` tag, which is what this reads.
+Older versions of the page used a `playersArray` JavaScript variable.
 """
 
 import json
@@ -12,14 +13,19 @@ from .. import http
 from .common import SourceResult, add_pick, parse_pick
 
 URL = "https://keeptradecut.com/dynasty-rankings"
+_JSON_TAG = re.compile(r'<script[^>]*id="ktc-players"[^>]*>(.*?)</script>', re.DOTALL)
 _ARRAY = re.compile(r"var\s+playersArray\s*=\s*(\[.*?\]);", re.DOTALL)
 
 
 def fetch():
     html = http.get_text(URL, params={"page": 0, "filters": "QB|WR|RB|TE|RDP", "format": 1})
-    m = _ARRAY.search(html)
+    return extract(html)
+
+
+def extract(html):
+    m = _JSON_TAG.search(html) or _ARRAY.search(html)
     if not m:
-        raise ValueError("KeepTradeCut page no longer has playersArray; the page layout changed")
+        raise ValueError("couldn't find player data on the KeepTradeCut page; its layout changed")
     return json.loads(m.group(1))
 
 
