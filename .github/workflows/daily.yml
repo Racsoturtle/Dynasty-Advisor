@@ -7,6 +7,11 @@ on:
     # New York (the first in summer, the second in winter).
     - cron: "45 10 * * *"
     - cron: "45 11 * * *"
+    # GitHub sometimes skips scheduled runs. These later ones refresh only
+    # if nothing has refreshed the dashboard yet this morning.
+    - cron: "17 13 * * *"
+    - cron: "17 15 * * *"
+    - cron: "17 17 * * *"
   workflow_dispatch:
     inputs:
       send_summary:
@@ -19,6 +24,7 @@ on:
     types: [opened, closed, reopened]  # "They said no" marks
 
 permissions:
+  actions: read  # the backup runs check whether the morning refresh happened
   contents: write  # saves the trade log to the data branch
   pages: write
   id-token: write
@@ -40,12 +46,25 @@ jobs:
           SCHEDULE: ${{ github.event.schedule }}
           EVENT: ${{ github.event_name }}
           SEND_SUMMARY: ${{ inputs.send_summary }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
           zone=$(TZ=America/New_York date +%Z)   # EDT in summer, EST in winter
           go=true
           if [ "$EVENT" = schedule ]; then
             if [ "$SCHEDULE" = "45 10 * * *" ] && [ "$zone" != EDT ]; then go=false; fi
             if [ "$SCHEDULE" = "45 11 * * *" ] && [ "$zone" != EST ]; then go=false; fi
+            case "$SCHEDULE" in "17 "*)
+              # Backup run: skip if a build already succeeded since 6:40 AM New York time.
+              since=$(date -u -d "$(TZ=America/New_York date +%F) 06:40 $(TZ=America/New_York date +%z)" +%FT%TZ)
+              for id in $(gh api "repos/$REPO/actions/runs?created=>=$since&per_page=50" --jq '.workflow_runs[].id'); do
+                if gh api "repos/$REPO/actions/runs/$id/jobs" --jq '.jobs[] | select(.name == "build" and .conclusion == "success") | .id' | grep -q .; then
+                  go=false; break
+                fi
+              done
+              # Before 6:40 AM there's nothing to back up yet.
+              [ "$(TZ=America/New_York date +%H%M)" -lt 0640 ] && go=false ;;
+            esac
           fi
           # The short summary goes out with the Thursday and Sunday morning builds.
           day=$(TZ=America/New_York date +%u)   # 4 = Thursday, 7 = Sunday
