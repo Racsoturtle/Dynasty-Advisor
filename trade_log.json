@@ -35,6 +35,11 @@
      "2026-10-06",
      0.156452,
      -0.02793
+    ],
+    [
+     "2026-10-07",
+     0.157811,
+     -0.028082
     ]
    ],
    "issue": "https://github.com/Racsoturtle/Dynasty-Advisor/issues/2",
@@ -66,14 +71,19 @@
    "first_seen": "2026-10-06",
    "first_edge": 0.247268,
    "first_league_edge": 0.06069,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-06",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-07",
    "denied": false,
    "checks": [
     [
      "2026-10-06",
      0.239524,
      0.053931
+    ],
+    [
+     "2026-10-07",
+     0.248496,
+     0.061039
     ]
    ],
    "issue": null
@@ -100,14 +110,19 @@
    "first_seen": "2026-10-06",
    "first_edge": 0.159727,
    "first_league_edge": 0.091187,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-06",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-07",
    "denied": false,
    "checks": [
     [
      "2026-10-06",
      0.159573,
      0.091357
+    ],
+    [
+     "2026-10-07",
+     0.164564,
+     0.095981
     ]
    ],
    "issue": null
@@ -134,14 +149,19 @@
    "first_seen": "2026-10-06",
    "first_edge": 0.126022,
    "first_league_edge": 0.049118,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-06",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-07",
    "denied": false,
    "checks": [
     [
      "2026-10-06",
      0.127102,
      0.050508
+    ],
+    [
+     "2026-10-07",
+     0.12426,
+     0.047728
     ]
    ],
    "issue": null
@@ -180,6 +200,11 @@
      "2026-10-06",
      0.248441,
      0.095703
+    ],
+    [
+     "2026-10-07",
+     0.375055,
+     0.222888
     ]
    ],
    "issue": null
@@ -218,6 +243,11 @@
      "2026-10-06",
      0.124916,
      -0.02282
+    ],
+    [
+     "2026-10-07",
+     0.13102,
+     -0.018331
     ]
    ],
    "issue": null
@@ -256,6 +286,11 @@
      "2026-10-06",
      0.256523,
      0.094617
+    ],
+    [
+     "2026-10-07",
+     0.392683,
+     0.229504
     ]
    ],
    "issue": null
@@ -286,14 +321,19 @@
    "first_seen": "2026-10-06",
    "first_edge": 0.075642,
    "first_league_edge": 0.075642,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-06",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-07",
    "denied": false,
    "checks": [
     [
      "2026-10-06",
      0.072903,
      0.072903
+    ],
+    [
+     "2026-10-07",
+     0.080966,
+     0.080966
     ]
    ],
    "issue": null
@@ -332,6 +372,11 @@
      "2026-10-06",
      0.251197,
      0.098459
+    ],
+    [
+     "2026-10-07",
+     0.360458,
+     0.208291
     ]
    ],
    "issue": null
@@ -370,6 +415,11 @@
      "2026-10-06",
      0.117927,
      -0.025905
+    ],
+    [
+     "2026-10-07",
+     0.115224,
+     -0.029838
     ]
    ],
    "issue": null
@@ -408,6 +458,11 @@
      "2026-10-06",
      0.225411,
      0.086828
+    ],
+    [
+     "2026-10-07",
+     0.218356,
+     0.084145
     ]
    ],
    "issue": null
@@ -446,6 +501,11 @@
      "2026-10-06",
      0.057264,
      0.067766
+    ],
+    [
+     "2026-10-07",
+     0.076705,
+     0.090816
     ]
    ],
    "issue": null
@@ -476,14 +536,19 @@
    "first_seen": "2026-10-06",
    "first_edge": 0.113141,
    "first_league_edge": -0.021231,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-06",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-07",
    "denied": false,
    "checks": [
     [
      "2026-10-06",
      0.113141,
      -0.021231
+    ],
+    [
+     "2026-10-07",
+     0.108467,
+     -0.026778
     ]
    ],
    "issue": null
@@ -514,14 +579,19 @@
    "first_seen": "2026-10-06",
    "first_edge": 0.249364,
    "first_league_edge": 0.079244,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-06",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-07",
    "denied": false,
    "checks": [
     [
      "2026-10-06",
      0.249364,
      0.079244
+    ],
+    [
+     "2026-10-07",
+     0.242603,
+     0.072065
     ]
    ],
    "issue": null
@@ -560,6 +630,11 @@
      "2026-10-06",
      0.245027,
      0.089626
+    ],
+    [
+     "2026-10-07",
+     0.277147,
+     0.122263
     ]
    ],
    "issue": null
@@ -590,14 +665,19 @@
    "first_seen": "2026-10-06",
    "first_edge": 0.238828,
    "first_league_edge": 0.085342,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-06",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-07",
    "denied": false,
    "checks": [
     [
      "2026-10-06",
      0.238828,
      0.085342
+    ],
+    [
+     "2026-10-07",
+     0.245069,
+     0.090895
     ]
    ],
    "issue": null
@@ -636,6 +716,125 @@
      "2026-10-06",
      0.218225,
      0.061254
+    ],
+    [
+     "2026-10-07",
+     0.350853,
+     0.192575
+    ]
+   ],
+   "issue": null
+  },
+  "575f3a672e": {
+   "partner_id": 12,
+   "partner": "BigDawgSP26",
+   "give": [
+    [
+     "13269",
+     "Fernando Mendoza"
+    ],
+    [
+     "7611",
+     "Rhamondre Stevenson"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:12",
+     "BigDawgSP26's 2028 1st"
+    ],
+    [
+     "4199",
+     "Aaron Jones"
+    ]
+   ],
+   "first_seen": "2026-10-07",
+   "first_edge": 0.247339,
+   "first_league_edge": 0.098417,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-07",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-07",
+     0.247339,
+     0.098417
+    ]
+   ],
+   "issue": null
+  },
+  "f5640c6294": {
+   "partner_id": 16,
+   "partner": "Is dewalt a lesbian?",
+   "give": [
+    [
+     "pick:2027:2:7",
+     "Racsoturtle's 2027 2nd (early)"
+    ],
+    [
+     "5947",
+     "Jakobi Meyers"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:16",
+     "Xinwen's 2028 1st"
+    ],
+    [
+     "13317",
+     "Ted Hurst"
+    ]
+   ],
+   "first_seen": "2026-10-07",
+   "first_edge": 0.236843,
+   "first_league_edge": 0.082367,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-07",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-07",
+     0.236843,
+     0.082367
+    ]
+   ],
+   "issue": null
+  },
+  "2c6c592a24": {
+   "partner_id": 11,
+   "partner": "Picken Browns A$$",
+   "give": [
+    [
+     "13269",
+     "Fernando Mendoza"
+    ],
+    [
+     "9754",
+     "Quentin Johnston"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2029:1:11",
+     "reebmas's 2029 1st"
+    ],
+    [
+     "pick:2028:2:11",
+     "reebmas's 2028 2nd"
+    ]
+   ],
+   "first_seen": "2026-10-07",
+   "first_edge": 0.230486,
+   "first_league_edge": 0.098611,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-07",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-07",
+     0.230486,
+     0.098611
     ]
    ],
    "issue": null
