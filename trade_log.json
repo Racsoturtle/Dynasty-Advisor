@@ -38,8 +38,8 @@
     ],
     [
      "2026-10-07",
-     0.157497,
-     -0.028331
+     0.158349,
+     -0.027551
     ]
    ],
    "issue": "https://github.com/Racsoturtle/Dynasty-Advisor/issues/2",
@@ -82,8 +82,8 @@
     ],
     [
      "2026-10-07",
-     0.249455,
-     0.062072
+     0.251119,
+     0.063653
     ]
    ],
    "issue": null
@@ -160,8 +160,8 @@
     ],
     [
      "2026-10-07",
-     0.12419,
-     0.04767
+     0.125503,
+     0.048825
     ]
    ],
    "issue": null
@@ -203,8 +203,8 @@
     ],
     [
      "2026-10-07",
-     0.375158,
-     0.222937
+     0.376247,
+     0.223877
     ]
    ],
    "issue": null
@@ -246,8 +246,8 @@
     ],
     [
      "2026-10-07",
-     0.132399,
-     -0.017115
+     0.135078,
+     -0.0145
     ]
    ],
    "issue": null
@@ -289,8 +289,8 @@
     ],
     [
      "2026-10-07",
-     0.394847,
-     0.231413
+     0.39431,
+     0.230888
     ]
    ],
    "issue": null
@@ -375,8 +375,8 @@
     ],
     [
      "2026-10-07",
-     0.360792,
-     0.208571
+     0.364136,
+     0.211767
     ]
    ],
    "issue": null
@@ -418,8 +418,8 @@
     ],
     [
      "2026-10-07",
-     0.116106,
-     -0.029062
+     0.116071,
+     -0.028972
     ]
    ],
    "issue": null
@@ -461,8 +461,8 @@
     ],
     [
      "2026-10-07",
-     0.21833,
-     0.084096
+     0.213316,
+     0.079315
     ]
    ],
    "issue": null
@@ -504,8 +504,8 @@
     ],
     [
      "2026-10-07",
-     0.076816,
-     0.090948
+     0.074085,
+     0.087717
     ]
    ],
    "issue": null
@@ -547,8 +547,8 @@
     ],
     [
      "2026-10-07",
-     0.108496,
-     -0.026744
+     0.110653,
+     -0.024473
     ]
    ],
    "issue": null
@@ -590,8 +590,8 @@
     ],
     [
      "2026-10-07",
-     0.243679,
-     0.072996
+     0.24569,
+     0.074723
     ]
    ],
    "issue": null
@@ -633,8 +633,8 @@
     ],
     [
      "2026-10-07",
-     0.276927,
-     0.122078
+     0.276367,
+     0.12135
     ]
    ],
    "issue": null
@@ -676,8 +676,8 @@
     ],
     [
      "2026-10-07",
-     0.245687,
-     0.091504
+     0.245879,
+     0.091781
     ]
    ],
    "issue": null
@@ -719,8 +719,8 @@
     ],
     [
      "2026-10-07",
-     0.352241,
-     0.193798
+     0.351603,
+     0.193187
     ]
    ],
    "issue": null
@@ -757,8 +757,8 @@
    "checks": [
     [
      "2026-10-07",
-     0.24738,
-     0.09844
+     0.24602,
+     0.097073
     ]
    ],
    "issue": null
@@ -795,8 +795,8 @@
    "checks": [
     [
      "2026-10-07",
-     0.237121,
-     0.082601
+     0.236908,
+     0.082225
     ]
    ],
    "issue": null
@@ -833,8 +833,232 @@
    "checks": [
     [
      "2026-10-07",
-     0.231813,
-     0.099815
+     0.226308,
+     0.094481
+    ]
+   ],
+   "issue": null
+  },
+  "385e159ffb": {
+   "partner_id": 14,
+   "partner": "Big Backs",
+   "give": [
+    [
+     "12512",
+     "Quinshon Judkins"
+    ],
+    [
+     "7526",
+     "Jaylen Waddle"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:14",
+     "Vollbs's 2027 1st (early)"
+    ],
+    [
+     "pick:2027:2:2",
+     "jdshorsey's 2027 2nd (early)"
+    ]
+   ],
+   "first_seen": "2026-10-07",
+   "first_edge": 0.222629,
+   "first_league_edge": 0.070106,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-07",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-07",
+     0.222629,
+     0.070106
+    ]
+   ],
+   "issue": null
+  },
+  "1320a07823": {
+   "partner_id": 2,
+   "partner": "NabersThinkImSellinDope",
+   "give": [
+    [
+     "7526",
+     "Jaylen Waddle"
+    ],
+    [
+     "pick:2027:1:9",
+     "BrantMason's 2027 1st (late)"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:2",
+     "jdshorsey's 2027 1st (early)"
+    ],
+    [
+     "pick:2028:1:2",
+     "jdshorsey's 2028 1st"
+    ]
+   ],
+   "first_seen": "2026-10-07",
+   "first_edge": 0.242534,
+   "first_league_edge": 0.081884,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-07",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-07",
+     0.242534,
+     0.081884
+    ]
+   ],
+   "issue": null
+  },
+  "51698de94b": {
+   "partner_id": 15,
+   "partner": "DeFootball Team",
+   "give": [
+    [
+     "4984",
+     "Josh Allen"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:15",
+     "dewaltjack's 2027 1st (early)"
+    ],
+    [
+     "12508",
+     "Jaxson Dart"
+    ]
+   ],
+   "first_seen": "2026-10-07",
+   "first_edge": 0.162225,
+   "first_league_edge": 0.001254,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-07",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-07",
+     0.162225,
+     0.001254
+    ]
+   ],
+   "issue": null
+  },
+  "e20dbe042f": {
+   "partner_id": 10,
+   "partner": "The Washington Wizards",
+   "give": [
+    [
+     "12512",
+     "Quinshon Judkins"
+    ],
+    [
+     "11646",
+     "Jalen Coker"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:10",
+     "DecStablow's 2027 1st (mid)"
+    ],
+    [
+     "pick:2029:1:10",
+     "DecStablow's 2029 1st"
+    ]
+   ],
+   "first_seen": "2026-10-07",
+   "first_edge": 0.247879,
+   "first_league_edge": 0.053445,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-07",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-07",
+     0.247879,
+     0.053445
+    ]
+   ],
+   "issue": null
+  },
+  "c44a2c42e0": {
+   "partner_id": 2,
+   "partner": "NabersThinkImSellinDope",
+   "give": [
+    [
+     "11646",
+     "Jalen Coker"
+    ],
+    [
+     "5947",
+     "Jakobi Meyers"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:14",
+     "Vollbs's 2028 1st"
+    ],
+    [
+     "pick:2029:1:2",
+     "jdshorsey's 2029 1st"
+    ]
+   ],
+   "first_seen": "2026-10-07",
+   "first_edge": 0.232576,
+   "first_league_edge": 0.000706,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-07",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-07",
+     0.232576,
+     0.000706
+    ]
+   ],
+   "issue": null
+  },
+  "dee9f93b5c": {
+   "partner_id": 9,
+   "partner": "Touch my Jeanty-lia\u2019s",
+   "give": [
+    [
+     "4984",
+     "Josh Allen"
+    ],
+    [
+     "9754",
+     "Quentin Johnston"
+    ]
+   ],
+   "get": [
+    [
+     "8155",
+     "Breece Hall"
+    ],
+    [
+     "11560",
+     "Caleb Williams"
+    ]
+   ],
+   "first_seen": "2026-10-07",
+   "first_edge": 0.063001,
+   "first_league_edge": 0.063001,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-07",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-07",
+     0.063001,
+     0.063001
     ]
    ],
    "issue": null
