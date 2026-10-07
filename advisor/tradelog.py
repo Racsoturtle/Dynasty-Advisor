@@ -24,11 +24,12 @@ class Row:
     deny_url: str
 
 
-def update(log, today, ideas, league_teams, me_team, roster_positions, per_game, premium, denied):
+def update(log, today, ideas, league_teams, me_team, roster_positions, per_game, premium, denied, pulled=()):
     """Adds today's ideas to the log and re-values every logged idea.
     `denied` is {idea key: issue url} from GitHub, or None when GitHub
-    couldn't be asked (then the marks already in the log stand).
-    Returns (log, rows) with rows in display order."""
+    couldn't be asked (then the marks already in the log stand). `pulled`
+    are this morning's offers the Refresh button took down because a roster
+    in them changed. Returns (log, rows) with rows in display order."""
     log = {"version": 1, "ideas": dict((log or {}).get("ideas") or {})}
     day = today.isoformat()
 
@@ -81,6 +82,8 @@ def update(log, today, ideas, league_teams, me_team, roster_positions, per_game,
             gain = nums["get_value"] - nums["give_value"]
             e["checks"] = [c for c in e["checks"] if c[0] != day][-59:] + [[day, round(edge, 6), round(league_edge, 6)]]
             status, note = ("recommended", "") if key in today_keys else ("dropped", _why_not(nums))
+        if status == "dropped" and key in pulled:
+            note = "Taken down at your refresh: a roster in it changed since this morning."
         if e.get("denied"):
             status, note = "denied", f"Marked denied{' on ' + _short(e['denied_on']) if e.get('denied_on') else ''}."
         url = github.deny_url(key, e["partner"], [g[1] for g in e["give"]], [g[1] for g in e["get"]])

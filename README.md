@@ -13,9 +13,14 @@ a backup offer takes its place; Claude can also mark one for every device by ope
 issue from Oscar's account, which the build skips), Waivers (free agents
 that clearly beat what you have), League (every team's value, needs and playoff odds).
 
-The Refresh from Sleeper button re-reads rosters and recent moves in the browser: it lists trades and
-adds since the morning build, hides offers whose players moved, and updates the Home roster and the
-trade checker. Values, lineups and new trade ideas still come from the morning build.
+The Refresh from Sleeper button rebuilds every page in the browser. It loads Python there
+([Pyodide](https://pyodide.org), added to the site by `tools/build_engine.py`), pulls fresh rosters,
+picks and scores from Sleeper, and reruns the same analysis on the morning's values and projections
+(`site/engine/raw.json`, written by `advisor/bundle.py`). Lineup, waivers, playoff odds, the League
+page, the trade log and the checker all update. The morning's trade offers are kept, except that an
+offer is taken down when the other team's roster changed, and all of them are when Oscar's did; new
+offers come with the next morning build. The rebuilt pages are kept in that browser until the next
+build. If the engine can't load, the button falls back to listing the day's Sleeper moves.
 
 Player and pick values come only from outside sources, averaged with equal weight:
 

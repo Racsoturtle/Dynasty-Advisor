@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 
 from . import (config, consensus, github, history, lineup, odds, projections, render, sleeper, summary, teams,
                tradelog, trades, waivers)
+from . import bundle
 from .sources import dynastyprocess, fantasycalc, ktc
 from .sources.common import NameIndex
 
@@ -148,6 +149,13 @@ def analyze(raw, today=None):
         "odds": league_odds,
         "call": odds.call(my_odds, week, deadline),
         "waivers": waivers.find(data, my_roster, me, advice, week_proj, cons),
+        # Set when the page's Refresh button reran this in the browser on
+        # this morning's downloads plus fresh Sleeper rosters.
+        "is_refresh": raw.get("fixed_offers") is not None,
+        "morning_fetched_at": datetime.fromisoformat(raw["morning_fetched_at"])
+        if raw.get("morning_fetched_at") else None,
+        "changed_rosters": set(),
+        "offers_pulled": 0,
     }
     call = report["call"][0]
     roster_positions = data.league.get("roster_positions", [])
@@ -160,18 +168,52 @@ def analyze(raw, today=None):
                   if e.get("denied")}
     # Backups beyond the top ideas stay hidden on the Trades page until offers
     # above them are marked "They said no" in the browser.
-    report["trade_offers"] = trades.find(league_teams, me, call, roster_positions, week_proj.per_game,
-                                         premium.multiplier, exclude=set(denied),
-                                         limit=config.TRADE_IDEAS + config.TRADE_BACKUPS) \
-        if call not in ("Past deadline", "Offseason") else []
+    pulled = set()
+    if report["is_refresh"]:
+        # The in-browser refresh: keep this morning's offers rather than search
+        # again, minus any whose rosters have changed since.
+        report["changed_rosters"] = changed_rosters(raw.get("baseline") or {}, data)
+        report["trade_offers"] = trades.keep_offers(
+            raw["fixed_offers"], league_teams, me, call, roster_positions, week_proj.per_game,
+            premium.multiplier, report["changed_rosters"])
+        kept = {i.key for i in report["trade_offers"]}
+        pulled = {trades.idea_key(o["partner"], o["give"], o["get"]) for o in raw["fixed_offers"]} - kept
+        report["offers_pulled"] = len(pulled)
+    else:
+        report["trade_offers"] = trades.find(league_teams, me, call, roster_positions, week_proj.per_game,
+                                             premium.multiplier, exclude=set(denied),
+                                             limit=config.TRADE_IDEAS + config.TRADE_BACKUPS) \
+            if call not in ("Past deadline", "Offseason") else []
     report["trade_ideas"] = report["trade_offers"][:config.TRADE_IDEAS]
     report["trade_log"], report["log_rows"] = tradelog.update(
         raw.get("trade_log"), today, report["trade_ideas"], league_teams, me, roster_positions,
-        week_proj.per_game, premium.multiplier, raw.get("denied"))
+        week_proj.per_game, premium.multiplier, raw.get("denied"), pulled)
     report["checker"] = trades.checker_data(league_teams, me, call, roster_positions, week_proj.per_game,
                                             premium.multiplier)
     report["summary"] = summary.build(report)
     return report
+
+
+def changed_rosters(baseline, data):
+    """Roster ids whose players or draft picks differ from `baseline`
+    ({"rosters": [...], "traded_picks": [...]} as of the morning build)."""
+    if not baseline:
+        return set()
+
+    def players(rosters):
+        return {r["roster_id"]: set(r.get("players") or []) for r in rosters}
+
+    def picks(traded):
+        out = {}
+        for p in traded:
+            out.setdefault(p["owner_id"], set()).add((str(p["season"]), p["round"], p["roster_id"]))
+            out.setdefault(p["previous_owner_id"], set()).add(("gave", str(p["season"]), p["round"], p["roster_id"]))
+        return out
+
+    before, now = players(baseline.get("rosters") or []), players(data.rosters)
+    pb, pn = picks(baseline.get("traded_picks") or []), picks(data.traded_picks)
+    return {rid for rid in set(before) | set(now) if before.get(rid) != now.get(rid)} | \
+           {rid for rid in set(pb) | set(pn) if pb.get(rid, set()) != pn.get(rid, set())}
 
 
 def _find_me(data, league_teams):
@@ -196,6 +238,7 @@ def main():
         save_snapshot(raw, args.snapshot)
     report = analyze(raw, today=datetime.now(ZoneInfo("America/New_York")).date())
     render.write_site(report, args.out)
+    bundle.write(raw, report, args.out)
     if args.log:
         Path(args.log).write_text(json.dumps(report["trade_log"], indent=1))
     Path(args.out, "summary.md").write_text(report["summary"])

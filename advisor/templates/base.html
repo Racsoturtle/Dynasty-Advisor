@@ -2,6 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>
+// After the Refresh button rebuilt the site in this browser, show that
+// version of the page instead of this morning's, until the next build.
+(function () {
+  if (window.__refreshed) return;
+  try {
+    const s = JSON.parse(localStorage.getItem("dynasty-advisor:pages") || "null");
+    const html = s && s.base === {{ fetched_ms if not is_refresh else morning_ms }} && s.files["{{ page }}"];
+    if (!html) return;
+    window.__refreshed = true;
+    document.write(html);
+    document.write('<plaintext style="display:none">');
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>{{ title }} · Dynasty Advisor</title>
@@ -94,21 +109,21 @@ window.Denied = (function () {
 })();
 </script>
 <script>
-// The Refresh button: re-reads rosters and recent moves straight from Sleeper
-// in the browser. Values, lineups and new trade ideas still come from the
-// daily build; this only shows what changed since it ran.
+// Fresh Sleeper rosters and moves, saved by the Refresh button. MORNING is
+// when this morning's build read Sleeper; moves after it are listed.
 window.Live = (function () {
-  const KEY = "dynasty-advisor:live", BUILT = {{ fetched_ms }}, LEAGUE = "{{ league.league_id }}";
+  const KEY = "dynasty-advisor:live", BUILT = {{ fetched_ms }}, MORNING = {{ morning_ms }}, LEAGUE = "{{ league.league_id }}";
+  const REFRESHED = {{ "true" if is_refresh else "false" }};
   const API = "https://api.sleeper.app/v1";
   function data() {
     try {
       const d = JSON.parse(localStorage.getItem(KEY) || "null");
-      return d && d.league === LEAGUE && d.at > BUILT ? d : null;
+      return d && d.league === LEAGUE && d.at >= BUILT ? d : null;
     } catch (e) { return null; }
   }
   function moves() {
     const d = data();
-    return d ? d.txns.filter((t) => t.status === "complete" && (t.status_updated || t.created) > BUILT)
+    return d ? d.txns.filter((t) => t.status === "complete" && (t.status_updated || t.created) > MORNING)
       .sort((a, b) => (a.status_updated || a.created) - (b.status_updated || b.created)) : [];
   }
   function keysOf(t) {
@@ -116,7 +131,7 @@ window.Live = (function () {
       (t.draft_picks || []).map((p) => "pick:" + p.season + ":" + p.round + ":" + p.roster_id));
   }
   function movedKeys() { return new Set(moves().flatMap(keysOf)); }
-  async function refresh() {
+  async function refresh(at) {
     const get = (p) => fetch(API + p).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
     const state = await get("/state/nfl");
     const leg = Number(state.leg || state.week || 0);
@@ -125,7 +140,7 @@ window.Live = (function () {
       get("/league/" + LEAGUE + "/rosters"), get("/league/" + LEAGUE + "/users"),
       ...legs.map((w) => get("/league/" + LEAGUE + "/transactions/" + w).catch(() => []))]);
     const slim = {
-      at: Date.now(), league: LEAGUE,
+      at: at || Date.now(), league: LEAGUE,
       rosters: rosters.map((r) => ({ roster_id: r.roster_id, owner_id: r.owner_id, players: r.players || [], taxi: r.taxi || [], reserve: r.reserve || [] })),
       users: users.map((u) => ({ user_id: u.user_id, name: (u.metadata && u.metadata.team_name) || u.display_name })),
       txns: weeks.flat().map((t) => ({ type: t.type, status: t.status, created: t.created, status_updated: t.status_updated,
@@ -133,9 +148,19 @@ window.Live = (function () {
     };
     localStorage.setItem(KEY, JSON.stringify(slim));
   }
+  // A data file from the in-browser rebuild when this page is one, else this morning's.
+  function file(name) {
+    if (REFRESHED) {
+      try {
+        const s = JSON.parse(localStorage.getItem("dynasty-advisor:pages") || "null");
+        if (s && s.files[name]) return Promise.resolve(JSON.parse(s.files[name]));
+      } catch (e) {}
+    }
+    return fetch(name).then((r) => r.json());
+  }
   let index = null;
-  const players = () => index || (index = fetch("live.json").then((r) => r.json()));
-  return { BUILT, data, moves, movedKeys, keysOf, refresh, players };
+  const players = () => index || (index = file("live.json"));
+  return { BUILT, MORNING, REFRESHED, data, moves, movedKeys, keysOf, refresh, players, file };
 })();
 </script>
 <main><div class="wrap">
@@ -149,19 +174,49 @@ window.Live = (function () {
 <script>
 (function () {
   const btn = document.getElementById("refresh-btn");
+  const label = (t) => { btn.textContent = t; };
   btn.addEventListener("click", async () => {
-    btn.disabled = true; btn.textContent = "Checking Sleeper…";
-    try { await Live.refresh(); location.reload(); }
-    catch (e) { btn.disabled = false; btn.textContent = "Refresh from Sleeper"; alert("Couldn't reach Sleeper. Try again in a minute."); }
+    btn.disabled = true;
+    try {
+      // Rebuild every page in this browser on fresh Sleeper rosters.
+      if (!window.FullRefresh) {
+        label("Loading…");
+        await new Promise((ok, fail) => {
+          const tag = document.createElement("script");
+          tag.src = "engine/refresh.js?v={{ fetched_ms if not is_refresh else morning_ms }}";
+          tag.onload = ok; tag.onerror = () => fail(new Error("couldn't load refresh.js"));
+          document.head.appendChild(tag);
+        });
+      }
+      const out = await FullRefresh(label);
+      label("Saving…");
+      await Live.refresh(out.at);
+      localStorage.setItem("dynasty-advisor:pages", JSON.stringify({ base: {{ fetched_ms if not is_refresh else morning_ms }}, at: out.at, files: out.files }));
+      location.reload();
+    } catch (e) {
+      console.error(e);
+      // Fall back to listing Sleeper moves over this morning's pages.
+      try { localStorage.removeItem("dynasty-advisor:pages"); } catch (x) {}
+      try {
+        label("Checking Sleeper…");
+        await Live.refresh();
+        alert("Couldn't rebuild the pages (" + e.message + "). Showing this morning's pages with today's Sleeper moves listed instead.");
+        location.reload();
+      } catch (e2) {
+        btn.disabled = false; label("Refresh from Sleeper");
+        alert("Couldn't reach Sleeper. Try again in a minute.");
+      }
+    }
   });
   const d = Live.data();
   if (!d) return;
   const banner = document.getElementById("live-banner");
   const time = (ms) => new Date(ms).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  btn.textContent = "Refresh from Sleeper (checked " + time(d.at) + ")";
+  btn.textContent = "Refresh from Sleeper (" + (Live.REFRESHED ? "rebuilt " : "checked ") + time(d.at) + ")";
   const moves = Live.moves();
   banner.hidden = false;
-  if (!moves.length) { banner.textContent = "Checked Sleeper at " + time(d.at) + ": no moves since this page was built."; return; }
+  const head = Live.REFRESHED ? "Rebuilt with Sleeper as of " + time(d.at) + "." : "Checked Sleeper at " + time(d.at) + ".";
+  if (!moves.length) { banner.innerHTML = "<b>" + head + "</b> No moves since this morning's build."; return; }
   Live.players().then((idx) => {
     const P = idx.players, ME = idx.me;
     const owner = {}; d.rosters.forEach((r) => { owner[r.roster_id] = r.owner_id; });
@@ -187,9 +242,10 @@ window.Live = (function () {
           (drop.length ? (add.length ? "dropped " : "You dropped ") + esc(drop.join(", ")) : "") + ".");
       }
     });
-    banner.innerHTML = "<div><b>Checked Sleeper at " + time(d.at) + ".</b> Since this page was built:</div>" +
+    banner.innerHTML = "<div><b>" + head + "</b> Since this morning's build:</div>" +
       (lines.length ? lines.map((l) => "<div>" + l + "</div>").join("") : "<div>Only other teams' waiver moves.</div>") +
-      (mine ? '<div class="muted">Offers that use players who moved are hidden. Lineup advice and new trade ideas catch up at the next morning refresh.</div>' : "");
+      (Live.REFRESHED ? '<div class="muted">Every page uses these rosters. Trade offers from this morning stay unless a roster in them changed.</div>'
+        : mine ? '<div class="muted">Offers that use players who moved are hidden. Lineup advice and new trade ideas catch up at the next morning refresh.</div>' : "");
   });
 })();
 </script>

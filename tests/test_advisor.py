@@ -412,3 +412,81 @@ def test_live_data_covers_every_rostered_player(report, tmp_path):
         for p in t.players:
             assert p.pid in live["players"]
     assert 'id="refresh-btn"' in (tmp_path / "index.html").read_text()
+
+
+def _refresh_raw(raw, morning):
+    """What the Refresh button hands the analysis: this morning's trimmed data,
+    the morning's rosters as the baseline, and the offers to keep."""
+    import copy
+    import json
+    from advisor import bundle
+    slim = json.loads(json.dumps(bundle.slim(raw, morning)))
+    slim["trade_log"] = morning["trade_log"]
+    slim["baseline"] = copy.deepcopy({"rosters": slim["sleeper"]["rosters"],
+                                      "traded_picks": slim["sleeper"]["traded_picks"]})
+    slim["morning_fetched_at"] = slim["fetched_at"]
+    return slim
+
+
+def test_refresh_on_trimmed_data_matches_the_morning_pages(tmp_path):
+    raw = build()
+    morning = main.analyze(raw, today=TODAY)
+    again = main.analyze(_refresh_raw(raw, morning), today=TODAY)
+    assert again["is_refresh"] and not again["offers_pulled"]
+    assert [i.key for i in again["trade_offers"]] == [i.key for i in morning["trade_offers"]]
+    render.write_site(morning, tmp_path / "a")
+    render.write_site(again, tmp_path / "b")
+    import re
+
+    def same(text):  # build times and the refreshed-page flag differ by design
+        return re.sub(r"\d{13}|updated [^<·]*|true|false", "", text)
+
+    for page in ("lineup.html", "waivers.html", "league.html", "index.html", "checker.json"):
+        assert same((tmp_path / "a" / page).read_text()) == same((tmp_path / "b" / page).read_text()), page
+
+
+def test_refresh_drops_offers_whose_rosters_changed():
+    raw = build()
+    morning = main.analyze(raw, today=TODAY)
+    offers = morning["trade_offers"]
+    partner = offers[0].partner.roster_id
+    r = _refresh_raw(raw, morning)
+    roster = next(x for x in r["sleeper"]["rosters"] if x["roster_id"] == partner)
+    in_offers = {a.key for i in offers for a in i.get}
+    cut = next(pid for pid in roster["players"] if pid not in in_offers)
+    roster["players"].remove(cut)  # they cut someone who isn't in any offer
+    after = main.analyze(r, today=TODAY)
+    assert after["changed_rosters"] == {partner}
+    kept = {i.key for i in after["trade_offers"]}
+    assert kept == {i.key for i in offers if i.partner.roster_id != partner}
+    assert after["offers_pulled"] == len(offers) - len(kept)
+    row = next(x for x in after["log_rows"] if x.key == offers[0].key)
+    assert row.status == "dropped" and "refresh" in row.note
+
+
+def test_refresh_drops_every_offer_when_my_roster_changed(tmp_path):
+    raw = build()
+    morning = main.analyze(raw, today=TODAY)
+    me = morning["me"]
+    r = _refresh_raw(raw, morning)
+    roster = next(x for x in r["sleeper"]["rosters"] if x["roster_id"] == me.roster_id)
+    dropped = roster["players"].pop()
+    after = main.analyze(r, today=TODAY)
+    assert after["trade_offers"] == [] and after["offers_pulled"] == len(morning["trade_offers"])
+    assert dropped not in {p.pid for p in after["me"].players}
+    assert all(f.drop != dropped for f in after["waivers"])
+    render.write_site(after, tmp_path)
+    assert "Your roster changed since this morning" in (tmp_path / "trades.html").read_text()
+
+
+def test_bundle_writes_the_engine_files(report, tmp_path):
+    import json
+    import zipfile
+    from advisor import bundle
+    raw = build()
+    bundle.write(raw, main.analyze(raw, today=TODAY), tmp_path)
+    names = zipfile.ZipFile(tmp_path / "engine" / "app.zip").namelist()
+    assert "advisor/main.py" in names and "advisor/templates/base.html" in names
+    slim = json.loads((tmp_path / "engine" / "raw.json").read_text())
+    assert slim["fixed_offers"] and set(slim["fixed_offers"][0]) == {"partner", "give", "get"}
+    assert "FullRefresh" in (tmp_path / "engine" / "refresh.js").read_text()

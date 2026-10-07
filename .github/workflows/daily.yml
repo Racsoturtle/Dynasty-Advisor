@@ -100,6 +100,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}  # reads DynastyProcess's file history and "Denied" issues
         run: python -m advisor.main --out site --snapshot snapshot --log logbook/trade_log.json
+      - name: Add the in-browser engine the Refresh button runs
+        run: python tools/build_engine.py site
       - name: Save the trade log
         run: |
           cd logbook

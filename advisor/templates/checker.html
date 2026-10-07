@@ -12,7 +12,7 @@
 <div class="card pad" id="verdict"><span class="muted">Tick at least one asset on each side.</span></div>
 <script>
 (async function () {
-  const D = await (await fetch("checker.json")).json();
+  const D = await Live.file("checker.json");
   const live = Live.data();
   if (live) {
     // Rebuild every roster from the fresh Sleeper pull, and move picks traded since the build.

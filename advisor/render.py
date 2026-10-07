@@ -70,7 +70,7 @@ def live_data(report):
                             p.get("team") or "FA", round(cons.player(pid)), round(per_game.get(pid, 0.0), 2),
                             p.get("age")]
     return {
-        "fetched_at": int(report["fetched_at"].timestamp() * 1000),
+        "fetched_at": round(report["fetched_at"].timestamp() * 1000),
         "league_id": report["league"].get("league_id"),
         "me": report["me"].roster_id,
         "players": players,
@@ -91,7 +91,10 @@ def write_site(report, out_dir):
         return {"name": p.get("full_name") or pid or "Empty", "pos": p.get("position") or "",
                 "team": p.get("team") or "FA", "injury": p.get("injury_status")}
 
-    ctx = dict(report, fetched_ms=int(report["fetched_at"].timestamp() * 1000), pick_years=config.PICK_YEARS_AHEAD, updated=local.strftime("%a %b %-d, %-I:%M %p ET"),
+    fetched_ms = round(report["fetched_at"].timestamp() * 1000)
+    morning = report.get("morning_fetched_at")
+    ctx = dict(report, fetched_ms=fetched_ms, morning_ms=round(morning.timestamp() * 1000) if morning else fetched_ms,
+               is_refresh=report.get("is_refresh", False), pick_years=config.PICK_YEARS_AHEAD, updated=local.strftime("%a %b %-d, %-I:%M %p ET"),
                sources=[s.name for s in report["consensus"].used], player=player, cfg=config,
                log_by_key={r.key: r for r in report.get("log_rows") or []})
     for filename, title in PAGES:

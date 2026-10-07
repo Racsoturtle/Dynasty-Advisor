@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% block body %}
+{% set mine_changed = me.roster_id in changed_rosters %}
+{% if offers_pulled %}<p class="card pad small">{% if mine_changed %}Your roster changed since this morning, so this morning's trade offers were taken down.{% else %}{{ offers_pulled }} of this morning's offers {{ "was" if offers_pulled == 1 else "were" }} taken down because the other team's roster changed since this morning.{% endif %} New ideas come with the next morning build at 6:45 AM. The taken-down offers are on the <a href="log.html">Trade log</a>.</p>{% endif %}
 {% if not trade_ideas %}
+{% if not (is_refresh and offers_pulled) %}
 <p class="lead">{% if call[0] in ("Past deadline", "Offseason") %}{{ call[1] }}{% else %}No trade passes every test today. Each idea has to win you {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% to {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in consensus value, improve the other team's starting lineup, and fit the {{ call[0] | lower }} call.{% endif %}</p>
+{% endif %}
 {% else %}
 <p class="lead"><span id="offer-count">{{ trade_ideas | length }}</span> offers to send, best first. If you send one and they turn it down, tap <b>They said no</b> and the next best offer takes its place. Each wins you at least {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% in consensus value but looks no more than {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in your favor at this league's prices, makes the other team's starting lineup better, and fits the <b>{{ call[0] | lower }}</b> call. Send them yourself in the Sleeper app.</p>
 <p class="small muted" id="hidden-note" hidden></p>

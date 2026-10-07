@@ -216,6 +216,32 @@ def find(league_teams, me_team, call, roster_positions, per_game=None, premium=1
     return _spread(ideas)[:limit]
 
 
+def keep_offers(specs, league_teams, me_team, call, roster_positions, per_game, premium, changed):
+    """This morning's offers, re-valued on today's rosters, without searching
+    again. An offer is dropped when Oscar's roster or the partner's roster
+    changed since the morning (`changed` holds those roster ids) or when one
+    of its players or picks is gone."""
+    if me_team.roster_id in changed:
+        return []
+    roster_size = sum(1 for s in roster_positions if s not in ("IR", "TAXI"))
+    me = TeamState(me_team, roster_positions, roster_size, per_game)
+    mine = {a.key: a for a in assets_for(me_team, 0)}
+    teams = {t.roster_id: t for t in league_teams}
+    out = []
+    for spec in specs:
+        partner = teams.get(spec["partner"])
+        if not partner or partner.roster_id in changed:
+            continue
+        theirs = {a.key: a for a in assets_for(partner, 0)}
+        give = [mine.get(k) for k in spec["give"]]
+        get = [theirs.get(k) for k in spec["get"]]
+        if None in give or None in get:
+            continue
+        them = TeamState(partner, roster_positions, roster_size, per_game)
+        out.append(_idea(partner, tuple(give), tuple(get), evaluate(me, them, give, get, premium), call, premium))
+    return out
+
+
 def _spread(ideas):
     """Across partners: the same package of Oscar's once, and each of
     Oscar's assets in at most two ideas, so the list offers real choices."""
