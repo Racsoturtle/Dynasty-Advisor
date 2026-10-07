@@ -1,0 +1,19 @@
+name: Live check of the Refresh button
+on:
+  push:
+    branches: [probe]
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install playwright==1.48.0 && python -m playwright install --with-deps chromium
+      - run: mkdir -p out && python check.py > out/result.txt 2>&1; cat out/result.txt
+      - name: Push results
+        run: |
+          git config user.name probe && git config user.email probe@example.com
+          git add out && git commit -qm "results [skip ci]" && git push -q origin HEAD:probe
