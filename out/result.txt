@@ -1,0 +1,12 @@
+morning header: Skulls Super Dynasty League · updated Wed Oct 7, 1:35 PM ET · Refresh from Sleeper
+refresh took 5.7 s
+button: Refresh from Sleeper (rebuilt 1:37 PM) | rebuilt page: True
+banner: Rebuilt with Sleeper as of 1:37 PM. No moves since this morning's build.
+index.html rebuilt: True | offers shown: 0 | scrollWidth 390
+lineup.html rebuilt: True | offers shown: 0 | scrollWidth 390
+trades.html rebuilt: True | offers shown: 6 | scrollWidth 390
+log.html rebuilt: True | offers shown: 0 | scrollWidth 390
+league.html rebuilt: True | offers shown: 0 | scrollWidth 390
+checker.html rebuilt: True | offers shown: 0 | scrollWidth 390
+storage KB 359
+errors: []
