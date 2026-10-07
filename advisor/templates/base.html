@@ -76,7 +76,8 @@ footer { color: var(--muted); font-size: 13px; padding: 24px 0; border-top: 1px 
 </head>
 <body>
 <header><div class="wrap">
-  <div class="top"><h1>{{ me.team_name }}</h1><span class="meta">{{ league.name }} · updated {{ updated }}</span></div>
+  <div class="top"><h1>{{ me.team_name }}</h1><span class="meta">{{ league.name }} · updated {{ updated }}
+    · <button class="btn" id="refresh-btn" type="button">Refresh from Sleeper</button></span></div>
   <nav>{% for file, name in PAGES %}<a href="{{ file }}"{% if file == page %} class="on"{% endif %}>{{ name }}</a>{% endfor %}</nav>
 </div></header>
 <script>
@@ -92,12 +93,105 @@ window.Denied = (function () {
   };
 })();
 </script>
+<script>
+// The Refresh button: re-reads rosters and recent moves straight from Sleeper
+// in the browser. Values, lineups and new trade ideas still come from the
+// daily build; this only shows what changed since it ran.
+window.Live = (function () {
+  const KEY = "dynasty-advisor:live", BUILT = {{ fetched_ms }}, LEAGUE = "{{ league.league_id }}";
+  const API = "https://api.sleeper.app/v1";
+  function data() {
+    try {
+      const d = JSON.parse(localStorage.getItem(KEY) || "null");
+      return d && d.league === LEAGUE && d.at > BUILT ? d : null;
+    } catch (e) { return null; }
+  }
+  function moves() {
+    const d = data();
+    return d ? d.txns.filter((t) => t.status === "complete" && (t.status_updated || t.created) > BUILT)
+      .sort((a, b) => (a.status_updated || a.created) - (b.status_updated || b.created)) : [];
+  }
+  function keysOf(t) {
+    return Object.keys(t.adds || {}).concat(Object.keys(t.drops || {}),
+      (t.draft_picks || []).map((p) => "pick:" + p.season + ":" + p.round + ":" + p.roster_id));
+  }
+  function movedKeys() { return new Set(moves().flatMap(keysOf)); }
+  async function refresh() {
+    const get = (p) => fetch(API + p).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
+    const state = await get("/state/nfl");
+    const leg = Number(state.leg || state.week || 0);
+    const legs = [leg - 1, leg, leg + 1].filter((w) => w >= 0);
+    const [rosters, users, ...weeks] = await Promise.all([
+      get("/league/" + LEAGUE + "/rosters"), get("/league/" + LEAGUE + "/users"),
+      ...legs.map((w) => get("/league/" + LEAGUE + "/transactions/" + w).catch(() => []))]);
+    const slim = {
+      at: Date.now(), league: LEAGUE,
+      rosters: rosters.map((r) => ({ roster_id: r.roster_id, owner_id: r.owner_id, players: r.players || [], taxi: r.taxi || [], reserve: r.reserve || [] })),
+      users: users.map((u) => ({ user_id: u.user_id, name: (u.metadata && u.metadata.team_name) || u.display_name })),
+      txns: weeks.flat().map((t) => ({ type: t.type, status: t.status, created: t.created, status_updated: t.status_updated,
+        roster_ids: t.roster_ids, adds: t.adds, drops: t.drops, draft_picks: t.draft_picks })),
+    };
+    localStorage.setItem(KEY, JSON.stringify(slim));
+  }
+  let index = null;
+  const players = () => index || (index = fetch("live.json").then((r) => r.json()));
+  return { BUILT, data, moves, movedKeys, keysOf, refresh, players };
+})();
+</script>
 <main><div class="wrap">
+<div class="card pad small" id="live-banner" hidden></div>
 {% block body %}{% endblock %}
 </div></main>
 <footer><div class="wrap">
   Player values are the average of {{ sources | join(", ") }}, each rescaled to the same 0 to 10,000 curve.
   {% for name, reason in consensus.dropped %}<br>Left out today: {{ name }} ({{ reason }}).{% endfor %}
 </div></footer>
+<script>
+(function () {
+  const btn = document.getElementById("refresh-btn");
+  btn.addEventListener("click", async () => {
+    btn.disabled = true; btn.textContent = "Checking Sleeper…";
+    try { await Live.refresh(); location.reload(); }
+    catch (e) { btn.disabled = false; btn.textContent = "Refresh from Sleeper"; alert("Couldn't reach Sleeper. Try again in a minute."); }
+  });
+  const d = Live.data();
+  if (!d) return;
+  const banner = document.getElementById("live-banner");
+  const time = (ms) => new Date(ms).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  btn.textContent = "Refresh from Sleeper (checked " + time(d.at) + ")";
+  const moves = Live.moves();
+  banner.hidden = false;
+  if (!moves.length) { banner.textContent = "Checked Sleeper at " + time(d.at) + ": no moves since this page was built."; return; }
+  Live.players().then((idx) => {
+    const P = idx.players, ME = idx.me;
+    const owner = {}; d.rosters.forEach((r) => { owner[r.roster_id] = r.owner_id; });
+    const uname = {}; d.users.forEach((u) => { uname[u.user_id] = u.name; });
+    const team = (rid) => rid === ME ? "You" : (uname[owner[rid]] || "Team " + rid);
+    const nth = (n) => n + ({ 1: "st", 2: "nd", 3: "rd" }[n] || "th");
+    const name = (pid) => (P[pid] ? P[pid][0] : "player " + pid);
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const lines = [];
+    let mine = false;
+    moves.forEach((t) => {
+      const got = {};
+      Object.entries(t.adds || {}).forEach(([pid, rid]) => (got[rid] = got[rid] || []).push(name(pid)));
+      (t.draft_picks || []).forEach((p) => (got[p.owner_id] = got[p.owner_id] || []).push(p.season + " " + nth(p.round)));
+      if (t.type === "trade") {
+        if ((t.roster_ids || []).includes(ME)) mine = true;
+        lines.push("<b>Trade, " + time(t.status_updated || t.created) + ":</b> " + Object.entries(got)
+          .map(([rid, xs]) => esc(team(Number(rid))) + " got " + esc(xs.join(", "))).join("; ") + ".");
+      } else if ((t.roster_ids || []).includes(ME)) {
+        mine = true;
+        const add = Object.keys(t.adds || {}).map(name), drop = Object.keys(t.drops || {}).map(name);
+        lines.push((add.length ? "You added " + esc(add.join(", ")) : "") + (add.length && drop.length ? " and " : "") +
+          (drop.length ? (add.length ? "dropped " : "You dropped ") + esc(drop.join(", ")) : "") + ".");
+      }
+    });
+    banner.innerHTML = "<div><b>Checked Sleeper at " + time(d.at) + ".</b> Since this page was built:</div>" +
+      (lines.length ? lines.map((l) => "<div>" + l + "</div>").join("") : "<div>Only other teams' waiver moves.</div>") +
+      (mine ? '<div class="muted">Offers that use players who moved are hidden. Lineup advice and new trade ideas catch up at the next morning refresh.</div>' : "");
+  });
+})();
+</script>
 </body>
 </html>

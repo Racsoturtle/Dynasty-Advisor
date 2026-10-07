@@ -13,6 +13,30 @@
 <script>
 (async function () {
   const D = await (await fetch("checker.json")).json();
+  const live = Live.data();
+  if (live) {
+    // Rebuild every roster from the fresh Sleeper pull, and move picks traded since the build.
+    const idx = await Live.players();
+    const picks = {};
+    D.teams.forEach((t) => t.picks.forEach((p) => { picks[p.id] = p; }));
+    D.teams.forEach((t) => {
+      const r = live.rosters.find((x) => x.roster_id === t.id);
+      if (!r) return;
+      const taxi = new Set(r.taxi), ir = new Set(r.reserve);
+      t.players = r.players.filter((pid) => idx.players[pid]).map((pid) => {
+        const p = idx.players[pid];
+        return { id: pid, name: p[0], pos: p[1], age: p[5], value: p[3], ppg: p[4], status: taxi.has(pid) ? "taxi" : ir.has(pid) ? "ir" : "bench" };
+      });
+    });
+    Live.moves().forEach((tx) => (tx.draft_picks || []).forEach((p) => {
+      const id = "pick:" + p.season + ":" + p.round + ":" + p.roster_id;
+      const pick = picks[id];
+      if (!pick) return;
+      D.teams.forEach((t) => { t.picks = t.picks.filter((x) => x.id !== id); });
+      const to = D.teams.find((t) => t.id === p.owner_id);
+      if (to) to.picks.push(pick);
+    }));
+  }
   const $ = (id) => document.getElementById(id);
   const me = D.teams.find((t) => t.id === D.me);
   const fmt = (x) => Math.round(x).toLocaleString();

@@ -40,7 +40,7 @@
 <tr><th>Player</th><th class="n">Value</th><th>Pos</th><th class="n">Age</th><th>Slot</th>
 {% for s in sources %}<th class="n">{{ SHORT_SOURCE.get(s, s) }}</th>{% endfor %}<th>Notes</th></tr>
 {% for p in me.players %}
-<tr>
+<tr data-pid="{{ p.pid }}">
   <td>{{ p.name }} <span class="muted small">{{ p.team }}</span></td>
   <td class="n"><b>{{ p.value | num }}</b></td>
   <td>{{ p.pos }}</td>
@@ -55,6 +55,36 @@
 </tr>
 {% endfor %}
 </table></div>
+<script>
+(function () {
+  const d = Live.data();
+  if (!d) return;
+  Live.players().then((idx) => {
+    const now = d.rosters.find((r) => r.roster_id === idx.me);
+    if (!now) return;
+    const have = new Set(now.players);
+    const rows = [...document.querySelectorAll("tr[data-pid]")];
+    rows.forEach((tr) => {
+      if (!have.has(tr.dataset.pid)) {
+        tr.style.opacity = 0.45; tr.style.textDecoration = "line-through";
+        tr.lastElementChild.insertAdjacentHTML("beforeend", '<span class="pill">no longer on your team</span>');
+      }
+    });
+    const listed = new Set(rows.map((tr) => tr.dataset.pid));
+    const table = rows.length ? rows[0].parentElement : null;
+    if (!table) return;
+    const cols = rows[0].children.length;
+    now.players.filter((pid) => !listed.has(pid)).forEach((pid) => {
+      const p = idx.players[pid] || ["player " + pid, "", "", 0];
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + p[0] + ' <span class="muted small">' + p[2] + '</span></td><td class="n"><b>' +
+        Math.round(p[3]).toLocaleString() + "</b></td><td>" + p[1] + "</td>" + "<td></td>".repeat(cols - 4) +
+        '<td><span class="pill good">new on your team</span></td>';
+      table.appendChild(tr);
+    });
+  });
+})();
+</script>
 
 <h2>Draft picks</h2>
 <div class="card scroll"><table>

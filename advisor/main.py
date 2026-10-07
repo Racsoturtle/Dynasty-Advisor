@@ -20,8 +20,10 @@ from .sources.common import NameIndex
 
 
 def collect_live():
+    fetched_at = datetime.now(timezone.utc)
     league = sleeper.fetch(config.LEAGUE_ID)
-    raw = {"sleeper": league.__dict__}
+    # The page's Refresh button shows Sleeper moves made after this moment.
+    raw = {"sleeper": league.__dict__, "fetched_at": fetched_at.isoformat()}
     season = league.league["season"]
     week = sleeper.current_week(league.league, league.state)
     fetchers = [
@@ -138,6 +140,7 @@ def analyze(raw, today=None):
         "consensus": cons,
         "completed_weeks": sleeper.completed_weeks(data.league, data.state),
         "generated": datetime.now(timezone.utc),
+        "fetched_at": datetime.fromisoformat(raw["fetched_at"]) if raw.get("fetched_at") else datetime.now(timezone.utc),
         "week": week,
         "week_proj": week_proj,
         "players_db": data.players,

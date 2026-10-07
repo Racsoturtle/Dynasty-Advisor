@@ -6,7 +6,7 @@
 <p class="lead"><span id="offer-count">{{ trade_ideas | length }}</span> offers to send, best first. If you send one and they turn it down, tap <b>They said no</b> and the next best offer takes its place. Each wins you at least {{ (cfg.TRADE_MIN_EDGE * 100) | int }}% in consensus value but looks no more than {{ (cfg.TRADE_MAX_EDGE * 100) | int }}% in your favor at this league's prices, makes the other team's starting lineup better, and fits the <b>{{ call[0] | lower }}</b> call. Send them yourself in the Sleeper app.</p>
 <p class="small muted" id="hidden-note" hidden></p>
 {% for i in trade_offers %}
-<div class="card idea offer" data-key="{{ i.key }}"{% if loop.index > cfg.TRADE_IDEAS %} hidden{% endif %}>
+<div class="card idea offer" data-key="{{ i.key }}" data-assets="{% for a in i.give + i.get %}{{ a.key }} {% endfor %}"{% if loop.index > cfg.TRADE_IDEAS %} hidden{% endif %}>
   <div class="idea-head"><b><span class="num">{{ loop.index }}</span>. To {{ i.partner.team_name }}</b>{% if i.partner.team_name != i.partner.owner %} <span class="muted small">{{ i.partner.owner }}</span>{% endif %}
     <span class="pill good">+{{ (i.edge * 100) | round(1) }}% value</span></div>
   <div class="sides">
@@ -26,19 +26,21 @@
 (function () {
   const LIMIT = {{ cfg.TRADE_IDEAS }};
   function apply() {
-    const d = Denied.all();
-    let shown = 0, hidden = 0;
+    const d = Denied.all(), moved = Live.movedKeys();
+    let shown = 0, hidden = 0, gone = 0;
     document.querySelectorAll(".offer").forEach((card) => {
       if (d[card.dataset.key]) { card.hidden = true; hidden++; return; }
+      if (card.dataset.assets.trim().split(" ").some((k) => moved.has(k))) { card.hidden = true; gone++; return; }
       shown++;
       card.hidden = shown > LIMIT;
       card.querySelector(".num").textContent = shown;
     });
     document.getElementById("offer-count").textContent = Math.min(shown, LIMIT);
     const note = document.getElementById("hidden-note");
-    note.hidden = !hidden;
-    note.innerHTML = hidden + (hidden === 1 ? " offer they turned down is" : " offers they turned down are") +
-      ' hidden. Undo it on the <a href="log.html">Trade log</a>.';
+    note.hidden = !hidden && !gone;
+    note.innerHTML = (hidden ? hidden + (hidden === 1 ? " offer they turned down is" : " offers they turned down are") +
+      ' hidden. Undo it on the <a href="log.html">Trade log</a>. ' : "") +
+      (gone ? gone + (gone === 1 ? " offer is" : " offers are") + " hidden because a player or pick in it has moved." : "");
   }
   document.querySelectorAll("button.deny").forEach((b) => b.addEventListener("click", () => { Denied.add(b.dataset.key); apply(); }));
   apply();

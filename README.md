@@ -13,6 +13,10 @@ a backup offer takes its place; Claude can also mark one for every device by ope
 issue from Oscar's account, which the build skips), Waivers (free agents
 that clearly beat what you have), League (every team's value, needs and playoff odds).
 
+The Refresh from Sleeper button re-reads rosters and recent moves in the browser: it lists trades and
+adds since the morning build, hides offers whose players moved, and updates the Home roster and the
+trade checker. Values, lineups and new trade ideas still come from the morning build.
+
 Player and pick values come only from outside sources, averaged with equal weight:
 
 - [FantasyCalc](https://www.fantasycalc.com) (values from real trades)

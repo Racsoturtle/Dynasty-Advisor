@@ -400,3 +400,15 @@ def test_backup_offers_follow_the_top_ideas(report, tmp_path):
     render.write_site(report, tmp_path)
     page = (tmp_path / "trades.html").read_text()
     assert page.count('class="btn deny"') == len(offers)
+
+
+def test_live_data_covers_every_rostered_player(report, tmp_path):
+    import json
+    render.write_site(report, tmp_path)
+    live = json.loads((tmp_path / "live.json").read_text())
+    assert live["me"] == report["me"].roster_id
+    assert live["fetched_at"] > 0
+    for t in report["teams"]:
+        for p in t.players:
+            assert p.pid in live["players"]
+    assert 'id="refresh-btn"' in (tmp_path / "index.html").read_text()
