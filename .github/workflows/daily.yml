@@ -24,7 +24,7 @@ on:
     types: [opened, closed, reopened]  # "They said no" marks
 
 permissions:
-  actions: read  # the backup runs check whether the morning refresh happened
+  actions: read  # scheduled runs check whether the morning refresh already happened
   contents: write  # saves the trade log to the data branch
   pages: write
   id-token: write
@@ -54,17 +54,19 @@ jobs:
           if [ "$EVENT" = schedule ]; then
             if [ "$SCHEDULE" = "45 10 * * *" ] && [ "$zone" != EDT ]; then go=false; fi
             if [ "$SCHEDULE" = "45 11 * * *" ] && [ "$zone" != EST ]; then go=false; fi
-            case "$SCHEDULE" in "17 "*)
-              # Backup run: skip if a build already succeeded since 6:40 AM New York time.
+            # Backup runs before 6:40 AM have nothing to back up yet.
+            case "$SCHEDULE" in "17 "*) [ "$(TZ=America/New_York date +%H%M)" -lt 0640 ] && go=false ;; esac
+            # Every scheduled run, including a 6:45 one GitHub started hours late,
+            # skips if a build already succeeded since 6:40 AM New York time, so
+            # the day's trade offers don't change mid-day.
+            if [ "$go" = true ]; then
               since=$(date -u -d "$(TZ=America/New_York date +%F) 06:40 $(TZ=America/New_York date +%z)" +%FT%TZ)
               for id in $(gh api "repos/$REPO/actions/runs?created=>=$since&per_page=50" --jq '.workflow_runs[].id'); do
                 if gh api "repos/$REPO/actions/runs/$id/jobs" --jq '.jobs[] | select(.name == "build" and .conclusion == "success") | .id' | grep -q .; then
                   go=false; break
                 fi
               done
-              # Before 6:40 AM there's nothing to back up yet.
-              [ "$(TZ=America/New_York date +%H%M)" -lt 0640 ] && go=false ;;
-            esac
+            fi
           fi
           # The short summary goes out with the Thursday and Sunday morning builds.
           day=$(TZ=America/New_York date +%u)   # 4 = Thursday, 7 = Sunday
