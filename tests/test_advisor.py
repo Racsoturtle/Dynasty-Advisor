@@ -272,7 +272,12 @@ def test_no_history_means_no_premium():
     raw["league_trades"] = []
     rep = main.analyze(raw, today=TODAY)
     assert rep["pick_premium"].multiplier == 1.0
-    assert all(i.league_edge == pytest.approx(i.edge) for i in rep["trade_ideas"])
+    # Without a premium the two views differ only by who has to cut a player.
+    from advisor import trades
+    for i in rep["trade_ideas"]:
+        nums = trades.evaluate(*_states(rep, i.partner), list(i.give), list(i.get), 1.0)
+        if not nums["my_cut"] and not nums["their_cut"]:
+            assert i.league_edge == pytest.approx(i.edge)
 
 
 def test_trade_ideas_look_fair_at_league_prices(report):
@@ -513,3 +518,40 @@ def test_refresh_counts_a_first_round_trade_made_since_the_morning():
     assert len(after["pick_premium"].counted) == len(morning["pick_premium"].counted) + 1
     # The morning build never prices from today's values; it uses each source's history.
     assert "new1" not in morning["trade_prices"]
+
+
+def _states(rep, partner):
+    from advisor import trades
+    rp = rep["league"].get("roster_positions", [])
+    size = sum(1 for s in rp if s not in ("IR", "TAXI"))
+    pg = rep["week_proj"].per_game
+    return trades.TeamState(rep["me"], rp, size, pg), trades.TeamState(partner, rp, size, pg)
+
+
+def test_a_partners_forced_cut_is_not_value_oscar_gets(report):
+    """Their taxi player for Oscar's active player: they have to cut someone to
+    make room. That costs them, but Oscar doesn't receive the cut player."""
+    from advisor import trades
+    me, them = _states(report, report["me"])[0], None
+    for partner in report["teams"]:
+        if partner.roster_id == report["me"].roster_id:
+            continue
+        st = _states(report, partner)[1]
+        taxi = [a for a in trades.assets_for(partner, 0) if a.pos and
+                next(p for p in partner.players if p.pid == a.key).status == "taxi"]
+        mine = [a for a in trades.assets_for(report["me"], 0) if a.pos]
+        for g in taxi:
+            for m in mine:
+                nums = trades.evaluate(me, st, [m], [g], 1.0)
+                if nums["their_cut"]:
+                    them = (st, m, g, nums)
+                    break
+            if them:
+                break
+        if them:
+            break
+    assert them, "sample league has no taxi swap that forces a cut"
+    st, m, g, nums = them
+    assert nums["get_value"] == pytest.approx(trades.package_value([g]))
+    cut = sum(p.value for p in nums["their_cut"])
+    assert nums["league_edge"] == pytest.approx((g.value + cut - m.value) / m.value)

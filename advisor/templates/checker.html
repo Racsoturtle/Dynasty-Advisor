@@ -111,13 +111,15 @@
   function evaluate(them, give, get) {
     const mine = after(me, new Set(give.map((a) => a.id)), get);
     const theirs = after(them, new Set(get.map((a) => a.id)), give);
+    // A player a team has to cut is a cost to that team only (same as the trade ideas).
     const gv = packageValue(give) + mine.cut.reduce((s, p) => s + p.value, 0);
-    const tv = packageValue(get) + theirs.cut.reduce((s, p) => s + p.value, 0);
-    const gl = packageValue(give, true) + mine.cut.reduce((s, p) => s + p.value, 0);
-    const tl = packageValue(get, true) + theirs.cut.reduce((s, p) => s + p.value, 0);
+    const tv = packageValue(get);
+    // How they see it, with 1sts at the league price: what they give up, cut included, against what they get.
+    const theirCost = packageValue(get, true) + theirs.cut.reduce((s, p) => s + p.value, 0);
+    const theirGain = packageValue(give, true);
     const active = (t) => t.players.filter((p) => p.status !== "taxi" && p.status !== "ir");
     return {
-      gv, tv, edge: gv ? (tv - gv) / gv : 0, leagueEdge: gl ? (tl - gl) / gl : 0, mine, theirs,
+      gv, tv, edge: gv ? (tv - gv) / gv : 0, leagueEdge: theirGain ? (theirCost - theirGain) / theirGain : 0, mine, theirs,
       myPoints: lineup(mine.players, "ppg") - lineup(active(me), "ppg"),
       myLineup: lineup(mine.players, "value") - lineup(active(me), "value"),
       theirLineup: lineup(theirs.players, "value") - lineup(active(them), "value"),
@@ -176,7 +178,8 @@
       (D.first_premium !== 1 && give.concat(get).some((a) => a.first) ?
         '<div class="small muted">This league pays ' + D.first_premium.toFixed(2) + "x for 1sts (see Trades). At that price it looks like " + pct(r.leagueEdge) + " for you.</div>" : "") +
       (note ? '<div class="small"><span class="pill warn">' + note + "</span></div>" : "") +
-      (r.mine.cut.length ? '<div class="small muted">You would cut ' + r.mine.cut.map((p) => p.name).join(", ") + " to make room.</div>" : "") +
+      (r.mine.cut.length ? '<div class="small muted">You would cut ' + r.mine.cut.map((p) => p.name).join(", ") + " to make room, so " + (r.mine.cut.length === 1 ? "that player counts" : "they count") + " in what you give.</div>" : "") +
+      (r.theirs.cut.length ? '<div class="small muted">They would have to cut ' + r.theirs.cut.map((p) => p.name).join(", ") + " to make room, which makes it a harder sell to them.</div>" : "") +
       (c ? '<div class="small"><b>Counter:</b> ' + c.text + " (" + pct(c.r.edge) + ").</div>" : "");
   }
   sel.addEventListener("change", () => { list($("theirs"), D.teams.find((t) => t.id === Number(sel.value))); update(); });

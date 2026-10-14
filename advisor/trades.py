@@ -128,21 +128,27 @@ class _Pts:
 
 def evaluate(me, them, give, get, premium=1.0):
     """Oscar gives `give` to `them` and gets `get`. Returns the numbers the
-    finder and the checker both use. `league_edge` is Oscar's edge with 1sts
-    at the league price, which is how the other team is likely to see it."""
+    finder and the checker both use. `edge` is Oscar's gain over what he gives
+    (his own forced cut included). `league_edge` is how lopsided it looks to
+    the other team, with 1sts at the league price and their forced cut
+    counted as part of what they give up."""
     give_keys = {a.key for a in give}
     get_keys = {a.key for a in get}
     my_after, my_cut = me.after(give_keys, get)
     their_after, their_cut = them.after(get_keys, give)
+    # A player a team has to cut to make room is a cost to that team only:
+    # Oscar's cut adds to what he gives, the partner's cut to what they give.
     give_value = package_value(give) + sum(p.value for p in my_cut)
-    get_value = package_value(get) + sum(p.value for p in their_cut)
-    give_league = package_value(give, premium) + sum(p.value for p in my_cut)
-    get_league = package_value(get, premium) + sum(p.value for p in their_cut)
+    get_value = package_value(get)
+    # How the partner sees it, with 1sts at the league price: what they give
+    # up (including their cut) against what they get.
+    their_cost = package_value(get, premium) + sum(p.value for p in their_cut)
+    their_gain = package_value(give, premium)
     return {
         "give_value": give_value,
         "get_value": get_value,
         "edge": (get_value - give_value) / give_value if give_value else 0.0,
-        "league_edge": (get_league - give_league) / give_league if give_league else 0.0,
+        "league_edge": (their_cost - their_gain) / their_gain if their_gain else 0.0,
         "my_lineup_change": me.lineup_value(my_after) - me.base_lineup,
         "my_points_change": me.lineup_points(my_after) - me.base_points,
         "their_lineup_change": them.lineup_value(their_after) - them.base_lineup,
