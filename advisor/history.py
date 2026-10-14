@@ -59,6 +59,47 @@ def measurable(trades):
     return [t for t in trades if seller(t)]
 
 
+def has_first(t):
+    return any(is_first(k) for side in sides(t).values() for k in side["gives"])
+
+
+def left_out(trades):
+    """Trades with 1sts in them that can't say what a 1st is worth, newest
+    first, as (date, team names, reason)."""
+    out = []
+    for t in trades:
+        if not has_first(t) or seller(t):
+            continue
+        s = sides(t)
+        teams = t.get("teams") or {}
+        names = [teams.get(r, f"Team {r}") for r in s]
+        if len(s) != 2:
+            reason = f"a {len(s)}-team trade, so there's no telling which side paid for the 1sts"
+        elif all(any(is_first(k) for k in side["gives"]) for side in s.values()):
+            reason = "1sts went both ways, so it can't say what a 1st is worth on its own"
+        else:
+            reason = "one side got nothing back"
+        out.append((trade_date(t), names, reason))
+    return sorted(out, key=lambda x: x[0], reverse=True)
+
+
+def price_now(trades, sources, prices):
+    """Readings for measurable trades that `prices` hasn't priced yet, taken
+    from today's downloads (`sources` are today's SourceResults). Used by the
+    in-browser Refresh for trades made since the morning build, which happen
+    on today's values anyway."""
+    out = {}
+    for t in measurable(trades):
+        if t["transaction_id"] in prices:
+            continue
+        keys = [k for side in sides(t).values() for k in side["gives"]]
+        out[t["transaction_id"]] = {
+            s.name: {k: s.picks.get(_pick_parts(k) + ("mid",)) if k.startswith("pick:") else s.players.get(k, 0.0)
+                     for k in keys}
+            for s in sources if s.name in SOURCES}
+    return out
+
+
 def _pick_parts(key):
     _, year, rnd, _ = key.split(":")
     return int(year), int(rnd)

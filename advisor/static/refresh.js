@@ -21,6 +21,21 @@ window.FullRefresh = async function (status) {
   const lastWeek = Number((league.settings || {}).playoff_week_start || 15) - 1;
   const weeks = Array.from({ length: lastWeek }, (_, i) => i + 1);
   const matchups = await Promise.all(weeks.map((w) => sleeper("/league/" + LEAGUE + "/matchups/" + w)));
+  // Trades made since the morning build, so the 1st-round price counts them.
+  const leg = Number(state.leg || state.week || 0);
+  const legs = [leg - 1, leg, leg + 1].filter((w) => w >= 0);
+  const txns = (await Promise.all(legs.map((w) => sleeper("/league/" + LEAGUE + "/transactions/" + w).catch(() => [])))).flat();
+  const teams = {};
+  const userById = Object.fromEntries(users.map((u) => [u.user_id, u]));
+  rosters.forEach((r) => {
+    const u = userById[r.owner_id] || {};
+    teams[String(r.roster_id)] = (u.metadata && u.metadata.team_name) || u.display_name || "Team " + r.roster_id;
+  });
+  const known = new Set((raw.league_trades || []).map((t) => t.transaction_id));
+  const fresh = txns.filter((t) => t.type === "trade" && t.status === "complete" && !known.has(t.transaction_id))
+    .map((t) => ({ ...t, season: league.season, teams }));
+  raw.league_trades = (raw.league_trades || []).concat(fresh)
+    .sort((a, b) => (a.status_updated || a.created || 0) - (b.status_updated || b.created || 0));
   const fetchedAt = new Date();
 
   raw.baseline = { rosters: s.rosters, traded_picks: s.traded_picks };

@@ -68,7 +68,7 @@ def slim(raw, report):
         "sleeper_week_proj": proj_rows(raw.get("sleeper_week_proj")) if raw.get("sleeper_week_proj") is not None else None,
         "sleeper_season_proj": proj_rows(raw.get("sleeper_season_proj")) if raw.get("sleeper_season_proj") is not None else None,
         "fp_week": fp,
-        "league_trades": [t for t in raw.get("league_trades") or [] if history.seller(t)],
+        "league_trades": [t for t in raw.get("league_trades") or [] if history.has_first(t)],
         "trade_prices": raw.get("trade_prices") or {},
         "trade_log": report.get("trade_log"),
         "denied": raw.get("denied"),

@@ -72,6 +72,9 @@
     </tbody>
   </table></div>
 {% endif %}
+{% if trades_left_out %}
+  <p class="muted small">Not counted: {% for when, names, reason in trades_left_out %}{{ when.strftime("%b %-d, %Y") }}, {{ names | join(" and ") if names | length == 2 else names[:-1] | join(", ") ~ " and " ~ names[-1] }}: {{ reason }}.{% if not loop.last %} {% endif %}{% endfor %}</p>
+{% endif %}
 </div>
 <p class="muted small">In a package the best piece counts fully and each next piece counts {{ (cfg.PACKAGE_WEIGHTS[1] * 100) | int }}%, then {{ (cfg.PACKAGE_WEIGHTS[2] * 100) | int }}%, so two mid players don't equal one star. When a deal adds players to a full roster, the cheapest bench player who has to be cut counts against that side. "Weekly points" uses Sleeper's rest-of-season projections.</p>
 {% endblock %}

@@ -159,7 +159,13 @@ def analyze(raw, today=None):
     }
     call = report["call"][0]
     roster_positions = data.league.get("roster_positions", [])
-    report["trade_prices"] = raw.get("trade_prices") or {}
+    report["trade_prices"] = dict(raw.get("trade_prices") or {})
+    if raw.get("fixed_offers") is not None:
+        # The in-browser refresh can't reach the sources' history, but trades
+        # made since the morning build happened on today's values.
+        report["trade_prices"].update(history.price_now(raw.get("league_trades") or [], cons.used,
+                                                        report["trade_prices"]))
+    report["trades_left_out"] = history.left_out(raw.get("league_trades") or [])
     premium = history.measure(raw.get("league_trades") or [], report["trade_prices"], data.players)
     report["pick_premium"] = premium
     denied = raw.get("denied")

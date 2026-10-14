@@ -490,3 +490,26 @@ def test_bundle_writes_the_engine_files(report, tmp_path):
     slim = json.loads((tmp_path / "engine" / "raw.json").read_text())
     assert slim["fixed_offers"] and set(slim["fixed_offers"][0]) == {"partner", "give", "get"}
     assert "FullRefresh" in (tmp_path / "engine" / "refresh.js").read_text()
+
+
+def test_trades_that_cant_measure_the_price_are_listed_with_a_reason(report, tmp_path):
+    left = report["trades_left_out"]
+    assert len(left) == 1 and "both ways" in left[0][2] and left[0][1] == ["Team 1", "Team 8"]
+    render.write_site(report, tmp_path)
+    assert "Not counted:" in (tmp_path / "trades.html").read_text()
+
+
+def test_refresh_counts_a_first_round_trade_made_since_the_morning():
+    import copy
+    raw = build()
+    morning = main.analyze(raw, today=TODAY)
+    r = _refresh_raw(raw, morning)
+    t = copy.deepcopy(next(x for x in r["league_trades"] if x["transaction_id"] == "t1"))
+    t["transaction_id"], t["status_updated"] = "new1", t["status_updated"] + 10 ** 9
+    r["league_trades"].append(t)
+    after = main.analyze(r, today=TODAY)
+    assert "new1" in after["trade_prices"] and set(after["trade_prices"]["new1"]) == {
+        "FantasyCalc", "KeepTradeCut", "FantasyPros (via DynastyProcess)"}
+    assert len(after["pick_premium"].counted) == len(morning["pick_premium"].counted) + 1
+    # The morning build never prices from today's values; it uses each source's history.
+    assert "new1" not in morning["trade_prices"]
