@@ -52,6 +52,10 @@ TRADE_IDEAS_PER_PARTNER = 2
 TRADE_MIN_ASSET = 300  # assets below this value don't move a trade
 HOLD_MAX_POINTS_LOSS = 3.0  # weekly points a Hold trade may cost
 HOLD_PICKS_FOR_AGE = 25.5  # on Hold, picks only buy players this young or younger
+# Spare picks: offers that turn 2 or 3 of Oscar's 2nd/3rd-round picks into one
+# better asset, so fewer rookies compete for roster and taxi spots.
+PICK_DEALS = 5
+PICK_DEAL_ROUNDS = (2, 3)
 
 # League pick premium: what this league pays for 1st-round picks, measured
 # from its own trades and priced with each source's values on the trade date.

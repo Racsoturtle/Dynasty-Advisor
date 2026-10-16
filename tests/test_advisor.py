@@ -340,7 +340,7 @@ def test_trade_log_counts_days_and_revalues():
     one = _day(raw, TODAY)
     ideas = one["trade_ideas"]
     log = one["trade_log"]
-    assert set(log["ideas"]) == {i.key for i in ideas}
+    assert set(log["ideas"]) == {i.key for i in ideas + one["pick_offers"]}
     assert all(e["days_recommended"] == 1 for e in log["ideas"].values())
     again = _day(raw, TODAY, log=log)  # a second build the same day
     assert all(e["days_recommended"] == 1 for e in again["trade_log"]["ideas"].values())
@@ -464,7 +464,9 @@ def test_refresh_drops_offers_whose_rosters_changed():
     assert after["changed_rosters"] == {partner}
     kept = {i.key for i in after["trade_offers"]}
     assert kept == {i.key for i in offers if i.partner.roster_id != partner}
-    assert after["offers_pulled"] == len(offers) - len(kept)
+    picks_pulled = sum(1 for i in morning["pick_offers"] if i.partner.roster_id == partner)
+    assert after["offers_pulled"] == len(offers) - len(kept) + picks_pulled
+    assert all(i.partner.roster_id != partner for i in after["pick_offers"])
     row = next(x for x in after["log_rows"] if x.key == offers[0].key)
     assert row.status == "dropped" and "refresh" in row.note
 
@@ -477,7 +479,8 @@ def test_refresh_drops_every_offer_when_my_roster_changed(tmp_path):
     roster = next(x for x in r["sleeper"]["rosters"] if x["roster_id"] == me.roster_id)
     dropped = roster["players"].pop()
     after = main.analyze(r, today=TODAY)
-    assert after["trade_offers"] == [] and after["offers_pulled"] == len(morning["trade_offers"])
+    assert after["trade_offers"] == [] and after["pick_offers"] == []
+    assert after["offers_pulled"] == len(morning["trade_offers"]) + len(morning["pick_offers"])
     assert dropped not in {p.pid for p in after["me"].players}
     assert all(f.drop != dropped for f in after["waivers"])
     render.write_site(after, tmp_path)
@@ -555,3 +558,26 @@ def test_a_partners_forced_cut_is_not_value_oscar_gets(report):
     assert nums["get_value"] == pytest.approx(trades.package_value([g]))
     cut = sum(p.value for p in nums["their_cut"])
     assert nums["league_edge"] == pytest.approx((g.value + cut - m.value) / m.value)
+
+
+def test_spare_pick_deals_turn_several_picks_into_one_better_asset(report):
+    from advisor import config, trades
+    deals = report["pick_offers"]
+    assert deals, "sample league should have at least one spare-pick deal"
+    for i in deals:
+        assert 2 <= len(i.give) <= 3 and len(i.get) == 1
+        assert all(trades.pick_round(a) in config.PICK_DEAL_ROUNDS for a in i.give)
+        assert i.get[0].value > max(a.value for a in i.give)
+        assert config.TRADE_MIN_EDGE <= i.edge <= config.TRADE_MAX_TRUE_EDGE
+        assert i.league_edge <= config.TRADE_MAX_EDGE and i.their_lineup_change >= 0
+        assert "fewer rookie" in i.reason
+    assert {i.key for i in deals} <= set(report["trade_log"]["ideas"])
+    room = report["pick_room"]
+    assert room["normal"] == 3 and room["drafts"] and room["taxi_slots"] == 5
+
+
+def test_trades_page_shows_spare_pick_section(report, tmp_path):
+    render.write_site(report, tmp_path)
+    page = (tmp_path / "trades.html").read_text()
+    assert "Spare 2nd and 3rd round picks" in page
+    assert page.count('class="btn deny-pick"') == len(report["pick_offers"])

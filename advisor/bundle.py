@@ -16,7 +16,7 @@ from . import history
 
 PKG = Path(__file__).parent
 SKILL_POS = ("QB", "RB", "WR", "TE", "K", "DEF")
-PLAYER_FIELDS = ("full_name", "first_name", "last_name", "position", "team", "age", "injury_status")
+PLAYER_FIELDS = ("full_name", "first_name", "last_name", "position", "team", "age", "injury_status", "years_exp")
 
 
 def write(raw, report, out_dir):
@@ -75,5 +75,7 @@ def slim(raw, report):
         "errors": raw.get("errors") or {},
         "fixed_offers": [{"partner": i.partner.roster_id, "give": [a.key for a in i.give], "get": [a.key for a in i.get]}
                          for i in report["trade_offers"]],
+        "fixed_pick_offers": [{"partner": i.partner.roster_id, "give": [a.key for a in i.give],
+                               "get": [a.key for a in i.get]} for i in report.get("pick_offers") or []],
     }
     return out

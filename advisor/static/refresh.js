@@ -51,7 +51,7 @@ window.FullRefresh = async function (status) {
     missing.forEach((pid) => {
       const p = all[pid];
       if (p) s.players[pid] = Object.fromEntries(["full_name", "first_name", "last_name", "position", "team", "age",
-        "injury_status"].filter((k) => p[k] != null).map((k) => [k, p[k]]));
+        "injury_status", "years_exp"].filter((k) => p[k] != null).map((k) => [k, p[k]]));
     });
   }
 

@@ -51,6 +51,43 @@
 })();
 </script>
 {% endif %}
+{% set room = pick_room %}
+<h2>Spare 2nd and 3rd round picks</h2>
+<div class="card pad">
+  <p class="small">{% for d in room.drafts %}<b>{{ d.year }}:</b> {{ d.total }} pick{{ "" if d.total == 1 else "s" }} ({% for n in d.by_round %}{% if n %}{{ n }} {{ loop.index | ordinal }}{% if not loop.last %}, {% endif %}{% endif %}{% endfor %}){% if not loop.last %} · {% endif %}{% endfor %}. A team normally has {{ room.normal }} a year.
+  Your taxi squad has {{ room.taxi_slots }} spots{% if room.taxi_staying %} and {{ room.taxi_staying | length }} of today's taxi players can stay there next season ({{ room.taxi_staying | join(", ") }}){% endif %}, so {{ room.taxi_open_next_year }} rookie{{ "" if room.taxi_open_next_year == 1 else "s" }} fit there next year and the rest need a bench spot.</p>
+{% if pick_offers %}
+  <p class="small muted">These offers trade 2 or 3 of your 2nds and 3rds for one better player or pick, so fewer rookies compete for spots. Each follows the same value rules as the offers above. The other team gives up a bench player or a pick, so their starting lineup doesn't change.</p>
+{% else %}
+  <p class="small muted">No offer turns your 2nds and 3rds into one better player or pick today within the value rules.</p>
+{% endif %}
+</div>
+{% for i in pick_offers %}
+<div class="card idea pick-offer" data-key="{{ i.key }}" data-assets="{% for a in i.give + i.get %}{{ a.key }} {% endfor %}">
+  <div class="idea-head"><b>To {{ i.partner.team_name }}</b>{% if i.partner.team_name != i.partner.owner %} <span class="muted small">{{ i.partner.owner }}</span>{% endif %}
+    <span class="pill good">+{{ (i.edge * 100) | round(1) }}% value</span></div>
+  <div class="sides">
+    <div><div class="k">You give</div>{% for a in i.give %}<div>{{ a.label }} <span class="muted small">pick · {{ a.value | num }}</span></div>{% endfor %}</div>
+    <div><div class="k">You get</div>{% for a in i.get %}<div>{{ a.label }} <span class="muted small">{{ a.pos or "pick" }} · {{ a.value | num }}</span></div>{% endfor %}</div>
+  </div>
+  <div class="small">{{ i.reason }}{% if i.get[0].pos %} Your weekly points {{ "rise" if i.my_points_change >= 0 else "drop" }} {{ i.my_points_change | abs | num(1) }}.{% endif %}
+    {% for t in i.tags if t != "uses your picks" %}<span class="pill">{{ t }}</span> {% endfor %}</div>
+  <div class="muted small">Package value {{ i.give_value | num }} given for {{ i.get_value | num }}.</div>
+  <div class="idea-foot"><span></span><button class="btn deny-pick" data-key="{{ i.key }}">They said no</button></div>
+</div>
+{% endfor %}
+<script>
+(function () {
+  function apply() {
+    const d = Denied.all(), moved = Live.movedKeys();
+    document.querySelectorAll(".pick-offer").forEach((card) => {
+      card.hidden = !!d[card.dataset.key] || card.dataset.assets.trim().split(" ").some((k) => moved.has(k));
+    });
+  }
+  document.querySelectorAll("button.deny-pick").forEach((b) => b.addEventListener("click", () => { Denied.add(b.dataset.key); apply(); }));
+  apply();
+})();
+</script>
 {% set pp = pick_premium %}
 <h2>What this league pays for 1sts</h2>
 <div class="card pad">

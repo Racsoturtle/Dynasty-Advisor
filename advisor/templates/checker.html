@@ -129,6 +129,11 @@
     if (D.call === "Contend" && r.myPoints < 0) return "You're contending, and this costs you " + r.myPoints.toFixed(1).replace("-", "") + " points a week.";
     if (D.call === "Hold" && r.myPoints < -D.hold_max_points_loss) return "On hold, this costs more than " + D.hold_max_points_loss + " points a week.";
     if (D.call === "Hold" && give.some((a) => !a.pos) && (avgAge(get) || 99) > D.hold_picks_for_age) return "On hold, don't spend picks on players older than " + D.hold_picks_for_age + ".";
+    if (D.call === "Retool" && give.every((a) => !a.pos)) {
+      // Picks have no age: on a retool they may buy players who are young.
+      if (get.some((a) => a.pos && (a.age || 99) > D.hold_picks_for_age)) return "You're retooling, so picks should only buy players " + D.hold_picks_for_age + " or younger.";
+      return null;
+    }
     if (D.call === "Retool") {
       const picks = get.filter((a) => !a.pos).reduce((s, a) => s + a.value, 0);
       const younger = (avgAge(get) || 99) < (avgAge(give) || 0);

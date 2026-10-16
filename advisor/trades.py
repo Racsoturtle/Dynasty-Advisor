@@ -170,6 +170,9 @@ def fits_direction(call, give, get, numbers):
     if call == "Contend":
         return numbers["my_points_change"] >= 0
     if call == "Retool":
+        if all(a.pos is None for a in give):
+            # Picks have no age: on a retool they may buy players who are young.
+            return all(a.pos is None or (a.age or 99) <= config.HOLD_PICKS_FOR_AGE for a in get)
         get_picks = sum(a.value for a in get if a.pos is None)
         younger = (_avg_age(get) or 99) < (_avg_age(give) or 0)
         return younger or get_picks >= 0.25 * sum(a.value for a in get)
@@ -220,6 +223,84 @@ def find(league_teams, me_team, call, roster_positions, per_game=None, premium=1
         ideas += _distinct(found)[: config.TRADE_IDEAS_PER_PARTNER]
     ideas.sort(key=lambda i: -i.score)
     return _spread(ideas)[:limit]
+
+
+def pick_round(asset):
+    return int(asset.key.split(":")[2]) if asset.key.startswith("pick:") else None
+
+
+def find_pick_deals(league_teams, me_team, call, roster_positions, per_game=None, premium=1.0, exclude=(),
+                    limit=config.PICK_DEALS):
+    """Offers that turn 2 or 3 of Oscar's 2nd/3rd-round picks into one asset
+    worth more than any of them: a player who isn't in the partner's starting
+    lineup, or a better pick. Same value rules as `find`, except the partner's
+    lineup only has to stay the same, since picks don't start for anyone."""
+    roster_size = sum(1 for s in roster_positions if s not in ("IR", "TAXI"))
+    me = TeamState(me_team, roster_positions, roster_size, per_game)
+    spare = [a for a in assets_for(me_team) if pick_round(a) in config.PICK_DEAL_ROUNDS]
+    packages = [g for n in (2, 3) for g in combinations(spare, n)]
+    ideas = []
+    for partner in league_teams:
+        if partner.roster_id == me_team.roster_id:
+            continue
+        them = TeamState(partner, roster_positions, roster_size, per_game)
+        found = []
+        for give in packages:
+            gv, gl, top = package_value(give), package_value(give, premium), max(a.value for a in give)
+            for a in assets_for(partner):
+                if a.value <= top:
+                    break  # sorted high to low: the rest wouldn't consolidate anything
+                get = (a,)
+                if not 0 <= (a.value - gv) / gv <= config.TRADE_MAX_TRUE_EDGE + 0.05 \
+                        or (league_value(a, premium) - gl) / gl > config.TRADE_MAX_EDGE + 0.05:
+                    continue
+                nums = evaluate(me, them, give, get, premium)
+                if not config.TRADE_MIN_EDGE <= nums["edge"] <= config.TRADE_MAX_TRUE_EDGE:
+                    continue
+                if nums["league_edge"] > config.TRADE_MAX_EDGE or nums["their_lineup_change"] < 0:
+                    continue
+                if not fits_direction(call, give, get, nums):
+                    continue
+                if idea_key(partner.roster_id, [x.key for x in give], [a.key]) in exclude:
+                    continue
+                found.append(_idea(partner, give, get, nums, call, premium))
+        found.sort(key=lambda i: -i.score)
+        ideas += found[:1]
+    ideas.sort(key=lambda i: -i.score)
+    return label_pick_deals(_spread(ideas)[:limit])
+
+
+def label_pick_deals(ideas):
+    for i in ideas:
+        player = i.get[0].pos is not None
+        i.reason = (f"Turns {len(i.give)} picks into one {'player who is on their bench' if player else 'better pick'}, "
+                    f"so {len(i.give) - 1} fewer rookie{'s' if len(i.give) > 2 else ''} will need a roster spot.")
+    return ideas
+
+
+def pick_room(me_team, league, players_db, today_season):
+    """Oscar's 2nd/3rd-round picks against the room he'll have for rookies.
+    Per future draft: picks by round, and a normal team's count."""
+    settings = league.get("settings") or {}
+    rounds = int(settings.get("draft_rounds") or 3)
+    taxi_slots = int(settings.get("taxi_slots") or 0)
+    taxi_years = int(settings.get("taxi_years") or 0)
+    years = {}
+    for pk in me_team.picks:
+        years.setdefault(pk.year, {}).setdefault(pk.round, 0)
+        years[pk.year][pk.round] += 1
+    taxi = [p for p in me_team.players if p.status == "taxi"]
+    # Next season everyone has a year more; taxi takes players in their first `taxi_years` seasons.
+    staying = [p for p in taxi if (players_db.get(p.pid) or {}).get("years_exp") is not None
+               and int(players_db[p.pid]["years_exp"]) + 1 < taxi_years]
+    return {
+        "drafts": [{"year": y, "by_round": [years[y].get(r, 0) for r in range(1, rounds + 1)],
+                    "total": sum(years[y].values())} for y in sorted(years)],
+        "normal": rounds,
+        "taxi_slots": taxi_slots,
+        "taxi_open_next_year": max(0, taxi_slots - len(staying)),
+        "taxi_staying": [p.name for p in staying],
+    }
 
 
 def keep_offers(specs, league_teams, me_team, call, roster_positions, per_game, premium, changed):
