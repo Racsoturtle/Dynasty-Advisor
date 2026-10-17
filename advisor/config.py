@@ -15,7 +15,7 @@ GITHUB_OWNER = "Racsoturtle"  # only this account's issues can mark an offer as 
 PROFILES = {
     "oscar": {"name": "Oscar", "username": MY_USERNAME, "store": "dynasty-advisor",
               "password_sha256": "a3421bf081b51292f9f066f3b6650e3c6abaef0cf3afe28c689881d5a3b95531"},
-    "jawsh": {"name": "Jawsh", "username": "Jawshwaganda", "store": "dynasty-advisor-jawsh",
+    "jawsh": {"name": "Jawsh", "username": "Jawshwaghanda", "store": "dynasty-advisor-jawsh",
               "password_sha256": "5499d174877ae57692bd39a90e635fc67b19f515d1a2723f3862078396a72a17"},
 }
 DEFAULT_PROFILE = "oscar"
