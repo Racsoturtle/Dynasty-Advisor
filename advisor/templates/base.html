@@ -3,12 +3,24 @@
 <head>
 <meta charset="utf-8">
 <script>
+// Only the profile signed in on this device sees these pages; anyone else
+// goes to the sign-in page first.
+(function () {
+  let p = "{{ profile.key }}";
+  try { p = localStorage.getItem("dynasty-advisor:profile"); } catch (e) {}
+  if (p !== "{{ profile.key }}") {
+    document.documentElement.style.display = "none";
+    location.replace("../index.html");
+  }
+})();
+</script>
+<script>
 // After the Refresh button rebuilt the site in this browser, show that
 // version of the page instead of this morning's, until the next build.
 (function () {
   if (window.__refreshed) return;
   try {
-    const s = JSON.parse(localStorage.getItem("dynasty-advisor:pages") || "null");
+    const s = JSON.parse(localStorage.getItem("{{ profile.store }}:pages") || "null");
     const html = s && s.base === {{ fetched_ms if not is_refresh else morning_ms }} && s.files["{{ page }}"];
     if (!html) return;
     window.__refreshed = true;
@@ -92,13 +104,14 @@ footer { color: var(--muted); font-size: 13px; padding: 24px 0; border-top: 1px 
 <body>
 <header><div class="wrap">
   <div class="top"><h1>{{ me.team_name }}</h1><span class="meta">{{ league.name }} · updated {{ updated }}
-    · <button class="btn" id="refresh-btn" type="button">Refresh from Sleeper</button></span></div>
+    · <button class="btn" id="refresh-btn" type="button">Refresh from Sleeper</button>
+    · <a class="btn" href="../index.html" onclick="try { localStorage.removeItem('dynasty-advisor:profile'); } catch (e) {}">{{ profile.name }}: switch profile</a></span></div>
   <nav>{% for file, name in PAGES %}<a href="{{ file }}"{% if file == page %} class="on"{% endif %}>{{ name }}</a>{% endfor %}</nav>
 </div></header>
 <script>
 // Offers marked "They said no", kept in this browser.
 window.Denied = (function () {
-  const KEY = "dynasty-advisor:denied";
+  const KEY = "{{ profile.store }}:denied";
   const read = () => { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } };
   const write = (d) => { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} };
   return {
@@ -112,7 +125,7 @@ window.Denied = (function () {
 // Fresh Sleeper rosters and moves, saved by the Refresh button. MORNING is
 // when this morning's build read Sleeper; moves after it are listed.
 window.Live = (function () {
-  const KEY = "dynasty-advisor:live", BUILT = {{ fetched_ms }}, MORNING = {{ morning_ms }}, LEAGUE = "{{ league.league_id }}";
+  const KEY = "{{ profile.store }}:live", BUILT = {{ fetched_ms }}, MORNING = {{ morning_ms }}, LEAGUE = "{{ league.league_id }}";
   const REFRESHED = {{ "true" if is_refresh else "false" }};
   const API = "https://api.sleeper.app/v1";
   function data() {
@@ -152,7 +165,7 @@ window.Live = (function () {
   function file(name) {
     if (REFRESHED) {
       try {
-        const s = JSON.parse(localStorage.getItem("dynasty-advisor:pages") || "null");
+        const s = JSON.parse(localStorage.getItem("{{ profile.store }}:pages") || "null");
         if (s && s.files[name]) return Promise.resolve(JSON.parse(s.files[name]));
       } catch (e) {}
     }
@@ -191,12 +204,12 @@ window.Live = (function () {
       const out = await FullRefresh(label);
       label("Saving…");
       await Live.refresh(out.at);
-      localStorage.setItem("dynasty-advisor:pages", JSON.stringify({ base: {{ fetched_ms if not is_refresh else morning_ms }}, at: out.at, files: out.files }));
+      localStorage.setItem("{{ profile.store }}:pages", JSON.stringify({ base: {{ fetched_ms if not is_refresh else morning_ms }}, at: out.at, files: out.files }));
       location.reload();
     } catch (e) {
       console.error(e);
       // Fall back to listing Sleeper moves over this morning's pages.
-      try { localStorage.removeItem("dynasty-advisor:pages"); } catch (x) {}
+      try { localStorage.removeItem("{{ profile.store }}:pages"); } catch (x) {}
       try {
         label("Checking Sleeper…");
         await Live.refresh();

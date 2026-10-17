@@ -8,6 +8,7 @@
 import argparse
 import csv
 import json
+import shutil
 import traceback
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -90,8 +91,11 @@ def load_snapshot(folder):
     return raw
 
 
-def analyze(raw, today=None):
+def analyze(raw, today=None, profile=None):
+    """The whole analysis from `profile`'s team (a key of config.PROFILES; the
+    in-browser refresh passes it in `raw`)."""
     today = today or date.today()
+    profile = profile or raw.get("profile") or config.DEFAULT_PROFILE
     data = sleeper.League(**raw["sleeper"])
     data.matchups = {int(k): v for k, v in (data.matchups or {}).items()}
     names = NameIndex(data.players)
@@ -119,7 +123,7 @@ def analyze(raw, today=None):
 
     cons = consensus.build(results, failures, today)
     league_teams = teams.build(data, cons)
-    me = _find_me(data, league_teams)
+    me = _find_me(data, league_teams, config.PROFILES[profile]["username"], raw.get("owner_id"))
 
     week = sleeper.current_week(data.league, data.state)
     week_proj = projections.build(
@@ -134,6 +138,7 @@ def analyze(raw, today=None):
     deadline = int((data.league.get("settings") or {}).get("trade_deadline") or 0)
     my_odds = league_odds.playoff.get(me.roster_id, 0.0)
     report = {
+        "profile": dict(config.PROFILES[profile], key=profile),
         "league": data.league,
         "state": data.state,
         "teams": league_teams,
@@ -231,11 +236,29 @@ def changed_rosters(baseline, data):
            {rid for rid in set(pb) | set(pn) if pb.get(rid, set()) != pn.get(rid, set())}
 
 
-def _find_me(data, league_teams):
-    user = next((u for u in data.users if (u.get("display_name") or "").lower() == config.MY_USERNAME.lower()), None)
+def _find_me(data, league_teams, username, owner_id=None):
+    """The team of the league member named `username`, or of `owner_id` (set
+    by the in-browser refresh, so a name changed since the morning still works)."""
+    if owner_id:
+        return next(t for t in league_teams if t.owner_id == owner_id)
+
+    def names(u):
+        return {(u.get("display_name") or "").lower(), ((u.get("metadata") or {}).get("team_name") or "").lower()}
+
+    user = next((u for u in data.users if username.lower() in names(u)), None)
     if not user:
-        raise RuntimeError(f"{config.MY_USERNAME} isn't in this league")
+        raise TeamNotFound(f"{username} isn't in this league")
     return next(t for t in league_teams if t.owner_id == user["user_id"])
+
+
+class TeamNotFound(RuntimeError):
+    pass
+
+
+def log_path(path, profile):
+    """The default profile keeps `path`; others get trade_log_<key>.json beside it."""
+    path = Path(path)
+    return path if profile == config.DEFAULT_PROFILE else path.with_name(f"{path.stem}_{profile}{path.suffix}")
 
 
 def main():
@@ -247,18 +270,35 @@ def main():
     args = ap.parse_args()
 
     raw = load_snapshot(args.offline) if args.offline else collect_live()
-    if args.log and Path(args.log).exists():
-        raw["trade_log"] = json.loads(Path(args.log).read_text())
+    raw.pop("trade_log", None)
     if args.snapshot:
         save_snapshot(raw, args.snapshot)
-    report = analyze(raw, today=datetime.now(ZoneInfo("America/New_York")).date())
-    render.write_site(report, args.out)
-    bundle.write(raw, report, args.out)
-    if args.log:
-        Path(args.log).write_text(json.dumps(report["trade_log"], indent=1))
+    today = datetime.now(ZoneInfo("America/New_York")).date()
+    out = Path(args.out)
+    if out.exists():
+        shutil.rmtree(out)
+    built = {}
+    for key in config.PROFILES:
+        log = log_path(args.log, key) if args.log else None
+        mine = dict(raw, trade_log=json.loads(log.read_text()) if log and log.exists() else None)
+        try:
+            report = analyze(mine, today=today, profile=key)
+        except TeamNotFound as exc:
+            if key == config.DEFAULT_PROFILE:
+                raise
+            print(f"Skipped the {key} profile: {exc}")
+            continue
+        render.write_site(report, out / key)
+        bundle.write(mine, report, out / key)
+        if log:
+            log.write_text(json.dumps(report["trade_log"], indent=1))
+        built[key] = report
+        print(f"Built {out / key} for {report['me'].team_name} ({report['me'].owner})")
+    report = built[config.DEFAULT_PROFILE]
+    render.write_root(out, built, report)
     Path(args.out, "summary.md").write_text(report["summary"])
     used = ", ".join(s.name for s in report["consensus"].used)
-    print(f"Built {args.out} for {report['me'].team_name}; sources used: {used}")
+    print(f"Sources used: {used}")
     for name, reason in report["consensus"].dropped:
         print(f"  left out {name}: {reason}")
     p = report["pick_premium"]

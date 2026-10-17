@@ -6,6 +6,20 @@ SITE_URL = "https://racsoturtle.github.io/Dynasty-Advisor/"
 GITHUB_REPO = "Racsoturtle/Dynasty-Advisor"
 GITHUB_OWNER = "Racsoturtle"  # only this account's issues can mark an offer as denied
 
+# Who can sign in. Each profile gets the whole site built from its own team,
+# under SITE_URL/<key>/. The team is the league member whose Sleeper display
+# name (or team name) is `username`. Passwords are stored only as
+# sha256("dynasty-advisor:<key>:<password>"). This keeps casual visitors out;
+# it isn't real security, since the site is public and its files can be
+# fetched directly. `store` names the browser storage the pages use.
+PROFILES = {
+    "oscar": {"name": "Oscar", "username": MY_USERNAME, "store": "dynasty-advisor",
+              "password_sha256": "a3421bf081b51292f9f066f3b6650e3c6abaef0cf3afe28c689881d5a3b95531"},
+    "jawsh": {"name": "Jawsh", "username": "Jawshwaganda", "store": "dynasty-advisor-jawsh",
+              "password_sha256": "5499d174877ae57692bd39a90e635fc67b19f515d1a2723f3862078396a72a17"},
+}
+DEFAULT_PROFILE = "oscar"
+
 # Value sources are asked for this format where they support it.
 NUM_TEAMS = 16
 NUM_QBS = 1

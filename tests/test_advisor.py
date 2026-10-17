@@ -581,3 +581,52 @@ def test_trades_page_shows_spare_pick_section(report, tmp_path):
     page = (tmp_path / "trades.html").read_text()
     assert "Spare 2nd and 3rd round picks" in page
     assert page.count('class="btn deny-pick"') == len(report["pick_offers"])
+
+
+def test_each_profile_sees_the_site_from_its_own_team(tmp_path, monkeypatch):
+    import hashlib
+    import json
+    import sys
+    from advisor import config
+    monkeypatch.setitem(config.PROFILES["jawsh"], "username", "Manager2")
+    main.save_snapshot(build(), tmp_path / "snap")
+    log = tmp_path / "trade_log.json"
+    monkeypatch.setattr(sys, "argv", ["advisor", "--offline", str(tmp_path / "snap"), "--out", str(tmp_path / "site"),
+                                      "--log", str(log)])
+    main.main()
+    site = tmp_path / "site"
+    login = (site / "index.html").read_text()
+    assert "Oscar" in login and "Jawsh" in login and "Veto" not in login and "Cywinski0" not in login
+    for key, password in (("oscar", "Cywinski0"), ("jawsh", "Veto")):
+        digest = hashlib.sha256(f"dynasty-advisor:{key}:{password}".encode()).hexdigest()
+        assert digest == config.PROFILES[key]["password_sha256"] and digest in login
+    oscar = json.loads((site / "oscar" / "live.json").read_text())["me"]
+    jawsh = json.loads((site / "jawsh" / "live.json").read_text())["me"]
+    assert oscar != jawsh
+    assert json.loads((site / "jawsh" / "engine" / "raw.json").read_text())["profile"] == "jawsh"
+    page = (site / "jawsh" / "trades.html").read_text()
+    assert '"jawsh"' in page and "dynasty-advisor-jawsh:denied" in page
+    assert log.exists() and (tmp_path / "trade_log_jawsh.json").exists()
+    assert "url=index.html" in (site / "trades.html").read_text()
+    assert (site / "trade_prices.json").exists() and (site / "summary.md").exists()
+
+
+def test_refresh_keeps_the_profile(tmp_path, monkeypatch):
+    from advisor import config
+    monkeypatch.setitem(config.PROFILES["jawsh"], "username", "Manager2")
+    raw = build()
+    morning = main.analyze(raw, today=TODAY, profile="jawsh")
+    assert morning["me"].owner == "Manager2"
+    again = main.analyze(_refresh_raw(raw, morning), today=TODAY)
+    assert again["me"].roster_id == morning["me"].roster_id and again["profile"]["key"] == "jawsh"
+
+
+def test_a_profile_missing_from_the_league_is_skipped(tmp_path, monkeypatch):
+    import sys
+    from advisor import config
+    monkeypatch.setitem(config.PROFILES["jawsh"], "username", "nobody")
+    main.save_snapshot(build(), tmp_path / "snap")
+    monkeypatch.setattr(sys, "argv", ["advisor", "--offline", str(tmp_path / "snap"), "--out", str(tmp_path / "site")])
+    main.main()
+    assert (tmp_path / "site" / "oscar" / "index.html").exists() and not (tmp_path / "site" / "jawsh").exists()
+    assert "Team not found" in (tmp_path / "site" / "index.html").read_text()

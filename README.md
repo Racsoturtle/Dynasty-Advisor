@@ -4,6 +4,12 @@ A personal dashboard for Racsoturtle's team in the Skulls Super Dynasty League o
 It rebuilds every day by 7 AM Eastern (6:45 AM run, adjusted for daylight saving) and publishes to
 GitHub Pages. The Thursday and Sunday builds also post a short summary as a GitHub issue.
 
+Profiles: the site opens on a sign-in page. Each profile in `PROFILES` (`advisor/config.py`), now Oscar
+and Jawsh, has a password and gets every page below built from its own team under `<site>/<profile>/`,
+with its own trade log (`trade_log.json` for Oscar, `trade_log_<profile>.json` for others). Passwords are
+stored only as hashes, but this keeps casual visitors out rather than securing anything: the repo and
+the site are public, so every page and data file can still be fetched directly.
+
 Pages: Home (contend, hold or retool call; record and luck; roster values; picks), Lineup (best
 lineup by consensus projection, changes, close calls, injuries and byes), Trades (offers to send:
 at least 3% in your favor by consensus value but no more than 10% at league prices, better for the

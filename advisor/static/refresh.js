@@ -5,6 +5,8 @@
 // whose rosters changed. Returns {filename: text} for every page and data file.
 window.FullRefresh = async function (status) {
   const base = new URL("engine/", location.href).href;
+  // Python itself is shared by every profile, one folder up.
+  const shared = new URL("../engine/", location.href).href;
   const API = "https://api.sleeper.app/v1";
   const get = (url) => fetch(url).then((r) => { if (!r.ok) throw new Error(url + " " + r.status); return r; });
   const sleeper = (p) => get(API + p).then((r) => r.json());
@@ -59,14 +61,14 @@ window.FullRefresh = async function (status) {
   if (!window.loadPyodide) {
     await new Promise((ok, fail) => {
       const tag = document.createElement("script");
-      tag.src = base + "pyodide/pyodide.js";
+      tag.src = shared + "pyodide/pyodide.js";
       tag.onload = ok; tag.onerror = () => fail(new Error("couldn't load pyodide.js"));
       document.head.appendChild(tag);
     });
   }
   const [py, lib, app] = await Promise.all([
-    loadPyodide({ indexURL: base + "pyodide/" }),
-    get(base + "lib.zip").then((r) => r.arrayBuffer()),
+    loadPyodide({ indexURL: shared + "pyodide/" }),
+    get(shared + "lib.zip").then((r) => r.arrayBuffer()),
     get(base + "app.zip").then((r) => r.arrayBuffer())]);
   py.unpackArchive(lib, "zip", { extractDir: "/lib" });
   py.unpackArchive(app, "zip", { extractDir: "/app" });

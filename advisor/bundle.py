@@ -53,6 +53,8 @@ def slim(raw, report):
                                 for p in page.get("players") or []]}
               for pos, page in raw["fp_week"].items()}
     out = {
+        "profile": report["profile"]["key"],
+        "owner_id": report["me"].owner_id,
         "sleeper": {**s, "players": players},
         "fetched_at": raw.get("fetched_at"),
         "fantasycalc": [{"player": {k: r["player"].get(k) for k in ("id", "name", "sleeperId", "position")},
