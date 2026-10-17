@@ -105,3 +105,22 @@ def write_site(report, out_dir):
     # Tomorrow's run reuses these readings instead of re-pricing old trades.
     (out / "trade_prices.json").write_text(json.dumps(report.get("trade_prices") or {}))
     (out / ".nojekyll").write_text("")
+
+
+def write_root(out_dir, built, report):
+    """The sign-in page at the site root, plus what is shared by every profile.
+    `built` maps profile key to that profile's report."""
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    env = _env()
+    profiles = [dict(p, key=k, team=built[k]["me"].team_name if k in built else None)
+                for k, p in config.PROFILES.items()]
+    (out / "index.html").write_text(env.get_template("login.html").render(
+        profiles=profiles, league=report["league"]))
+    # Old bookmarks to a page at the root go to the sign-in page.
+    for filename, _ in PAGES:
+        if filename != "index.html":
+            (out / filename).write_text('<!doctype html><meta http-equiv="refresh" content="0; url=index.html">')
+    # Tomorrow's run reuses these readings instead of re-pricing old trades.
+    (out / "trade_prices.json").write_text(json.dumps(report.get("trade_prices") or {}))
+    (out / ".nojekyll").write_text("")
