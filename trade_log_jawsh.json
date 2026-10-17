@@ -1,0 +1,377 @@
+{
+ "version": 1,
+ "ideas": {
+  "d549c6f0d1": {
+   "partner_id": 11,
+   "partner": "Picken Browns A$$",
+   "give": [
+    [
+     "8130",
+     "Trey McBride"
+    ],
+    [
+     "pick:2027:2:8",
+     "Jawshwaghanda's 2027 2nd (late)"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:11",
+     "reebmas's 2027 1st (early)"
+    ],
+    [
+     "8137",
+     "George Pickens"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.222492,
+   "first_league_edge": 0.092153,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.222492,
+     0.092153
+    ]
+   ],
+   "issue": null
+  },
+  "ad0d1698fa": {
+   "partner_id": 14,
+   "partner": "Big Backs",
+   "give": [
+    [
+     "8130",
+     "Trey McBride"
+    ],
+    [
+     "pick:2029:2:8",
+     "Jawshwaghanda's 2029 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:2",
+     "jdshorsey's 2027 1st (early)"
+    ],
+    [
+     "3198",
+     "Derrick Henry"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.154579,
+   "first_league_edge": 0.013267,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.154579,
+     0.013267
+    ]
+   ],
+   "issue": null
+  },
+  "4df46da7ed": {
+   "partner_id": 3,
+   "partner": "Password is Taco",
+   "give": [
+    [
+     "12514",
+     "Emeka Egbuka"
+    ],
+    [
+     "pick:2029:2:8",
+     "Jawshwaghanda's 2029 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:3",
+     "mattgilliatt's 2027 1st (mid)"
+    ],
+    [
+     "11635",
+     "Ladd McConkey"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.19773,
+   "first_league_edge": 0.07709,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.19773,
+     0.07709
+    ]
+   ],
+   "issue": null
+  },
+  "ae4831d17a": {
+   "partner_id": 6,
+   "partner": "Golden Shower",
+   "give": [
+    [
+     "12514",
+     "Emeka Egbuka"
+    ],
+    [
+     "pick:2027:2:10",
+     "DecStablow's 2027 2nd (mid)"
+    ]
+   ],
+   "get": [
+    [
+     "6801",
+     "Tee Higgins"
+    ],
+    [
+     "pick:2027:1:6",
+     "mattswider's 2027 1st (mid)"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.189507,
+   "first_league_edge": 0.081377,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.189507,
+     0.081377
+    ]
+   ],
+   "issue": null
+  },
+  "fd5c26fcd8": {
+   "partner_id": 9,
+   "partner": "Touch my Jeanty-lia\u2019s",
+   "give": [
+    [
+     "7547",
+     "Amon-Ra St. Brown"
+    ],
+    [
+     "11603",
+     "AJ Barner"
+    ]
+   ],
+   "get": [
+    [
+     "8144",
+     "Chris Olave"
+    ],
+    [
+     "7588",
+     "Javonte Williams"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.093984,
+   "first_league_edge": 0.093984,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.093984,
+     0.093984
+    ]
+   ],
+   "issue": null
+  },
+  "346d8259cc": {
+   "partner_id": 10,
+   "partner": "The Washington Wizards",
+   "give": [
+    [
+     "8228",
+     "Jaylen Warren"
+    ],
+    [
+     "pick:2027:2:10",
+     "DecStablow's 2027 2nd (mid)"
+    ]
+   ],
+   "get": [
+    [
+     "12481",
+     "Cam Skattebo"
+    ],
+    [
+     "pick:2027:1:1",
+     "amilardo's 2027 1st (late)"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.198772,
+   "first_league_edge": 0.089802,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.198772,
+     0.089802
+    ]
+   ],
+   "issue": null
+  },
+  "4dd8c0cd21": {
+   "partner_id": 16,
+   "partner": "Is dewalt a lesbian?",
+   "give": [
+    [
+     "13311",
+     "Chris Bell"
+    ],
+    [
+     "pick:2027:2:8",
+     "Jawshwaghanda's 2027 2nd (late)"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:16",
+     "Xinwen's 2028 1st"
+    ],
+    [
+     "11834",
+     "Devaughn Vele"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.248236,
+   "first_league_edge": 0.070474,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.248236,
+     0.070474
+    ]
+   ],
+   "issue": null
+  },
+  "9a9c905133": {
+   "partner_id": 2,
+   "partner": "NabersThinkImSellinDope",
+   "give": [
+    [
+     "pick:2027:2:10",
+     "DecStablow's 2027 2nd (mid)"
+    ],
+    [
+     "pick:2027:2:8",
+     "Jawshwaghanda's 2027 2nd (late)"
+    ],
+    [
+     "pick:2029:2:8",
+     "Jawshwaghanda's 2029 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:14",
+     "Vollbs's 2027 1st (early)"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.202652,
+   "first_league_edge": -0.037878,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.202652,
+     -0.037878
+    ]
+   ],
+   "issue": null
+  },
+  "7d122acf9b": {
+   "partner_id": 3,
+   "partner": "Password is Taco",
+   "give": [
+    [
+     "pick:2027:2:10",
+     "DecStablow's 2027 2nd (mid)"
+    ],
+    [
+     "pick:2029:2:8",
+     "Jawshwaghanda's 2029 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:3",
+     "mattgilliatt's 2027 1st (mid)"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.221262,
+   "first_league_edge": -0.02299,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.221262,
+     -0.02299
+    ]
+   ],
+   "issue": null
+  },
+  "0a14d5a8e3": {
+   "partner_id": 1,
+   "partner": "Sparvero\u2019s Soldiers",
+   "give": [
+    [
+     "pick:2028:3:8",
+     "Jawshwaghanda's 2028 3rd"
+    ],
+    [
+     "pick:2029:3:8",
+     "Jawshwaghanda's 2029 3rd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2029:1:1",
+     "amilardo's 2029 1st"
+    ]
+   ],
+   "first_seen": "2026-10-17",
+   "first_edge": 0.227582,
+   "first_league_edge": -0.017935,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-17",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-17",
+     0.227582,
+     -0.017935
+    ]
+   ],
+   "issue": null
+  }
+ }
+}
