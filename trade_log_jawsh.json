@@ -27,14 +27,19 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.222492,
    "first_league_edge": 0.092153,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-17",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-18",
    "denied": false,
    "checks": [
     [
      "2026-10-17",
      0.222492,
      0.092153
+    ],
+    [
+     "2026-10-18",
+     0.219098,
+     0.095012
     ]
    ],
    "issue": null
@@ -73,6 +78,11 @@
      "2026-10-17",
      0.154579,
      0.013267
+    ],
+    [
+     "2026-10-18",
+     0.141092,
+     0.002823
     ]
    ],
    "issue": null
@@ -103,14 +113,19 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.19773,
    "first_league_edge": 0.07709,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-17",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-18",
    "denied": false,
    "checks": [
     [
      "2026-10-17",
      0.19773,
      0.07709
+    ],
+    [
+     "2026-10-18",
+     0.200371,
+     0.085086
     ]
    ],
    "issue": null
@@ -141,14 +156,19 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.189507,
    "first_league_edge": 0.081377,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-17",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-18",
    "denied": false,
    "checks": [
     [
      "2026-10-17",
      0.189507,
      0.081377
+    ],
+    [
+     "2026-10-18",
+     0.191692,
+     0.084948
     ]
    ],
    "issue": null
@@ -179,14 +199,19 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.093984,
    "first_league_edge": 0.093984,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-17",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-18",
    "denied": false,
    "checks": [
     [
      "2026-10-17",
      0.093984,
      0.093984
+    ],
+    [
+     "2026-10-18",
+     0.088996,
+     0.088996
     ]
    ],
    "issue": null
@@ -217,14 +242,19 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.198772,
    "first_league_edge": 0.089802,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-17",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-18",
    "denied": false,
    "checks": [
     [
      "2026-10-17",
      0.198772,
      0.089802
+    ],
+    [
+     "2026-10-18",
+     0.191244,
+     0.083603
     ]
    ],
    "issue": null
@@ -263,6 +293,11 @@
      "2026-10-17",
      0.248236,
      0.070474
+    ],
+    [
+     "2026-10-18",
+     0.237075,
+     0.060302
     ]
    ],
    "issue": null
@@ -293,14 +328,19 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.202652,
    "first_league_edge": -0.037878,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-17",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-18",
    "denied": false,
    "checks": [
     [
      "2026-10-17",
      0.202652,
      -0.037878
+    ],
+    [
+     "2026-10-18",
+     0.166348,
+     -0.066922
     ]
    ],
    "issue": null
@@ -327,14 +367,19 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.221262,
    "first_league_edge": -0.02299,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-17",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-18",
    "denied": false,
    "checks": [
     [
      "2026-10-17",
      0.221262,
      -0.02299
+    ],
+    [
+     "2026-10-18",
+     0.188703,
+     -0.049037
     ]
    ],
    "issue": null
@@ -361,14 +406,171 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.227582,
    "first_league_edge": -0.017935,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-17",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-18",
    "denied": false,
    "checks": [
     [
      "2026-10-17",
      0.227582,
      -0.017935
+    ],
+    [
+     "2026-10-18",
+     0.235407,
+     -0.011674
+    ]
+   ],
+   "issue": null
+  },
+  "20a156e8c5": {
+   "partner_id": 14,
+   "partner": "Big Backs",
+   "give": [
+    [
+     "8130",
+     "Trey McBride"
+    ],
+    [
+     "8408",
+     "Jordan Mason"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:2",
+     "jdshorsey's 2027 1st (early)"
+    ],
+    [
+     "3198",
+     "Derrick Henry"
+    ]
+   ],
+   "first_seen": "2026-10-18",
+   "first_edge": 0.129918,
+   "first_league_edge": 0.053083,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-18",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-18",
+     0.129918,
+     0.053083
+    ]
+   ],
+   "issue": null
+  },
+  "9637c13045": {
+   "partner_id": 1,
+   "partner": "Sparvero\u2019s Soldiers",
+   "give": [
+    [
+     "13311",
+     "Chris Bell"
+    ],
+    [
+     "pick:2027:2:8",
+     "Jawshwaghanda's 2027 2nd (late)"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2029:1:1",
+     "amilardo's 2029 1st"
+    ],
+    [
+     "5892",
+     "David Montgomery"
+    ]
+   ],
+   "first_seen": "2026-10-18",
+   "first_edge": 0.245245,
+   "first_league_edge": 0.092168,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-18",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-18",
+     0.245245,
+     0.092168
+    ]
+   ],
+   "issue": null
+  },
+  "6aa5daeeac": {
+   "partner_id": 13,
+   "partner": "The Auto Bids",
+   "give": [
+    [
+     "2133",
+     "Davante Adams"
+    ],
+    [
+     "pick:2029:2:8",
+     "Jawshwaghanda's 2029 2nd"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:13",
+     "dbransfield's 2028 1st"
+    ],
+    [
+     "5927",
+     "Terry McLaurin"
+    ]
+   ],
+   "first_seen": "2026-10-18",
+   "first_edge": 0.191534,
+   "first_league_edge": 0.04746,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-18",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-18",
+     0.191534,
+     0.04746
+    ]
+   ],
+   "issue": null
+  },
+  "afa255a26e": {
+   "partner_id": 9,
+   "partner": "Touch my Jeanty-lia\u2019s",
+   "give": [
+    [
+     "4984",
+     "Josh Allen"
+    ],
+    [
+     "13311",
+     "Chris Bell"
+    ]
+   ],
+   "get": [
+    [
+     "8155",
+     "Breece Hall"
+    ],
+    [
+     "11560",
+     "Caleb Williams"
+    ]
+   ],
+   "first_seen": "2026-10-18",
+   "first_edge": 0.078643,
+   "first_league_edge": 0.078643,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-18",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-18",
+     0.078643,
+     0.078643
     ]
    ],
    "issue": null
