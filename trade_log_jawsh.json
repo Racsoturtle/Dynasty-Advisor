@@ -27,8 +27,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.222492,
    "first_league_edge": 0.092153,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
@@ -40,6 +40,11 @@
      "2026-10-18",
      0.219098,
      0.095012
+    ],
+    [
+     "2026-10-19",
+     0.220266,
+     0.095196
     ]
    ],
    "issue": null
@@ -83,6 +88,11 @@
      "2026-10-18",
      0.141092,
      0.002823
+    ],
+    [
+     "2026-10-19",
+     0.140169,
+     0.001162
     ]
    ],
    "issue": null
@@ -113,8 +123,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.19773,
    "first_league_edge": 0.07709,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
@@ -126,6 +136,11 @@
      "2026-10-18",
      0.200371,
      0.085086
+    ],
+    [
+     "2026-10-19",
+     0.174115,
+     0.061086
     ]
    ],
    "issue": null
@@ -156,8 +171,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.189507,
    "first_league_edge": 0.081377,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
@@ -169,6 +184,11 @@
      "2026-10-18",
      0.191692,
      0.084948
+    ],
+    [
+     "2026-10-19",
+     0.179689,
+     0.0748
     ]
    ],
    "issue": null
@@ -199,8 +219,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.093984,
    "first_league_edge": 0.093984,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
@@ -212,6 +232,11 @@
      "2026-10-18",
      0.088996,
      0.088996
+    ],
+    [
+     "2026-10-19",
+     0.073733,
+     0.073733
     ]
    ],
    "issue": null
@@ -242,8 +267,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.198772,
    "first_league_edge": 0.089802,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
@@ -255,6 +280,11 @@
      "2026-10-18",
      0.191244,
      0.083603
+    ],
+    [
+     "2026-10-19",
+     0.177929,
+     0.070466
     ]
    ],
    "issue": null
@@ -298,6 +328,11 @@
      "2026-10-18",
      0.237075,
      0.060302
+    ],
+    [
+     "2026-10-19",
+     0.235668,
+     0.058727
     ]
    ],
    "issue": null
@@ -328,8 +363,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.202652,
    "first_league_edge": -0.037878,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
@@ -341,6 +376,11 @@
      "2026-10-18",
      0.166348,
      -0.066922
+    ],
+    [
+     "2026-10-19",
+     0.169526,
+     -0.064379
     ]
    ],
    "issue": null
@@ -367,8 +407,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.221262,
    "first_league_edge": -0.02299,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
@@ -380,6 +420,11 @@
      "2026-10-18",
      0.188703,
      -0.049037
+    ],
+    [
+     "2026-10-19",
+     0.183899,
+     -0.05288
     ]
    ],
    "issue": null
@@ -406,8 +451,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.227582,
    "first_league_edge": -0.017935,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
@@ -419,6 +464,11 @@
      "2026-10-18",
      0.235407,
      -0.011674
+    ],
+    [
+     "2026-10-19",
+     0.23645,
+     -0.01084
     ]
    ],
    "issue": null
@@ -449,14 +499,19 @@
    "first_seen": "2026-10-18",
    "first_edge": 0.129918,
    "first_league_edge": 0.053083,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
      "2026-10-18",
      0.129918,
      0.053083
+    ],
+    [
+     "2026-10-19",
+     0.129818,
+     0.06776
     ]
    ],
    "issue": null
@@ -487,14 +542,19 @@
    "first_seen": "2026-10-18",
    "first_edge": 0.245245,
    "first_league_edge": 0.092168,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
      "2026-10-18",
      0.245245,
      0.092168
+    ],
+    [
+     "2026-10-19",
+     0.24496,
+     0.091089
     ]
    ],
    "issue": null
@@ -525,14 +585,19 @@
    "first_seen": "2026-10-18",
    "first_edge": 0.191534,
    "first_league_edge": 0.04746,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
      "2026-10-18",
      0.191534,
      0.04746
+    ],
+    [
+     "2026-10-19",
+     0.201159,
+     0.054907
     ]
    ],
    "issue": null
@@ -563,14 +628,57 @@
    "first_seen": "2026-10-18",
    "first_edge": 0.078643,
    "first_league_edge": 0.078643,
-   "days_recommended": 1,
-   "last_recommended": "2026-10-18",
+   "days_recommended": 2,
+   "last_recommended": "2026-10-19",
    "denied": false,
    "checks": [
     [
      "2026-10-18",
      0.078643,
      0.078643
+    ],
+    [
+     "2026-10-19",
+     0.073097,
+     0.073097
+    ]
+   ],
+   "issue": null
+  },
+  "37476c5ec9": {
+   "partner_id": 2,
+   "partner": "NabersThinkImSellinDope",
+   "give": [
+    [
+     "pick:2029:1:8",
+     "Jawshwaghanda's 2029 1st"
+    ],
+    [
+     "8408",
+     "Jordan Mason"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:2",
+     "jdshorsey's 2028 1st"
+    ],
+    [
+     "pick:2028:2:2",
+     "jdshorsey's 2028 2nd"
+    ]
+   ],
+   "first_seen": "2026-10-19",
+   "first_edge": 0.09623,
+   "first_league_edge": 0.088283,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-19",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-19",
+     0.09623,
+     0.088283
     ]
    ],
    "issue": null
