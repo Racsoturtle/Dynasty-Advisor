@@ -45,6 +45,11 @@
      "2026-10-19",
      0.220266,
      0.095196
+    ],
+    [
+     "2026-10-20",
+     0.049942,
+     -0.034857
     ]
    ],
    "issue": null
@@ -93,6 +98,11 @@
      "2026-10-19",
      0.140169,
      0.001162
+    ],
+    [
+     "2026-10-20",
+     0.145524,
+     0.00391
     ]
    ],
    "issue": null
@@ -123,8 +133,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.19773,
    "first_league_edge": 0.07709,
-   "days_recommended": 3,
-   "last_recommended": "2026-10-19",
+   "days_recommended": 4,
+   "last_recommended": "2026-10-20",
    "denied": false,
    "checks": [
     [
@@ -141,6 +151,11 @@
      "2026-10-19",
      0.174115,
      0.061086
+    ],
+    [
+     "2026-10-20",
+     0.179353,
+     0.06473
     ]
    ],
    "issue": null
@@ -171,8 +186,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.189507,
    "first_league_edge": 0.081377,
-   "days_recommended": 3,
-   "last_recommended": "2026-10-19",
+   "days_recommended": 4,
+   "last_recommended": "2026-10-20",
    "denied": false,
    "checks": [
     [
@@ -189,6 +204,11 @@
      "2026-10-19",
      0.179689,
      0.0748
+    ],
+    [
+     "2026-10-20",
+     0.173553,
+     0.068578
     ]
    ],
    "issue": null
@@ -219,8 +239,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.093984,
    "first_league_edge": 0.093984,
-   "days_recommended": 3,
-   "last_recommended": "2026-10-19",
+   "days_recommended": 4,
+   "last_recommended": "2026-10-20",
    "denied": false,
    "checks": [
     [
@@ -237,6 +257,11 @@
      "2026-10-19",
      0.073733,
      0.073733
+    ],
+    [
+     "2026-10-20",
+     0.075082,
+     0.075082
     ]
    ],
    "issue": null
@@ -285,6 +310,11 @@
      "2026-10-19",
      0.177929,
      0.070466
+    ],
+    [
+     "2026-10-20",
+     0.147776,
+     0.03711
     ]
    ],
    "issue": null
@@ -333,6 +363,11 @@
      "2026-10-19",
      0.235668,
      0.058727
+    ],
+    [
+     "2026-10-20",
+     0.254085,
+     0.074988
     ]
    ],
    "issue": null
@@ -363,8 +398,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.202652,
    "first_league_edge": -0.037878,
-   "days_recommended": 3,
-   "last_recommended": "2026-10-19",
+   "days_recommended": 4,
+   "last_recommended": "2026-10-20",
    "denied": false,
    "checks": [
     [
@@ -381,6 +416,11 @@
      "2026-10-19",
      0.169526,
      -0.064379
+    ],
+    [
+     "2026-10-20",
+     0.176688,
+     -0.05865
     ]
    ],
    "issue": null
@@ -407,8 +447,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.221262,
    "first_league_edge": -0.02299,
-   "days_recommended": 3,
-   "last_recommended": "2026-10-19",
+   "days_recommended": 4,
+   "last_recommended": "2026-10-20",
    "denied": false,
    "checks": [
     [
@@ -425,6 +465,11 @@
      "2026-10-19",
      0.183899,
      -0.05288
+    ],
+    [
+     "2026-10-20",
+     0.16394,
+     -0.068848
     ]
    ],
    "issue": null
@@ -451,8 +496,8 @@
    "first_seen": "2026-10-17",
    "first_edge": 0.227582,
    "first_league_edge": -0.017935,
-   "days_recommended": 3,
-   "last_recommended": "2026-10-19",
+   "days_recommended": 4,
+   "last_recommended": "2026-10-20",
    "denied": false,
    "checks": [
     [
@@ -469,6 +514,11 @@
      "2026-10-19",
      0.23645,
      -0.01084
+    ],
+    [
+     "2026-10-20",
+     0.231648,
+     -0.014682
     ]
    ],
    "issue": null
@@ -499,8 +549,8 @@
    "first_seen": "2026-10-18",
    "first_edge": 0.129918,
    "first_league_edge": 0.053083,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-19",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-20",
    "denied": false,
    "checks": [
     [
@@ -512,6 +562,11 @@
      "2026-10-19",
      0.129818,
      0.06776
+    ],
+    [
+     "2026-10-20",
+     0.134015,
+     0.071022
     ]
    ],
    "issue": null
@@ -542,8 +597,8 @@
    "first_seen": "2026-10-18",
    "first_edge": 0.245245,
    "first_league_edge": 0.092168,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-19",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-20",
    "denied": false,
    "checks": [
     [
@@ -555,6 +610,11 @@
      "2026-10-19",
      0.24496,
      0.091089
+    ],
+    [
+     "2026-10-20",
+     0.247411,
+     0.093549
     ]
    ],
    "issue": null
@@ -585,8 +645,8 @@
    "first_seen": "2026-10-18",
    "first_edge": 0.191534,
    "first_league_edge": 0.04746,
-   "days_recommended": 2,
-   "last_recommended": "2026-10-19",
+   "days_recommended": 3,
+   "last_recommended": "2026-10-20",
    "denied": false,
    "checks": [
     [
@@ -598,6 +658,11 @@
      "2026-10-19",
      0.201159,
      0.054907
+    ],
+    [
+     "2026-10-20",
+     0.216785,
+     0.066158
     ]
    ],
    "issue": null
@@ -641,6 +706,11 @@
      "2026-10-19",
      0.073097,
      0.073097
+    ],
+    [
+     "2026-10-20",
+     0.060998,
+     0.060998
     ]
    ],
    "issue": null
@@ -679,6 +749,159 @@
      "2026-10-19",
      0.09623,
      0.088283
+    ],
+    [
+     "2026-10-20",
+     0.099691,
+     0.090228
+    ]
+   ],
+   "issue": null
+  },
+  "a5ded34ea6": {
+   "partner_id": 3,
+   "partner": "Password is Taco",
+   "give": [
+    [
+     "8130",
+     "Trey McBride"
+    ]
+   ],
+   "get": [
+    [
+     "4034",
+     "Christian McCaffrey"
+    ],
+    [
+     "pick:2027:1:8",
+     "Jawshwaghanda's 2027 1st (late)"
+    ]
+   ],
+   "first_seen": "2026-10-20",
+   "first_edge": 0.170922,
+   "first_league_edge": 0.089124,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-20",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-20",
+     0.170922,
+     0.089124
+    ]
+   ],
+   "issue": null
+  },
+  "40dba172e1": {
+   "partner_id": 10,
+   "partner": "The Washington Wizards",
+   "give": [
+    [
+     "8228",
+     "Jaylen Warren"
+    ],
+    [
+     "pick:2027:2:8",
+     "Jawshwaghanda's 2027 2nd (late)"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2027:1:1",
+     "amilardo's 2027 1st (late)"
+    ],
+    [
+     "12481",
+     "Cam Skattebo"
+    ]
+   ],
+   "first_seen": "2026-10-20",
+   "first_edge": 0.20359,
+   "first_league_edge": 0.087543,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-20",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-20",
+     0.20359,
+     0.087543
+    ]
+   ],
+   "issue": null
+  },
+  "dca3cbb316": {
+   "partner_id": 16,
+   "partner": "Is dewalt a lesbian?",
+   "give": [
+    [
+     "pick:2027:2:10",
+     "DecStablow's 2027 2nd (mid)"
+    ],
+    [
+     "13311",
+     "Chris Bell"
+    ]
+   ],
+   "get": [
+    [
+     "pick:2028:1:16",
+     "Xinwen's 2028 1st"
+    ],
+    [
+     "pick:2028:2:16",
+     "Xinwen's 2028 2nd"
+    ]
+   ],
+   "first_seen": "2026-10-20",
+   "first_edge": 0.23242,
+   "first_league_edge": 0.065114,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-20",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-20",
+     0.23242,
+     0.065114
+    ]
+   ],
+   "issue": null
+  },
+  "ce8e55a533": {
+   "partner_id": 10,
+   "partner": "The Washington Wizards",
+   "give": [
+    [
+     "4984",
+     "Josh Allen"
+    ],
+    [
+     "2133",
+     "Davante Adams"
+    ]
+   ],
+   "get": [
+    [
+     "6794",
+     "Justin Jefferson"
+    ],
+    [
+     "6904",
+     "Jalen Hurts"
+    ]
+   ],
+   "first_seen": "2026-10-20",
+   "first_edge": 0.041202,
+   "first_league_edge": 0.09934,
+   "days_recommended": 1,
+   "last_recommended": "2026-10-20",
+   "denied": false,
+   "checks": [
+    [
+     "2026-10-20",
+     0.041202,
+     0.09934
     ]
    ],
    "issue": null
