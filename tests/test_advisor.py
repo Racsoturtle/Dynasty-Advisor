@@ -596,8 +596,9 @@ def test_each_profile_sees_the_site_from_its_own_team(tmp_path, monkeypatch):
     main.main()
     site = tmp_path / "site"
     login = (site / "index.html").read_text()
-    assert "Oscar" in login and "Jawsh" in login and "Veto" not in login and "Cywinski0" not in login
-    for key, password in (("oscar", "Cywinski0"), ("jawsh", "Veto")):
+    assert "Oscar" in login and "Jawsh" in login and "Cywinski0" not in login
+    assert "Your free trial has ended." in login
+    for key, password in (("oscar", "Cywinski0"), ("jawsh", "Cywinski0")):
         digest = hashlib.sha256(f"dynasty-advisor:{key}:{password}".encode()).hexdigest()
         assert digest == config.PROFILES[key]["password_sha256"] and digest in login
     oscar = json.loads((site / "oscar" / "live.json").read_text())["me"]
@@ -606,6 +607,7 @@ def test_each_profile_sees_the_site_from_its_own_team(tmp_path, monkeypatch):
     assert json.loads((site / "jawsh" / "engine" / "raw.json").read_text())["profile"] == "jawsh"
     page = (site / "jawsh" / "trades.html").read_text()
     assert '"jawsh"' in page and "dynasty-advisor-jawsh:denied" in page
+    assert config.PROFILES["jawsh"]["password_sha256"] in page  # an old-password sign-in is sent back
     assert log.exists() and (tmp_path / "trade_log_jawsh.json").exists()
     assert "url=index.html" in (site / "trades.html").read_text()
     assert (site / "trade_prices.json").exists() and (site / "summary.md").exists()

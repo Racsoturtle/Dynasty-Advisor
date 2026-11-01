@@ -11,12 +11,15 @@ GITHUB_OWNER = "Racsoturtle"  # only this account's issues can mark an offer as 
 # name (or team name) is `username`. Passwords are stored only as
 # sha256("dynasty-advisor:<key>:<password>"). This keeps casual visitors out;
 # it isn't real security, since the site is public and its files can be
-# fetched directly. `store` names the browser storage the pages use.
+# fetched directly. `store` names the browser storage the pages use. An
+# optional `notice` shows on the sign-in page when that profile is picked.
+# Changing a password signs that profile out on every device.
 PROFILES = {
     "oscar": {"name": "Oscar", "username": MY_USERNAME, "store": "dynasty-advisor",
               "password_sha256": "a3421bf081b51292f9f066f3b6650e3c6abaef0cf3afe28c689881d5a3b95531"},
     "jawsh": {"name": "Jawsh", "username": "Jawshwaghanda", "store": "dynasty-advisor-jawsh",
-              "password_sha256": "5499d174877ae57692bd39a90e635fc67b19f515d1a2723f3862078396a72a17"},
+              "password_sha256": "69e7ca9c950a41ccfdbd3884ce69eedf544a42a0bca3306b8993cfe35da5c327",
+              "notice": "Your free trial has ended."},
 }
 DEFAULT_PROFILE = "oscar"
 
