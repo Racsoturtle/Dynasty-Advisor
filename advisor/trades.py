@@ -270,6 +270,65 @@ def find_pick_deals(league_teams, me_team, call, roster_positions, per_game=None
     return label_pick_deals(_spread(ideas)[:limit])
 
 
+def find_pick_upgrades(league_teams, me_team, call, roster_positions, per_game=None, premium=1.0, exclude=(),
+                       limit=config.PICK_UPGRADES):
+    """Offers that add 1 or 2 of Oscar's 2nd/3rd-round picks to one of his
+    players to get a better player (or two players, the best of them better
+    than his). Same value rules as `find`, except the partner's starting
+    lineup only has to stay the same: the picks are what pays them for the
+    better player."""
+    roster_size = sum(1 for s in roster_positions if s not in ("IR", "TAXI"))
+    me = TeamState(me_team, roster_positions, roster_size, per_game)
+    mine = assets_for(me_team)
+    players = [a for a in mine if a.pos][: config.TRADE_POOL]
+    spare = [a for a in mine if pick_round(a) in config.PICK_DEAL_ROUNDS]
+    pick_sets = [g for n in range(1, config.PICK_UPGRADE_MAX_PICKS + 1) for g in combinations(spare, n)]
+    ideas = []
+    for partner in league_teams:
+        if partner.roster_id == me_team.roster_id:
+            continue
+        them = TeamState(partner, roster_positions, roster_size, per_game)
+        theirs = [a for a in assets_for(partner) if a.pos][: config.TRADE_POOL]
+        gets = [g for n in (1, 2) for g in combinations(theirs, n)]
+        found = []
+        for p in players:
+            for picks in pick_sets:
+                give = (p,) + picks
+                gv, gl = package_value(give), package_value(give, premium)
+                for get in gets:
+                    if get[0].value < p.value * (1 + config.PICK_UPGRADE_STEP):
+                        continue  # not a real step up from the player he gives
+                    raw_edge = (package_value(get) - gv) / gv
+                    if raw_edge < -0.05 or raw_edge > config.TRADE_MAX_TRUE_EDGE + 0.05 \
+                            or (package_value(get, premium) - gl) / gl > config.TRADE_MAX_EDGE + 0.05:
+                        continue
+                    nums = evaluate(me, them, give, get, premium)
+                    if not config.TRADE_MIN_EDGE <= nums["edge"] <= config.TRADE_MAX_TRUE_EDGE:
+                        continue
+                    if nums["league_edge"] > config.TRADE_MAX_EDGE or nums["their_lineup_change"] < 0:
+                        continue
+                    if not fits_direction(call, give, get, nums):
+                        continue
+                    if idea_key(partner.roster_id, [a.key for a in give], [a.key for a in get]) in exclude:
+                        continue
+                    found.append(_idea(partner, give, get, nums, call, premium))
+        found.sort(key=lambda i: -i.score)
+        ideas += _distinct(found)[:1]
+    ideas.sort(key=lambda i: -i.score)
+    return label_pick_upgrades(_spread(ideas)[:limit])
+
+
+def label_pick_upgrades(ideas):
+    for i in ideas:
+        player = next(a for a in i.give if a.pos)
+        picks = len(i.give) - 1
+        best = i.get[0]
+        extra = f", plus {i.get[1].label}" if len(i.get) > 1 else ""
+        i.reason = (f"Adds {picks} pick{'s' if picks > 1 else ''} to {player.label} to move up to {best.label} "
+                    f"({best.value - player.value:,.0f} more value){extra}.")
+    return ideas
+
+
 def label_pick_deals(ideas):
     for i in ideas:
         player = i.get[0].pos is not None

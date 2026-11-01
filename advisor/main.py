@@ -190,9 +190,13 @@ def analyze(raw, today=None, profile=None):
         report["pick_offers"] = trades.label_pick_deals(trades.keep_offers(
             raw.get("fixed_pick_offers") or [], league_teams, me, call, roster_positions, week_proj.per_game,
             premium.multiplier, report["changed_rosters"]))
-        kept = {i.key for i in report["trade_offers"] + report["pick_offers"]}
+        report["upgrade_offers"] = trades.label_pick_upgrades(trades.keep_offers(
+            raw.get("fixed_upgrade_offers") or [], league_teams, me, call, roster_positions, week_proj.per_game,
+            premium.multiplier, report["changed_rosters"]))
+        kept = {i.key for i in report["trade_offers"] + report["pick_offers"] + report["upgrade_offers"]}
         pulled = {trades.idea_key(o["partner"], o["give"], o["get"])
-                  for o in raw["fixed_offers"] + (raw.get("fixed_pick_offers") or [])} - kept
+                  for o in raw["fixed_offers"] + (raw.get("fixed_pick_offers") or [])
+                  + (raw.get("fixed_upgrade_offers") or [])} - kept
         report["offers_pulled"] = len(pulled)
     else:
         report["trade_offers"] = trades.find(league_teams, me, call, roster_positions, week_proj.per_game,
@@ -203,9 +207,13 @@ def analyze(raw, today=None, profile=None):
             league_teams, me, call, roster_positions, week_proj.per_game, premium.multiplier,
             exclude=set(denied) | {i.key for i in report["trade_offers"]}) \
             if call not in ("Past deadline", "Offseason") else []
+        report["upgrade_offers"] = trades.find_pick_upgrades(
+            league_teams, me, call, roster_positions, week_proj.per_game, premium.multiplier,
+            exclude=set(denied) | {i.key for i in report["trade_offers"] + report["pick_offers"]}) \
+            if call not in ("Past deadline", "Offseason") else []
     report["trade_ideas"] = report["trade_offers"][:config.TRADE_IDEAS]
     report["trade_log"], report["log_rows"] = tradelog.update(
-        raw.get("trade_log"), today, report["trade_ideas"] + report["pick_offers"], league_teams, me, roster_positions,
+        raw.get("trade_log"), today, report["trade_ideas"] + report["pick_offers"] + report["upgrade_offers"], league_teams, me, roster_positions,
         week_proj.per_game, premium.multiplier, raw.get("denied"), pulled)
     report["checker"] = trades.checker_data(league_teams, me, call, roster_positions, week_proj.per_game,
                                             premium.multiplier)
