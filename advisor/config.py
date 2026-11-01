@@ -70,11 +70,15 @@ HOLD_PICKS_FOR_AGE = 25.5  # on Hold, picks only buy players this young or young
 # better asset, so fewer rookies compete for roster and taxi spots.
 PICK_DEALS = 5
 PICK_DEAL_ROUNDS = (2, 3)
-# Pick-sweetened upgrades: one of Oscar's players plus up to this many of his
-# 2nd/3rd-round picks for a better player (or two) on another team.
-PICK_UPGRADES = 5
-PICK_UPGRADE_MAX_PICKS = 2
+# Pick-sweetened upgrades: one of Oscar's players (any value) plus up to this
+# many of his 2nd/3rd-round picks for a better RB, WR or TE (or two) on another
+# team. Strictly value: the partner's lineup and the call don't matter.
+PICK_UPGRADES = 8
+PICK_UPGRADES_PER_PARTNER = 2
+PICK_UPGRADE_MAX_PICKS = 4
+PICK_UPGRADE_TARGETS = ("RB", "WR", "TE")
 PICK_UPGRADE_STEP = 0.15  # the best player he gets is worth at least this much more than his
+PICK_UPGRADE_PER_PICK = 50  # score bonus per pick moved, to favor clearing picks
 
 # League pick premium: what this league pays for 1st-round picks, measured
 # from its own trades and priced with each source's values on the trade date.

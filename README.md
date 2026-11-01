@@ -13,7 +13,7 @@ the site are public, so every page and data file can still be fetched directly.
 Pages: Home (contend, hold or retool call; record and luck; roster values; picks), Lineup (best
 lineup by consensus projection, changes, close calls, injuries and byes), Trades (offers to send:
 at least 3% in your favor by consensus value but no more than 10% at league prices, better for the
-partner's starting lineup, and fitting the call; offers that turn spare 2nds and 3rds into one better asset; offers that add 1 or 2 of those picks to one of your players for a better player; plus what this league pays for 1sts), Trade checker (grade any offer in the browser and get a counter), Trade log (every suggested offer,
+partner's starting lineup, and fitting the call; offers that turn spare 2nds and 3rds into one better asset; offers that add up to 4 of those picks to one of your players for a better RB, WR or TE, strictly on value; plus what this league pays for 1sts), Trade checker (grade any offer in the browser and get a counter), Trade log (every suggested offer,
 re-valued daily, saved on the `data` branch). "They said no" on an offer hides it in that browser and
 a backup offer takes its place; Claude can also mark one for every device by opening a "Denied: ... [id]"
 issue from Oscar's account, which the build skips), Waivers (free agents

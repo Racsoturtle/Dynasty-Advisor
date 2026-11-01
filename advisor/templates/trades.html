@@ -79,9 +79,9 @@
 <h3>Add picks to move up</h3>
 <div class="card pad">
 {% if upgrade_offers %}
-  <p class="small muted">These offers add 1 or {{ cfg.PICK_UPGRADE_MAX_PICKS }} of your 2nds and 3rds to one of your players to get a better player from another team (sometimes with a second player thrown in). The best player you get is worth at least {{ (cfg.PICK_UPGRADE_STEP * 100) | int }}% more than the one you give. Each follows the same value rules as the offers above, and the other team's starting lineup doesn't get worse.</p>
+  <p class="small muted">These offers add up to {{ cfg.PICK_UPGRADE_MAX_PICKS }} of your 2nds and 3rds to one of your players to get a better RB, WR or TE (sometimes with a second player thrown in), so picks you won't have room for turn into player value. The best player you get is worth at least {{ (cfg.PICK_UPGRADE_STEP * 100) | int }}% more than the one you give. These are strictly value calls: each follows the same value rules as the offers above, but the other team's lineup may get worse and the {{ call[0] | lower }} call isn't applied.</p>
 {% else %}
-  <p class="small muted">No offer adds your 2nds and 3rds to one of your players for a better player today within the value rules.</p>
+  <p class="small muted">No offer adds your 2nds and 3rds to one of your players for a better RB, WR or TE today within the value rules.</p>
 {% endif %}
 </div>
 {% for i in upgrade_offers %}

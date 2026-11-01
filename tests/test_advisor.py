@@ -586,11 +586,13 @@ def test_pick_upgrades_add_picks_to_a_player_for_a_better_player(report):
         picks = [a for a in i.give if a.pos is None]
         assert len(players) == 1 and 1 <= len(picks) <= config.PICK_UPGRADE_MAX_PICKS
         assert all(trades.pick_round(a) in config.PICK_DEAL_ROUNDS for a in picks)
-        assert 1 <= len(i.get) <= 2 and all(a.pos for a in i.get)
+        assert 1 <= len(i.get) <= 2 and all(a.pos in config.PICK_UPGRADE_TARGETS for a in i.get)
         assert max(a.value for a in i.get) >= players[0].value * (1 + config.PICK_UPGRADE_STEP)
         assert config.TRADE_MIN_EDGE <= i.edge <= config.TRADE_MAX_TRUE_EDGE
-        assert i.league_edge <= config.TRADE_MAX_EDGE and i.their_lineup_change >= 0
+        assert i.league_edge <= config.TRADE_MAX_EDGE  # their lineup may get worse here
         assert "move up to" in i.reason
+    mine = [a.key for i in deals for a in i.give + i.get if a.pos]
+    assert len(mine) == len(set(mine))  # each player in one offer only
     others = {i.key for i in report["trade_offers"] + report["pick_offers"]}
     assert not others & {i.key for i in deals}
     assert {i.key for i in deals} <= set(report["trade_log"]["ideas"])
