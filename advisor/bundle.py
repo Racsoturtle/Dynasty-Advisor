@@ -79,5 +79,7 @@ def slim(raw, report):
                          for i in report["trade_offers"]],
         "fixed_pick_offers": [{"partner": i.partner.roster_id, "give": [a.key for a in i.give],
                                "get": [a.key for a in i.get]} for i in report.get("pick_offers") or []],
+        "fixed_upgrade_offers": [{"partner": i.partner.roster_id, "give": [a.key for a in i.give],
+                                  "get": [a.key for a in i.get]} for i in report.get("upgrade_offers") or []],
     }
     return out

@@ -340,7 +340,7 @@ def test_trade_log_counts_days_and_revalues():
     one = _day(raw, TODAY)
     ideas = one["trade_ideas"]
     log = one["trade_log"]
-    assert set(log["ideas"]) == {i.key for i in ideas + one["pick_offers"]}
+    assert set(log["ideas"]) == {i.key for i in ideas + one["pick_offers"] + one["upgrade_offers"]}
     assert all(e["days_recommended"] == 1 for e in log["ideas"].values())
     again = _day(raw, TODAY, log=log)  # a second build the same day
     assert all(e["days_recommended"] == 1 for e in again["trade_log"]["ideas"].values())
@@ -464,7 +464,7 @@ def test_refresh_drops_offers_whose_rosters_changed():
     assert after["changed_rosters"] == {partner}
     kept = {i.key for i in after["trade_offers"]}
     assert kept == {i.key for i in offers if i.partner.roster_id != partner}
-    picks_pulled = sum(1 for i in morning["pick_offers"] if i.partner.roster_id == partner)
+    picks_pulled = sum(1 for i in morning["pick_offers"] + morning["upgrade_offers"] if i.partner.roster_id == partner)
     assert after["offers_pulled"] == len(offers) - len(kept) + picks_pulled
     assert all(i.partner.roster_id != partner for i in after["pick_offers"])
     row = next(x for x in after["log_rows"] if x.key == offers[0].key)
@@ -479,8 +479,9 @@ def test_refresh_drops_every_offer_when_my_roster_changed(tmp_path):
     roster = next(x for x in r["sleeper"]["rosters"] if x["roster_id"] == me.roster_id)
     dropped = roster["players"].pop()
     after = main.analyze(r, today=TODAY)
-    assert after["trade_offers"] == [] and after["pick_offers"] == []
-    assert after["offers_pulled"] == len(morning["trade_offers"]) + len(morning["pick_offers"])
+    assert after["trade_offers"] == [] and after["pick_offers"] == [] and after["upgrade_offers"] == []
+    assert after["offers_pulled"] == len(morning["trade_offers"]) + len(morning["pick_offers"]) \
+        + len(morning["upgrade_offers"])
     assert dropped not in {p.pid for p in after["me"].players}
     assert all(f.drop != dropped for f in after["waivers"])
     render.write_site(after, tmp_path)
@@ -576,11 +577,34 @@ def test_spare_pick_deals_turn_several_picks_into_one_better_asset(report):
     assert room["normal"] == 3 and room["drafts"] and room["taxi_slots"] == 5
 
 
+def test_pick_upgrades_add_picks_to_a_player_for_a_better_player(report):
+    from advisor import config, trades
+    deals = report["upgrade_offers"]
+    assert deals, "sample league should have at least one pick-sweetened upgrade"
+    for i in deals:
+        players = [a for a in i.give if a.pos]
+        picks = [a for a in i.give if a.pos is None]
+        assert len(players) == 1 and 1 <= len(picks) <= config.PICK_UPGRADE_MAX_PICKS
+        assert all(trades.pick_round(a) in config.PICK_DEAL_ROUNDS for a in picks)
+        assert 1 <= len(i.get) <= 2 and all(a.pos in config.PICK_UPGRADE_TARGETS for a in i.get)
+        assert max(a.value for a in i.get) >= players[0].value * (1 + config.PICK_UPGRADE_STEP)
+        assert config.TRADE_MIN_EDGE <= i.edge <= config.TRADE_MAX_TRUE_EDGE
+        assert i.league_edge <= config.TRADE_MAX_EDGE  # their lineup may get worse here
+        assert "move up to" in i.reason
+    mine = [a.key for i in deals for a in i.give + i.get if a.pos]
+    assert len(mine) == len(set(mine))  # each player in one offer only
+    others = {i.key for i in report["trade_offers"] + report["pick_offers"]}
+    assert not others & {i.key for i in deals}
+    assert {i.key for i in deals} <= set(report["trade_log"]["ideas"])
+
+
 def test_trades_page_shows_spare_pick_section(report, tmp_path):
     render.write_site(report, tmp_path)
     page = (tmp_path / "trades.html").read_text()
     assert "Spare 2nd and 3rd round picks" in page
     assert page.count('class="btn deny-pick"') == len(report["pick_offers"])
+    assert "Add picks to move up" in page
+    assert page.count('class="btn deny-pick deny-upgrade"') == len(report["upgrade_offers"])
 
 
 def test_each_profile_sees_the_site_from_its_own_team(tmp_path, monkeypatch):

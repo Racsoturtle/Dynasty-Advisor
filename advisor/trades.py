@@ -270,6 +270,95 @@ def find_pick_deals(league_teams, me_team, call, roster_positions, per_game=None
     return label_pick_deals(_spread(ideas)[:limit])
 
 
+def find_pick_upgrades(league_teams, me_team, call, roster_positions, per_game=None, premium=1.0, exclude=(),
+                       limit=config.PICK_UPGRADES):
+    """Offers that add up to PICK_UPGRADE_MAX_PICKS of Oscar's 2nd/3rd-round
+    picks to one of his players, however little that player is worth, to get
+    a better RB, WR or TE (or two, the best of them better than his player).
+    Strictly a value call: the same value rules as `find`, but the partner's
+    lineup and the contend / hold / retool call don't matter here, because
+    the point is to turn picks he has no roster room for into player value."""
+    from bisect import bisect_left, bisect_right
+    roster_size = sum(1 for s in roster_positions if s not in ("IR", "TAXI"))
+    me = TeamState(me_team, roster_positions, roster_size, per_game)
+    mine = assets_for(me_team, 0)
+    players = [a for a in mine if a.pos]
+    spare = [a for a in mine if pick_round(a) in config.PICK_DEAL_ROUNDS]
+    # Picks of the same value are interchangeable: keep one set per value mix.
+    pick_sets, seen = [], set()
+    for n in range(1, config.PICK_UPGRADE_MAX_PICKS + 1):
+        for g in combinations(spare, n):
+            mix = tuple(round(a.value) for a in g)
+            if mix not in seen:
+                seen.add(mix)
+                pick_sets.append(g)
+    ideas = []
+    for partner in league_teams:
+        if partner.roster_id == me_team.roster_id:
+            continue
+        them = TeamState(partner, roster_positions, roster_size, per_game)
+        theirs = [a for a in assets_for(partner) if a.pos in config.PICK_UPGRADE_TARGETS][: config.TRADE_POOL]
+        gets = [(package_value(g), g) for n in (1, 2) for g in combinations(theirs, n)]
+        found = []
+        for p in players:
+            gets_up = [(v, g) for v, g in gets if g[0].value >= p.value * (1 + config.PICK_UPGRADE_STEP)]
+            if not gets_up:
+                continue
+            # Every package of this player plus picks, by consensus value.
+            gives = sorted(((package_value((p,) + picks), picks) for picks in pick_sets), key=lambda x: x[0])
+            give_values = [v for v, _ in gives]
+            for v, get in gets_up:
+                # Packages this get beats by TRADE_MIN_EDGE to TRADE_MAX_TRUE_EDGE.
+                lo = bisect_left(give_values, v / (1 + config.TRADE_MAX_TRUE_EDGE))
+                hi = bisect_right(give_values, v / (1 + config.TRADE_MIN_EDGE))
+                # The roster math is slow: only the few best by value and picks moved.
+                best = sorted(gives[lo:hi], key=lambda x: -(v - x[0] + config.PICK_UPGRADE_PER_PICK * len(x[1])))
+                tried = 0
+                for gv, picks in best:
+                    if tried == 3:
+                        break
+                    give = (p,) + picks
+                    gl = package_value(give, premium)
+                    if (package_value(get, premium) - gl) / gl > config.TRADE_MAX_EDGE + 0.05:
+                        continue
+                    tried += 1
+                    nums = evaluate(me, them, give, get, premium)
+                    if not config.TRADE_MIN_EDGE <= nums["edge"] <= config.TRADE_MAX_TRUE_EDGE:
+                        continue
+                    if nums["league_edge"] > config.TRADE_MAX_EDGE:
+                        continue
+                    if idea_key(partner.roster_id, [a.key for a in give], [a.key for a in get]) in exclude:
+                        continue
+                    found.append(_idea(partner, give, get, nums, call, premium))
+                    break
+        # More picks moved is the point: break near-ties toward bigger packages.
+        for i in found:
+            i.score += config.PICK_UPGRADE_PER_PICK * (len(i.give) - 1)
+        found.sort(key=lambda i: -i.score)
+        ideas += _distinct(found)[: config.PICK_UPGRADES_PER_PARTNER]
+    ideas.sort(key=lambda i: -i.score)
+    # Picks may repeat across offers (they're alternatives), but each of his
+    # players and each player he'd get shows up once.
+    used, out = set(), []
+    for i in ideas:
+        keys = {a.key for a in i.give + i.get if a.pos}
+        if not keys & used:
+            used |= keys
+            out.append(i)
+    return label_pick_upgrades(out[:limit])
+
+
+def label_pick_upgrades(ideas):
+    for i in ideas:
+        player = next(a for a in i.give if a.pos)
+        picks = len(i.give) - 1
+        best = i.get[0]
+        extra = f", plus {i.get[1].label}" if len(i.get) > 1 else ""
+        i.reason = (f"Adds {picks} pick{'s' if picks > 1 else ''} to {player.label} to move up to {best.label} "
+                    f"({best.value - player.value:,.0f} more value){extra}.")
+    return ideas
+
+
 def label_pick_deals(ideas):
     for i in ideas:
         player = i.get[0].pos is not None
