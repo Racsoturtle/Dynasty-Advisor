@@ -6,9 +6,10 @@
 // Only the profile signed in on this device sees these pages; anyone else
 // goes to the sign-in page first.
 (function () {
-  let p = "{{ profile.key }}";
-  try { p = localStorage.getItem("dynasty-advisor:profile"); } catch (e) {}
-  if (p !== "{{ profile.key }}") {
+  let p = "{{ profile.key }}", h = "{{ profile.password_sha256 }}";
+  try { p = localStorage.getItem("dynasty-advisor:profile"); h = localStorage.getItem("dynasty-advisor:signin"); } catch (e) {}
+  // A sign-in made with an old password no longer counts.
+  if (p !== "{{ profile.key }}" || h !== "{{ profile.password_sha256 }}") {
     document.documentElement.style.display = "none";
     location.replace("../index.html");
   }

@@ -8,7 +8,9 @@ Profiles: the site opens on a sign-in page. Each profile in `PROFILES` (`advisor
 and Jawsh, has a password and gets every page below built from its own team under `<site>/<profile>/`,
 with its own trade log (`trade_log.json` for Oscar, `trade_log_<profile>.json` for others). Passwords are
 stored only as hashes, but this keeps casual visitors out rather than securing anything: the repo and
-the site are public, so every page and data file can still be fetched directly.
+the site are public, so every page and data file can still be fetched directly. Changing a profile's
+password signs it out on every device, and a profile's optional `notice` (Jawsh's: "Your free trial has
+ended.") shows on the sign-in page when it is picked.
 
 Pages: Home (contend, hold or retool call; record and luck; roster values; picks), Lineup (best
 lineup by consensus projection, changes, close calls, injuries and byes), Trades (offers to send:

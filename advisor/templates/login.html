@@ -9,8 +9,10 @@
 // A profile signed in on this device goes straight to its pages. "Switch
 // profile" on any page clears it and comes back here.
 try {
-  const p = localStorage.getItem("dynasty-advisor:profile");
-  if (p && {{ profiles | selectattr("team") | map(attribute="key") | list | tojson }}.includes(p)) location.replace(p + "/index.html");
+  const p = localStorage.getItem("dynasty-advisor:profile"), h = localStorage.getItem("dynasty-advisor:signin");
+  const live = {{ profiles | selectattr("team") | map(attribute="key") | list | tojson }};
+  const hashes = { {% for p in profiles %}{{ p.key | tojson }}: {{ p.password_sha256 | tojson }}{% if not loop.last %}, {% endif %}{% endfor %} };
+  if (p && live.includes(p) && h === hashes[p]) location.replace(p + "/index.html");
 } catch (e) {}
 </script>
 <style>
@@ -36,6 +38,8 @@ form { display: grid; gap: 10px; }
 form[hidden] { display: none; }
 input { font: inherit; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
 form button { font: inherit; padding: 10px 12px; border-radius: 8px; border: 0; background: var(--accent); color: #fff; cursor: pointer; }
+.notice { padding: 12px 14px; border-radius: 8px; border: 1px solid var(--bad); color: var(--bad); font-weight: 600; }
+.notice[hidden] { display: none; }
 .err { color: var(--bad); font-size: 14px; min-height: 1.4em; }
 </style>
 </head>
@@ -44,11 +48,12 @@ form button { font: inherit; padding: 10px 12px; border-radius: 8px; border: 0; 
   <h1>Dynasty Advisor</h1>
   <div class="muted small">{{ league.name }}. Pick your profile.</div>
   <div class="who">
-    {% for p in profiles %}<button type="button" data-key="{{ p.key }}" data-hash="{{ p.password_sha256 }}"{% if not p.team %} disabled{% endif %}>
+    {% for p in profiles %}<button type="button" data-key="{{ p.key }}" data-hash="{{ p.password_sha256 }}" data-notice="{{ p.notice or '' }}"{% if not p.team %} disabled{% endif %}>
       <b>{{ p.name }}</b><span class="muted small">{{ p.team or "Team not found in the league today" }}</span></button>
     {% endfor %}
   </div>
   <form id="pw" hidden>
+    <div class="notice" id="notice" role="alert" hidden></div>
     <label for="password" class="small muted">Password for <span id="who"></span></label>
     <input id="password" type="password" autocomplete="current-password" required>
     <button type="submit">Sign in</button>
@@ -63,6 +68,8 @@ form button { font: inherit; padding: 10px 12px; border-radius: 8px; border: 0; 
     document.querySelectorAll(".who button").forEach((x) => x.classList.toggle("on", x === b));
     picked = b;
     document.getElementById("who").textContent = b.querySelector("b").textContent;
+    const notice = document.getElementById("notice");
+    notice.textContent = b.dataset.notice; notice.hidden = !b.dataset.notice;
     form.hidden = false; err.textContent = ""; input.value = ""; input.focus();
   }));
   async function sha256(text) {
@@ -75,7 +82,7 @@ form button { font: inherit; padding: 10px 12px; border-radius: 8px; border: 0; 
     if (await sha256("dynasty-advisor:" + key + ":" + input.value) !== picked.dataset.hash) {
       err.textContent = "Wrong password."; input.select(); return;
     }
-    try { localStorage.setItem("dynasty-advisor:profile", key); } catch (x) {}
+    try { localStorage.setItem("dynasty-advisor:profile", key); localStorage.setItem("dynasty-advisor:signin", picked.dataset.hash); } catch (x) {}
     location.href = key + "/index.html";
   });
 })();
