@@ -1,0 +1,38 @@
+Seasons: [('2026', '1327317900188487680'), ('2025', '1264704578339745792')]
+draft 2026 1327317900196876288 linear complete rounds 3 name Skulls Super Dynasty League
+draft 2025 1264704579254104064 snake complete rounds 25 name Skulls Super Dynasty League
+Using startup draft 1264704579254104064 season 2025
+
+kept/drafted | share of current roster | roster | team now (user) | team at draft
+16/25 = 64% | 67% of 24 | 6 | Golden Shower (mattswider) | Golden Shower
+    kept: Lamar Jackson (R1), Jonathan Taylor (R2), Tee Higgins (R3), D'Andre Swift (R4), Matthew Golden (R5), Khalil Shakir (R6), Jacory Croskey-Merritt (R7), Dallas Goedert (R8), Pittsburgh Steelers (R9), Bryce Young (R11), Wan'Dale Robinson (R12), Michael Wilson (R13), Cam Little (R14), Shedeur Sanders (R16), Tre Tucker (R17), Spencer Shrader (R22)
+15/25 = 60% | 62% of 24 | 12 | BigDawgSP26 (BigDawgSP26) | BigDawgSP26
+    kept: CeeDee Lamb (R1), Jaxon Smith-Njigba (R2), Josh Jacobs (R3), Chuba Hubbard (R4), Aaron Jones (R6), Jake Ferguson (R8), Jauan Jennings (R9), Calvin Austin (R11), Harrison Butker (R14), Green Bay Packers (R15), Phil Mafah (R18), Chimere Dike (R19), LeQuint Allen (R20), Raheim Sanders (R21), Indianapolis Colts (R22)
+15/25 = 60% | 62% of 24 | 16 | Is dewalt a lesbian? (Xinwen) | Wens POV for Sexy Stuff
+    kept: Ja'Marr Chase (R1), Kyren Williams (R2), Garrett Wilson (R3), Isiah Pacheco (R4), C.J. Stroud (R5), Travis Kelce (R6), Jayden Higgins (R7), Cade Otton (R10), Brandon Aubrey (R11), Isaac TeSlaa (R12), Darius Cooper (R14), Aaron Rodgers (R15), Los Angeles Rams (R16), Tahj Brooks (R17), Elijah Mitchell (R20)
+14/25 = 56% | 56% of 25 | 8 | Jawshwaghanda (Jawshwaghanda) | Jawshwaghanda
+    kept: Amon-Ra St. Brown (R1), Trey McBride (R2), Chase Brown (R3), Emeka Egbuka (R4), Jordan Mason (R7), Rashod Bateman (R9), Mason Taylor (R10), Elic Ayomanor (R11), Geno Smith (R12), Denver Broncos (R13), Tyler Bass (R14), Jahan Dotson (R19), Quinn Ewers (R20), AJ Barner (R21)
+14/25 = 56% | 61% of 23 | 15 | DeFootball Team (dewaltjack) | DeFootball Team
+    kept: Jahmyr Gibbs (R1), Bo Nix (R2), DK Metcalf (R4), Jameson Williams (R5), Dalton Kincaid (R6), Mark Andrews (R7), Jack Bech (R8), Najee Harris (R9), Philadelphia Eagles (R10), Jaylin Noel (R11), Jaxson Dart (R12), Will Reichard (R14), Kayshon Boutte (R20), Daniel Carlson (R21)
+13/25 = 52% | 54% of 24 | 9 | Touch my Jeanty-lia’s (BrantMason) | Kraft Mac & 🧀
+    kept: Ashton Jeanty (R1), Tetairoa McMillan (R3), Caleb Williams (R6), Tucker Kraft (R7), Javonte Williams (R9), Devin Neal (R10), Kyler Murray (R11), Terrance Ferguson (R12), Pat Bryant (R13), Jake Bates (R14), San Francisco 49ers (R15), Jonathon Brooks (R17), Kimani Vidal (R23)
+13/25 = 52% | 57% of 23 | 11 | Picken Browns A$$ (reebmas) | Dak Sucks Sack
+    kept: A.J. Brown (R2), TreVeyon Henderson (R3), George Pickens (R4), Colston Loveland (R5), Zach Charbonnet (R6), Keon Coleman (R7), Michael Pittman (R8), Dak Prescott (R11), Jalen Milroe (R13), Evan McPherson (R14), Keaton Mitchell (R17), Joe Milton (R19), Cleveland Browns (R22)
+12/25 = 48% | 50% of 24 | 3 | Only Fannins (mattgilliatt) | Password is Taco
+    kept: Jayden Daniels (R1), Ladd McConkey (R2), Sam LaPorta (R4), Travis Etienne (R6), Trey Benson (R7), Kyle Williams (R9), Tyler Allgeier (R10), Harold Fannin (R11), Cameron Dicker (R13), New England Patriots (R16), Christian Watson (R19), Riley Leonard (R23)
+10/25 = 40% | 45% of 22 | 1 | Sparvero’s Soldiers (amilardo) | Zay Hello to My Lil Frien
+    kept: Omarion Hampton (R2), James Cook (R3), Zay Flowers (R4), Jordan Love (R6), Deebo Samuel (R7), Jayden Reed (R8), Isaiah Likely (R9), Buffalo Bills (R13), Mike Gesicki (R14), Kyle Monangai (R15)
+10/25 = 40% | 43% of 23 | 13 | The Auto Bids (dbransfield) | The Auto Bids
+    kept: Saquon Barkley (R1), Terry McLaurin (R3), Cam Ward (R6), Kyle Pitts (R7), J.J. McCarthy (R10), KeAndre Lambert-Smith (R11), Jalen McMillan (R13), Tank Dell (R14), Chase McLaughlin (R16), Adonai Mitchell (R17)
+9/25 = 36% | 41% of 22 | 2 | NabersThinkImSellinDope (jdshorsey) | Shoresy’s Sleepers
+    kept: Malik Nabers (R1), Courtland Sutton (R5), Evan Engram (R7), DeMario Douglas (R9), Elijah Arroyo (R10), Baltimore Ravens (R12), Tyler Loop (R14), Dalton Schultz (R19), Kenneth Gainwell (R22)
+9/25 = 36% | 39% of 23 | 5 | Monkey Neva Cramp (bmatthews31) | Monkey Neva Cramp
+    kept: De'Von Achane (R1), Bucky Irving (R2), Patrick Mahomes (R4), Ollie Gordon (R10), Efton Chism (R11), Brenton Strange (R12), Kansas City Chiefs (R14), Tory Horton (R16), Ka'imi Fairbairn (R17)
+8/25 = 32% | 36% of 22 | 4 | Better Call Pearsall (jrowley10) | Better Call Pearsall
+    kept: Nico Collins (R1), Brock Bowers (R2), Kenneth Walker (R3), Ricky Pearsall (R6), Luther Burden (R7), Minnesota Vikings (R13), Brashard Smith (R16), Oronde Gadsden (R18)
+8/25 = 32% | 33% of 24 | 7 | Racsoturtle (Racsoturtle) | Racsoturtle
+    kept: Quinshon Judkins (R4), Brian Robinson (R6), Dylan Sampson (R9), Pat Freiermuth (R10), Quentin Johnston (R12), Jalen Royals (R15), Ben Sinnott (R18), Jordan Watkins (R20)
+6/25 = 24% | 29% of 21 | 14 | Big Backs (Vollbs) | The Choice is Yours
+    kept: Joe Burrow (R2), Xavier Worthy (R4), Rachaad White (R10), Matthew Stafford (R12), Tutu Atwell (R20), Andy Borregales (R21)
+5/25 = 20% | 23% of 22 | 10 | The Washington Wizards (DecStablow) | 2006-07 Boston Celtics
+    kept: Justin Jefferson (R1), Brock Purdy (R6), Washington Commanders (R14), Kendre Miller (R17), Michael Mayer (R19)
