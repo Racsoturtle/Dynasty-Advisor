@@ -1,0 +1,190 @@
+== around playersArray
+ 9,265,1070,1967,1816,2134,1842,1733,1817,1808,235,1581,1711,282,1796,2009,1261,1838,1566,1895,1712,1246,1575,1256,1906,565,1738,1627,1970,1756,2070,1186,569,1891,2026,1054,159,1943,545,349,1400,1940,1713,1442,1572,1245,1632,87,1981,1272,1760,1892,2013,1776,1386,1755,1515,1390,1786,1635,2135,1574,785,1972,1078,1761,88,1059,822,1615,1966,1601,1787,1762,1478,1736,238,1610,310,1893,6,1620,767,618,2014,1189,2020,229,576,2003,1592,1565,2136,252,1614,1015,1356,1606,1797,1604,153,1579,1991,1065,1486,1735,1611,2040,2036,1276,1422,413,1746,1266,2137,1434,1927,2025,1430,1988,2011,1734,1469,1618,911,1749,23,2010,1904,221,2004,1218,2015,243,1247,1758,538,600,1490,1818,2029,1769,1701,385,1809,1607,1481,1254,1631,1764,1444,1616,52,2007,1069,1013,2017,47,1452,1336,1613,1450,1557,1207,1322,1197,1012,1777,1824,1262,1626,1399,286,1283,609,1608,1949,10,2008,1737,994,2065,1584,1206,1275,2022,1382,1157,268,1244,293,1383,1750,1681,2027,1406,84,1162,1029,1017,1209,1570,179,1948,1577,1815,311,533,1052,950,1035,1504,572,1763,1391,1823,1229,1619,177,1524,1595,1436,1641,1686,1596,307,7,1402,404,539,1255,2075,1932,1182,1191,1230];
+
+    // Values from Trades — slider state. Server has already resolved BlendRatio
+    // from ?blend= URL param → BlendRatio cookie → default. The slider JS
+    // (valuesFromTradesBlendSlider.js) reads both globals on DOMContentLoaded.
+    var blendRatio = 0.0;
+    var isBlendSliderEnabled = true;
+
+</script>
+<script>
+    var playersVersion = '2611251820-0f77672813f32ab5';
+    var playersArray = [];
+    var ktcPoolReady = ktcFetchPlayerPool('dynasty', playersVersion,
+        typeof filteredPlayersIds !== 'undefined' ? filteredPlayersIds : null)
+        .then(function (pool) { playersArray = pool; });
+</script>
+
+<script>
+    var historiesVersion = '261125-4e37044363b3f0cd';
+</script>
+
+<main
+    class="rankings-page  dashboard-page alert-open ">
+    <!-- Modal -->
+    <div class="modal question-modal ktc-modal" id="rankingsPageKTCModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-info question-explanation">
+                <h2>Your Thoughts?</h2>
+                <p>KTC's values are crowdsourced from users like you.</p>
+                    <p>
+                        Rank the three players below 1, 2, and 3 according to how you value them. <span class="blue-text">Keep</span> the most valuable, <span class="gray-text">Trade</span> the second in value, and <span class="red-text">Cut</span> the least valuable.
+                    </p>
+            </div>
+            <div class="modal-config-wrapper toggle-outer OneQB">
+                <div class="sf-toggle-wrapper OneQB">
+                    <div class="sf-label">
+                        <p>Superflex</p>
+                    </div>
+                    <div class="sf-toggle">
+                        <div class="sf-toggle-toggle"></div>
+                        <p class="sf-toggle-text sf-toggle-on">On</p>
+                        <p class="sf-toggle-text sf-toggle-off">Off</p>
+                    </div>
+                </div>
+                <div class="other-settings">
+                    <p>.5 PPR</p>
+                    <span class="bullet">•</span>
+                    <p>12 Tm.</p>
+                    <span class="bullet">•</span>
+                    <p>No TEP</p>
+                </div>
+            </div>
+            <div class="ktc-ktc-wrapper OneQB">
+                
+    <div class='ktc-ui-wrapper ktc-ui-oneQB'>
+        <div><input id="oneQBKtcSubmitToken" type="hidden" value="67d6e6b9-d06a-4f39-aeee-251f102b41f4||1442|1712|1756" /></div>
+        <div class="ktc-ui">
+                <div class="ktc-player" data-player-id="1442">
+                    <div class="status-num status-1"><p>1</p></div>
+                    <div class="status-num status-2"><p>2</p></div>
+                    <div class="stat
+local scripts: ['/early/dataCache.js?v=xTrmfr1em9NDKk0drgXv63QjiKMwgp1E2fpoG4zoSQY', '/vendor/js/vendor.min.js?v=ezLPo6_6yQwCYRg6WAajE94LWiymwGS--P37-4wIuQo', '/js/site.min.js?v=DkgCIlIjvHdsmttA-N8fUtbe-MpgY4iRJMMpqPSf-JI']
+
+######## /early/dataCache.js?v=xTrmfr1em9NDKk0drgXv63QjiKMwgp1E2fpoG4zoSQY length 11892
+head: // Client-side cache for the big, slow-changing datasets: the bulk player histories and the
+// league player pool.
+//
+// The server names the current dataset in a page global and serves it from a versioned,
+// immutable URL, so "is my copy current?" is a string compare instead of a guess about
+// the clock â the old sessionStorage cache keyed on the UTC date, which rolls hours before
+// the nightly publish, and the payload has since outgrown Web Storage's ~5MB anyway.
+//
+// Everything here degrades to a plain fetch. A browser without the Cache API, a storage
+// error, or a hung open leaves the page working exactly as it did before this file existed.
+//
+// Loaded from <head> ahead of the bundle so a page can start its pool fetch at parse time.
+// No jQuery here.
+
+var KTC_DATA_CACHE_NAME = 'ktc-data';
+
+// Bump when what a payload CONTAINS changes at a deploy, so a stored response built by the
+// old server can never be handed to new code. Ordinary data changes are handled by the server's
+// version; this covers the case where the bytes change but that version legitimately does not.
+// rev 2: the crowd series stopped carrying a server-stamped live point.
+var KTC_DATA_CACHE_SCHEMA_REV = '2';
+
+var KTC_HISTORIES_VERSION_HEADER = 'X-KTC-Histories-Version';
+var KTC_PLAYERS_VERSION_HEADER = 'X-KTC-Players-Version';
+
+// The Cache API has no upgrade/blocking semantics to deadlock on, but a wedged storage
+// layer must not take the page down with it.
+var KTC_DATA_CACHE_TIMEOUT_MS = 150
+-- fetch( at 7654: origin credentials up front: its version is
+// per instance, and the affinity cookie is what routes the fetch to the instance that
+// rendered the page.
+function ktcDataCacheRequest(url, credentials, signal) {
+	if (credentials !== 'omit') {
+		return fetch(url, { credentials: credentials, signal: signal });
+	}
+
+	var retry = function () { return fetch(url, { credentials: 'same-origin', signal: signal }); };
+	return fetch(url, { credentials: 'omit', redirect: 'manual', signal: signal }).then(function (response) {
+		if (response.type === 'opaqueredirect' || response.status === 401 || response.status === 403) {
+			return retry();
+		}
+		return response;
+	}, retry);
+}
+
+function ktcDataCacheNetworkF
+-- fetch( at 7750: tes the fetch to the instance that
+// rendered the page.
+function ktcDataCacheRequest(url, credentials, signal) {
+	if (credentials !== 'omit') {
+		return fetch(url, { credentials: credentials, signal: signal });
+	}
+
+	var retry = function () { return fetch(url, { credentials: 'same-origin', signal: signal }); };
+	return fetch(url, { credentials: 'omit', redirect: 'manual', signal: signal }).then(function (response) {
+		if (response.type === 'opaqueredirect' || response.status === 401 || response.status === 403) {
+			return retry();
+		}
+		return response;
+	}, retry);
+}
+
+function ktcDataCacheNetworkFetch(url, cache, ctx) {
+	ktcDataCacheRequest(url, ctx.credentials, ctx.signal).then(function (re
+-- fetch( at 7821: taCacheRequest(url, credentials, signal) {
+	if (credentials !== 'omit') {
+		return fetch(url, { credentials: credentials, signal: signal });
+	}
+
+	var retry = function () { return fetch(url, { credentials: 'same-origin', signal: signal }); };
+	return fetch(url, { credentials: 'omit', redirect: 'manual', signal: signal }).then(function (response) {
+		if (response.type === 'opaqueredirect' || response.status === 401 || response.status === 403) {
+			return retry();
+		}
+		return response;
+	}, retry);
+}
+
+function ktcDataCacheNetworkFetch(url, cache, ctx) {
+	ktcDataCacheRequest(url, ctx.credentials, ctx.signal).then(function (response) {
+		ctx.onResponse(response);
+		if (!response.ok) {
+			throw ne
+-- dynasty-rankings at 4562: match ? decodeURIComponent(match[1]) : '';
+}
+
+/**
+ * Fetches a versioned dataset, serving it from the browser cache when the stored copy matches
+ * the version the page was rendered with.
+ *
+ * @param {string} baseUrl      Path without query, e.g. "/dynasty-rankings/histories".
+ * @param {string} version      Server-published dataset version (the page global).
+ * @param {function} onData     Called with the parsed payload. Called once, cached or not.
+ * @param {object} [options]    versionHeader (default histories), credentials (default 'omit'),
+ *                              signal (AbortSignal), onResponse (called once headers arrive),
+ *                              onError (called when 
+
+######## /vendor/js/vendor.min.js?v=ezLPo6_6yQwCYRg6WAajE94LWiymwGS--P37-4wIuQo length 449353
+head: /*! ScrollMagic v2.0.6 | (c) 2018 Jan Paepke (@janpaepke) | license & info: http://scrollmagic.io */
+!function(t,e){"function"==typeof define&&define.amd?define(e):"object"==typeof exports?module.exports=e():t.ScrollMagic=e()}(this,function(){"use strict";var t=function(){};t.version="2.0.6",window.addEventListener("mousewheel",function(){});var e="data-scrollmagic-pin-spacer";t.Controller=function(i){var o,a,s="REVERSE",u="PAUSED",c=n.defaults,l=this,f=r.extend({},c,i),h=[],d=!1,p=0,g=u,m=!0,v=0,_=!0,y=function(){f.refreshInterval>0&&(a=window.setTimeout(C,f.refreshInterval))},b=function(){return f.vertical?r.get.scrollTop(f.container):r.get.scrollLeft(f.container)},w=function(){return f.vertical?r.get.height(f.container):r.get.width(f.container)},x=this._setScrollPos=function(t){f.vertical?m?window.scrollTo(r.get.scrollLeft(),t):f.container.scrollTop=t:m?window.scrollTo(t,r.get.scrollTop()):f.container.scrollLeft=t},S=function(){if(_&&d){var t=r.type.Array(d)?d:h.slice(0);d=!1;var e=p,n=(p=l.scrollPos())-e;0!==n&&(g=n>0?"FORWARD":s),g===s&&t.reverse(),t.forEach(function(t){t.update(!0)})}},E=function(){o=r.rAF(S)},M=function(t){"resize"==t.type&&(v=w(),g=u),!0!==d&&(d=!0,E())},C=function(){if(!m&&v!=w()){var t;try{t=new Event("resize",{bubbles:!1,cancelable:!1})}catch(e){(t=document.createEvent("Event")).initEvent("resize",!1,!1)}f.container.dispatchEvent(t)}h.forEach(function(t){t.refresh()}),y()};this._options=f;var T=function(t){if(t.length<=1)return t;var e=t.slice(0);r
+-- fetch( at 154121: new Error(t.status+" "+t.statusText);return t.blob()}function Oo(t){if(!t.ok)throw new Error(t.status+" "+t.statusText);return t.arrayBuffer()}function Po(t){if(!t.ok)throw new Error(t.status+" "+t.statusText);return t.text()}function Io(t,e){return fetch(t,e).then(Po)}function Lo(t){return function(e,n,i){return 2===arguments.length&&"function"==typeof n&&(i=n,n=void 0),Io(e,n).then(function(e){return t(e,i)})}}var Ro=Lo(go),Yo=Lo(So);function Fo(t){if(!t.ok)throw new Error(t.status+" "+t.statusText);return t.json()}function Uo(t){return function(e,n){return Io(e,n).then(function(e){return(new DOMParser).parseFromString(e,t)})}}var Ho=Uo("application/xml"),jo=Uo("text/html"),zo=Uo("image/sv
+-- fetch( at 277013: =r}return t},t.axisBottom=function(t){return R(3,t)},t.axisLeft=function(t){return R(4,t)},t.axisRight=function(t){return R(2,t)},t.axisTop=function(t){return R(1,t)},t.bisect=r,t.bisectLeft=o,t.bisectRight=r,t.bisector=n,t.blob=function(t,e){return fetch(t,e).then(No)},t.brush=function(){return yr(ur)},t.brushSelection=function(t){var e=t.__brush;return e?e.dim.output(e.selection):null},t.brushX=function(){return yr(ar)},t.brushY=function(){return yr(sr)},t.buffer=function(t,e){return fetch(t,e).then(Oo)},t.chord=function(){var t=0,e=null,n=null,i=null;function r(r){var o,a,s,u,c,l,f=r.length,h=[],d=m(f),p=[],g=[],v=g.groups=new Array(f),_=new Array(f*f);for(o=0,c=-1;++c<f;){for(a=0,l=-1;++
+-- fetch( at 277254: ){return fetch(t,e).then(No)},t.brush=function(){return yr(ur)},t.brushSelection=function(t){var e=t.__brush;return e?e.dim.output(e.selection):null},t.brushX=function(){return yr(ar)},t.brushY=function(){return yr(sr)},t.buffer=function(t,e){return fetch(t,e).then(Oo)},t.chord=function(){var t=0,e=null,n=null,i=null;function r(r){var o,a,s,u,c,l,f=r.length,h=[],d=m(f),p=[],g=[],v=g.groups=new Array(f),_=new Array(f*f);for(o=0,c=-1;++c<f;){for(a=0,l=-1;++l<f;)a+=r[c][l];h.push(a),p.push(m(f)),o+=a}for(e&&d.sort(function(t,n){return e(h[t],h[n])}),n&&p.forEach(function(t,e){t.sort(function(t,i){return n(r[e][t],r[e][i])})}),u=(o=Mr(0,Er-t*f)/o)?t:Er/f,a=0,c=-1;++c<f;){for(s=a,l=-1;++l<f;){var
+-- fetch( at 304447: teZoom=Nn,t.interrupt=hi,t.interval=function(t,e,n){var i=new Jn,r=e;return null==e?(i.restart(t,e,n),i):(e=+e,n=null==n?Kn():+n,i.restart(function o(a){a+=r,i.restart(o,r+=e,n),t(a)},e,n),i)},t.isoFormat=ng,t.isoParse=ig,t.json=function(t,e){return fetch(t,e).then(Fo)},t.keys=function(t){var e=[];for(var n in t)e.push(n);return e},t.lab=De,t.lch=function(t,e,n,i){return 1===arguments.length?Re(t):new Fe(n,e,t,null==i?1:i)},t.line=hv,t.lineRadial=bv,t.linkHorizontal=function(){return Cv(Tv)},t.linkRadial=function(){var t=Cv(Av);return t.angle=t.x,delete t.x,t.radius=t.y,delete t.y,t},t.linkVertical=function(){return Cv(kv)},t.local=At,t.map=Ur,t.matcher=Q,t.max=M,t.mean=function(t,e){var n,i
+-- $.ajax at 334381: "li").length>0?a():s()}var o=e();void 0!==o.url&&""!==o.url||(o.url=h.get("url")),void 0!==o.dataType&&""!==o.dataType||(o.dataType=h.get("dataType")),void 0!==o.url&&"list-required"!==o.url&&(o.url=o.url(t),o.data=h.get("preparePostData")(o.data,t),$.ajax(o).done(function(e){var i=g.init(e);i=g.updateCategories(i,e),i=g.convertXml(i),n(t,e)&&c(i=g.processData(i,t),t),g.checkIfDataExists(i)&&v.parent().find("li").length>0?a():s(),h.get("ajaxCallback")()}).fail(function(){d.warning("Fail to load response data")}).always(function(){}))}}switch(t.keyCode){case 27:s(),v.trigger("blur");break;case 38:t.preventDefault(),y.length>0&&b>0&&(b-=1,v.val(h.get("getValue")(y[b])),u(b));break;case 40:t.pr
+
+######## /js/site.min.js?v=DkgCIlIjvHdsmttA-N8fUtbe-MpgY4iRJMMpqPSf-JI length 836875
+head: if("undefined"!=typeof ktcPoolReady){var ktcReady=$.fn.ready;$.fn.ready=function(e){return ktcReady.call(this,function(){var a=function(){try{e.call(document,$)}catch(e){$.readyException(e)}};ktcPoolReady.then(a,a)})}}var FORMATTYPE=2;"undefined"==typeof formatCookie||"OneQB"!=formatCookie&&1!=formatCookie||(FORMATTYPE=1);var VALUESOURCE=1,LEAGUETYPE=-1;"undefined"!=typeof leagueType&&(LEAGUETYPE=leagueType);var rawPlayers,rawDevys,sfSC,oneQBSC,sfTok,oneQBTok,FormatTypeCookieExpiration=30,MAXRANK=9999,LEAGUEYEARPHASE=0,LEAGUEYEAR=2026,DRAFTYEAR=2027,TEP=0,TEPCookieName="TEPTier",ValueSourceCookieName="ValueSource";function getKTCPlayerResult(e){return"Keep"==e?$(".ktc-player.is-kept").data("player-id"):"Trade"==e?$(".ktc-player.is-traded").data("player-id"):"Cut"==e?$(".ktc-player.is-cut").data("player-id"):void 0}function playerValueEditorAutoselect(){var e={data:autoCompletePlayers,getValue:"playerName",placeholder:"Search for a player",list:{maxNumberOfElements:5,match:{enabled:!0},onChooseEvent:function(){var e=$("#player-autocomplete").getSelectedItemData().playerID;$("#edit-player-button")[0].href=isStartSitValueEditor?"/admin/start-sit-player-value-editor/"+e:"/admin/player-value-editor/"+leagueType+"/"+e,$("#player-autocomplete").removeClass("inactive"),$("#player-autocomplete").addClass("active")}}};$("#player-autocomplete").easyAutocomplete(e),$(".easy-autocomplete").css("width","100%")}function playerComparisonAutoselect(){var e={data:autoCompletePlayers,getValue:"
+-- playersArray at 2606: e").removeClass("inactive"),$("#player-2-autocomplete").addClass("active")}}};$("#player-1-autocomplete").easyAutocomplete(e),$("#player-2-autocomplete").easyAutocomplete(a),$(".easy-autocomplete").css("width","100%")}function adminHistoryUpdates(e){playersArray=updateArrayHistoriesFormat(playersArray,e),$("#admin.vft-time-admin-page").length>0&&(vftTimePageSetup(),startVftTimePage())}function populateActivityFeed(){}function updateActivityFeedFormat(){1==FORMATTYPE?(d3.selectAll(".activity-feed-main-block").transition().delay(0).duration(300).ease(d3.easeLinear).style("opacity",0),setTimeout(function(){$("#activity-feed-main").removeClass("superflex"),$("#activity-feed-main").addClass("oneq
+-- playersArray at 2646: -autocomplete").addClass("active")}}};$("#player-1-autocomplete").easyAutocomplete(e),$("#player-2-autocomplete").easyAutocomplete(a),$(".easy-autocomplete").css("width","100%")}function adminHistoryUpdates(e){playersArray=updateArrayHistoriesFormat(playersArray,e),$("#admin.vft-time-admin-page").length>0&&(vftTimePageSetup(),startVftTimePage())}function populateActivityFeed(){}function updateActivityFeedFormat(){1==FORMATTYPE?(d3.selectAll(".activity-feed-main-block").transition().delay(0).duration(300).ease(d3.easeLinear).style("opacity",0),setTimeout(function(){$("#activity-feed-main").removeClass("superflex"),$("#activity-feed-main").addClass("oneqb"),d3.selectAll(".activity-feed-main-bl
+-- playersArray at 4093: fOff(!0),setTimeout(function(){$(".toggle-outer").removeClass("no-animate")},200)),2==FORMATTYPE&&($(".toggle-outer").addClass("no-animate"),toggleSfOn(!0),setTimeout(function(){$(".toggle-outer").removeClass("no-animate")},200)),"undefined"!=typeof playersArray&&playersArray.length>0&&(rawPlayers=playersArray,playersArray=updateArrayFormat(playersArray)),"undefined"!=typeof devyPlayers&&devyPlayers.length>0&&(rawDevys=devyPlayers,devyPlayers=updateDevyArrayFormat(devyPlayers)),TEP>0&&updateTepUI(),$(".hamburger").on("click",function(){$(".navigation-wrapper").hasClass("opened")?($(".navigation-wrapper").removeClass("opened"),$("body").addClass("mobile-nav-open"),$("body").removeClass("mobil
+-- playersArray at 4107: meout(function(){$(".toggle-outer").removeClass("no-animate")},200)),2==FORMATTYPE&&($(".toggle-outer").addClass("no-animate"),toggleSfOn(!0),setTimeout(function(){$(".toggle-outer").removeClass("no-animate")},200)),"undefined"!=typeof playersArray&&playersArray.length>0&&(rawPlayers=playersArray,playersArray=updateArrayFormat(playersArray)),"undefined"!=typeof devyPlayers&&devyPlayers.length>0&&(rawDevys=devyPlayers,devyPlayers=updateDevyArrayFormat(devyPlayers)),TEP>0&&updateTepUI(),$(".hamburger").on("click",function(){$(".navigation-wrapper").hasClass("opened")?($(".navigation-wrapper").removeClass("opened"),$("body").addClass("mobile-nav-open"),$("body").removeClass("mobile-nav-open")):
+-- $.ajax at 7705: lect()}),$("#admin #player-1-autocomplete").length>0&&$(document).ready(function(){playerComparisonAutoselect()}),$("#admin .ktc-button").click(function(){var e=getKTCPlayerResult("Keep")+"|"+getKTCPlayerResult("Trade")+"|"+getKTCPlayerResult("Cut");$.ajax({url:"/admin/submitKtcResult",type:"POST",data:JSON.stringify(e),contentType:"application/json;",dataType:"json",headers:{"x-ktc-submit-token":$("#oneQBKtcSubmitToken").val()}}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){console.log(t)})}),$("#admin #process-oneqb-devy-ktcs-button").click(function(){$.ajax({url:"/admin/processOneQBKTCs/2",type:"POST",contentType:"application/json;",dataType:"json"}).done(fun
+-- $.ajax at 8045: cation/json;",dataType:"json",headers:{"x-ktc-submit-token":$("#oneQBKtcSubmitToken").val()}}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){console.log(t)})}),$("#admin #process-oneqb-devy-ktcs-button").click(function(){$.ajax({url:"/admin/processOneQBKTCs/2",type:"POST",contentType:"application/json;",dataType:"json"}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){console.log(t)})}),$("#admin #process-superflex-devy-ktcs-button").click(function(){$.ajax({url:"/admin/processSuperflexKTCs/2",type:"POST",contentType:"application/json;",dataType:"json"}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){console.
+-- $.ajax at 8306: :"/admin/processOneQBKTCs/2",type:"POST",contentType:"application/json;",dataType:"json"}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){console.log(t)})}),$("#admin #process-superflex-devy-ktcs-button").click(function(){$.ajax({url:"/admin/processSuperflexKTCs/2",type:"POST",contentType:"application/json;",dataType:"json"}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){console.log(t)})}),$("#admin #process-oneqb-dynasty-ktcs-button").click(function(){$.ajax({url:"/admin/processOneQBKTCs/1",type:"POST",contentType:"application/json;",dataType:"json"}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){console.l
+-- $.ajax at 8570: admin/processSuperflexKTCs/2",type:"POST",contentType:"application/json;",dataType:"json"}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){console.log(t)})}),$("#admin #process-oneqb-dynasty-ktcs-button").click(function(){$.ajax({url:"/admin/processOneQBKTCs/1",type:"POST",contentType:"application/json;",dataType:"json"}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){console.log(t)})}),$("#admin #process-superflex-dynasty-ktcs-button").click(function(){$.ajax({url:"/admin/processSuperflexKTCs/1",type:"POST",contentType:"application/json;",dataType:"json"}).done(function(e){window.location.href=e.redirectUrl}).fail(function(e,a,t){conso
+-- oneQBValues at 23835:  dsRemovePlayer(e){for(var a=0;a<dsConfig.players.length;a++)if(dsConfig.players[a].playerID==e){var t=a;if(t>-1)dsConfig.players.splice(t,1),$("#ds-players-list .player-"+a).remove()}}function updateDSPlayerFormat(e){return 1==FORMATTYPE?(e.value=e.oneQBValues.value,e.pickRank=e.oneQBValues.pickRank,e.adp=e.oneQBValues.adp,e.history=e.oneQBValues.history,e.kept=e.oneQBValues.kept,e.traded=e.oneQBValues.traded,e.cut=e.oneQBValues.cut,e.diff=e.oneQBValues.diff,e.overallTrend=e.oneQBValues.overallTrend,e.rookieTrend=e.oneQBValues.rookieTrend,e.rookiePositionalTrend=e.oneQBValues.rookiePositionalTrend):(e.value=e.superflexValues.value,e.pickRank=e.superflexValues.pickRank,e.adp=e.superflexValue
+-- oneQBValues at 23866: a<dsConfig.players.length;a++)if(dsConfig.players[a].playerID==e){var t=a;if(t>-1)dsConfig.players.splice(t,1),$("#ds-players-list .player-"+a).remove()}}function updateDSPlayerFormat(e){return 1==FORMATTYPE?(e.value=e.oneQBValues.value,e.pickRank=e.oneQBValues.pickRank,e.adp=e.oneQBValues.adp,e.history=e.oneQBValues.history,e.kept=e.oneQBValues.kept,e.traded=e.oneQBValues.traded,e.cut=e.oneQBValues.cut,e.diff=e.oneQBValues.diff,e.overallTrend=e.oneQBValues.overallTrend,e.rookieTrend=e.oneQBValues.rookieTrend,e.rookiePositionalTrend=e.oneQBValues.rookiePositionalTrend):(e.value=e.superflexValues.value,e.pickRank=e.superflexValues.pickRank,e.adp=e.superflexValues.adp,e.history=e.superflexValu
+-- oneQBValues at 23895: )if(dsConfig.players[a].playerID==e){var t=a;if(t>-1)dsConfig.players.splice(t,1),$("#ds-players-list .player-"+a).remove()}}function updateDSPlayerFormat(e){return 1==FORMATTYPE?(e.value=e.oneQBValues.value,e.pickRank=e.oneQBValues.pickRank,e.adp=e.oneQBValues.adp,e.history=e.oneQBValues.history,e.kept=e.oneQBValues.kept,e.traded=e.oneQBValues.traded,e.cut=e.oneQBValues.cut,e.diff=e.oneQBValues.diff,e.overallTrend=e.oneQBValues.overallTrend,e.rookieTrend=e.oneQBValues.rookieTrend,e.rookiePositionalTrend=e.oneQBValues.rookiePositionalTrend):(e.value=e.superflexValues.value,e.pickRank=e.superflexValues.pickRank,e.adp=e.superflexValues.adp,e.history=e.superflexValues.history,e.kept=e.superflex
+-- oneQBValues at 23923: erID==e){var t=a;if(t>-1)dsConfig.players.splice(t,1),$("#ds-players-list .player-"+a).remove()}}function updateDSPlayerFormat(e){return 1==FORMATTYPE?(e.value=e.oneQBValues.value,e.pickRank=e.oneQBValues.pickRank,e.adp=e.oneQBValues.adp,e.history=e.oneQBValues.history,e.kept=e.oneQBValues.kept,e.traded=e.oneQBValues.traded,e.cut=e.oneQBValues.cut,e.diff=e.oneQBValues.diff,e.overallTrend=e.oneQBValues.overallTrend,e.rookieTrend=e.oneQBValues.rookieTrend,e.rookiePositionalTrend=e.oneQBValues.rookiePositionalTrend):(e.value=e.superflexValues.value,e.pickRank=e.superflexValues.pickRank,e.adp=e.superflexValues.adp,e.history=e.superflexValues.history,e.kept=e.superflexValues.kept,e.traded=e.super
+-- dynasty-rankings at 85438: "ddp-wrap",!0).classed("ddp-wrap-ovr",!0).append("p").html(function(e){return e.overall});var l=r.append("div").classed("ddp-wrap",!0).classed("ddp-wrap-player-name",!0);l.append("a").attr("target","_blank").attr("href",function(e){if(e.slug)return"/dynasty-rankings/players/"+e.slug;d3.select(this).remove()}).html(function(e){return e.playerName}),l.append("p").classed("player-team-name",!0).html(function(e){return e.team}),l.append("p").html(function(e){if(!e.slug)return e.playerName;d3.select(this).remove()});var i=r.append("div").classed("ddp-wrap",!0).classed("ddp-wrap-details",!0);i.append("div").classed("details-age",!0).append("p").html(function(e){if(e.age>18)return e.age+" y.o."}),i
+-- dynasty-rankings at 101386: ($("#hint-rank").addClass("revealed"),$("#hint-rank p").html("Rank: "+curP.player.rank)),gameStatus.curHints++,gameStatus.totalHints++,$("#hints-num").html(gameStatus.totalHints)}function getHistories(){for(var e=0;e<playersArray.length;e++){var a="/dynasty-rankings/histories/"+player.slug;fetchSpecificPlayerHistoryAsync(guessGraphHistoryUpdates,playersArray[e].playerID,a)}}function processAllPlayers(){playersArray=playersArray.filter(function(e){return"RDP"!=e.position});for(var e=0;e<playersArray.length;e++){var a=playersArray[e];if(a.history.length>91){var t=a.history.slice(a.history.length-92,a.history.length-1),r=d3.extent(t,function(e){return e.v});Math.abs(r[1]-r[0])>=MINRANGETHREE&&t
+-- dynasty-rankings at 110451: t-text",!0).html(function(){if(gameStatus.curHints>0)return 1==gameStatus.curHints?gameStatus.curHints+" hint":gameStatus.curHints+" hints";d3.select(this).remove()}),s.append("p").classed("player-name",!0).append("a").attr("href",function(){return"/dynasty-rankings/players/"+t.slug}).attr("target","_blank").html(t.playerName);var i=s.append("div").classed("player-info-wrap",!0);if(i.append("p").html(function(){return t.position}),i.append("p").html(function(){return"<span class='bullet'>â¢</span>"+t.team}),i.append("p").html(function(){return"<span class='bullet'>â¢</span>"+t.age+" y.o."}),i.append("p").html(function(){return"<span class='bullet'>â¢</span>Rank: "+t.rank}),e)r.append("p")
+-- dynasty-rankings at 131123: .players.length&&l.kept&&l.traded&&l.cut)&&($(".ktc-page").length>0&&addKTC(l,s),getCookieTrue("scNO")?(setCookie("DefaultKtcSubmitted",!0,1),$(".ktc-page").length>0?setTimeout(function(){newKtc()},300):$("main.home").length>0?window.location.href="/dynasty-rankings":setTimeout(function(){$(r).modal("hide")},500)):1==FORMATTYPE&&oneQBSC?l.kept.oneQBValues.value>l.traded.oneQBValues.value&&l.kept.oneQBValues.value>l.cut.oneQBValues.value?(setCookie("DefaultKtcSubmitted",!0,1),trackFathomGoal("VYDCQTZW"),$(".ktc-page").length>0?newKtc():setTimeout(function(){$(r).modal("hide")},300),setTimeout(function(){$(".sc-passed-banner").show()},400),setTimeout(function(){$(".sc-passed-banner").hide()},2
