@@ -1,0 +1,89 @@
+length 355471
+script tag: <script>
+script tag: <script async src="https://www.googletagmanager.com/gtag/js?id=UA-134209803-1">
+script tag: <script>
+script tag: <script src="https://cdn.usefathom.com/script.js" data-site="LPLQWNPN" data-canonical="false" defer>
+script tag: <script data-no-optimize="1" data-cfasync="false">
+script tag: <script src="/early/dataCache.js?v=xTrmfr1em9NDKk0drgXv63QjiKMwgp1E2fpoG4zoSQY">
+script tag: <script>
+script tag: <script>
+script tag: <script>
+script tag: <script>
+script tag: <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+script tag: <script defer src="/vendor/js/vendor.min.js?v=ezLPo6_6yQwCYRg6WAajE94LWiymwGS--P37-4wIuQo">
+script tag: <script defer src="/js/site.min.js?v=DkgCIlIjvHdsmttA-N8fUtbe-MpgY4iRJMMpqPSf-JI">
+script tag: <script>
+ktc-players tag: False playersArray: True
+rows 0 list
+== oneQB first at 5903
+link rel="preload" href="/js/site.min.js?v=DkgCIlIjvHdsmttA-N8fUtbe-MpgY4iRJMMpqPSf-JI" as="script" />         <link rel="preconnect" href="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=keeptradecut.com" as="script"/>       </head> <body>     <script>     var leagueType = 1;     var oneQBSC = false;     var sfSC = false;     var oneQBPlayers = [{"playerName":"Romeo Doubs","playerID":1238,"slug":"romeo-doubs-1238","position":"WR","positionID":3,"team":"NEP","rookie":false,"age":26.6,"heightFeet":6,"heightInches":2,"weight":204,"seasonsExperience":4,"pickRound":4,"pickNum":27,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTrend":-28,"positionalTrend":-12,"vft
+== superflex first at 8317
+:13,"positionalTier":15,"vftValue":3278,"vftRank":138,"vftPickRank":149,"vftPositionalRank":57,"vftHistory":[],"vftOverallTier":11,"vftPositionalTier":14,"blendValue":3288,"blendRank":149,"blendPickRank":164,"blendPositionalRank":64,"blendHistory":[],"blendOverallTier":14,"blendPositionalTier":15},"superflexValues":{"startSitValue":0,"overallTrend":-16,"positionalTrend":-7,"vftOverallTrend":-21,"vftPositionalTrend":-11,"blendOverallTrend":-21,"blendPositionalTrend":-10,"overall7DayTrend":-1,"positional7DayTrend":-2,"kept":40106,"traded":40287,"cut":37556,"diff":0,"isOutThisWeek":false,"tep":{"value":2663,"rank":175,"pickRank":193,"positionalRank":68,"history":[],"overallTier":20,"positionalTier":16,"vftValue":2411,"vftRank":187,"vftPickRank":205,"vftPositionalRank":69,"vftHistory":[],"vftO
+== Value first at 6331
+238","position":"WR","positionID":3,"team":"NEP","rookie":false,"age":26.6,"heightFeet":6,"heightInches":2,"weight":204,"seasonsExperience":4,"pickRound":4,"pickNum":27,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTrend":-28,"positionalTrend":-12,"vftOverallTrend":1,"vftPositionalTrend":0,"blendOverallTrend":-18,"blendPositionalTrend":-10,"overall7DayTrend":-7,"positional7DayTrend":-3,"kept":30947,"traded":30915,"cut":29835,"diff":0,"isOutThisWeek":false,"tep":{"value":3299,"rank":169,"pickRank":187,"positionalRank":68,"history":[],"overallTier":12,"positionalTier":15,"vftValue":3278,"vftRank":151,"vftPickRank":162,"vftPositionalRank":59,"vftHistory":[],"vftOverallTier":
+== playerName first at 5968
+be-MpgY4iRJMMpqPSf-JI" as="script" />         <link rel="preconnect" href="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=keeptradecut.com" as="script"/>       </head> <body>     <script>     var leagueType = 1;     var oneQBSC = false;     var sfSC = false;     var oneQBPlayers = [{"playerName":"Romeo Doubs","playerID":1238,"slug":"romeo-doubs-1238","position":"WR","positionID":3,"team":"NEP","rookie":false,"age":26.6,"heightFeet":6,"heightInches":2,"weight":204,"seasonsExperience":4,"pickRound":4,"pickNum":27,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTrend":-28,"positionalTrend":-12,"vftOverallTrend":1,"vftPositionalTrend":0,"blendOverallTrend":-18,"b
+== __NEXT_DATA__ first at -1
+== application/json first at -1
+== head
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script>var gtag = false;</script>
+
+    
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-134209803-1"></script>
+        <script>window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+
+            gtag('config', 'UA-134209803-1');</script>
+
+        <script src="https://cdn.usefathom.com/script.js" data-site="LPLQWNPN" data-canonical="false" defer></script>
+    
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta name="google" content="notranslate" />
+    <meta http-equiv="Content-Language" content="en_US" />
+    <title>Dynasty Rankings - KeepTradeCut</title>
+        <link rel="canonical" href="https://keeptradecut.com/dynasty-rankings" />
+
+        <meta name="description" content="Constantly updating dynasty rankings. KeepTradeCut crowdsources dynasty rankings and values to provide you with all the free tools you need as a dynasty owner.">
+        <meta property="og:description" content="Constantly updating dynasty rankings. KeepTradeCut crowdsources dynasty rankings and values to provide you with all the free tools you need as a dynasty owner." />
+    <meta property="og:site_name" content="KeepTradeCut">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Dynasty Rankings - KeepTradeCut" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://keeptradecut.com/dynasty-rankings?page=0&amp;filters=QB%7CWR%7CRB%7CTE%7CRDP&amp;format=1" />
+
+        <meta property="og:image" content="https://www.keeptradecut.com/assets/images/banners/og-img.jpg">
+
+    <meta name="format-detection" content="telephone=no">
+
+    
+    
+    <!-- Raptive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+        (function (w, d) {
+            w.adthrive = w.adthrive || {};
+            w.adthrive.cmd = w.
+                adthrive.cmd || [];
+            w.adthrive.plugin = 'adthrive-ads-manual';
+            w.adthrive.host = 'ads.adthrive.com'; var s = d.createElement('script');
+            s.async = true;
+            s.referrerpolicy = 'no-referrer-when-downgrade';
+            s.src = 'https://' + w.adthrive.host + '/sites/65f4b083afd6b949a4ba13f3/ads.min.js?referrer=' + w.encodeURIComponent(w.location.href) + '&cb=' + (Math.floor(Math.random() * 100) + 1);
+            var n = d.getElementsByTagName('script')[0];
+            n.parentNode.insertBefore(s, n);
+        })(window, document);
+    </script>
+    <!-- End of Raptive Head Tag -->
+    
+
+    <link rel="preconnect" href="https://ads.adthrive.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect" href="https://btloader.com" crossorigin
