@@ -76,6 +76,25 @@ def test_ktc_reads_old_players_array():
     assert ktc.extract(html) == [{"playerName": "A", "playerID": 1}]
 
 
+def test_ktc_empty_players_array_is_an_error():
+    html = "<script>var playersArray = [];\nvar ktcPoolReady = ktcFetchPlayerPool('dynasty', 'v');</script>"
+    with pytest.raises(ValueError, match="no longer includes its player list"):
+        ktc.extract(html)
+
+
+def test_missing_source_warns_on_every_page(tmp_path):
+    raw = build()
+    raw["ktc"] = None
+    raw.setdefault("errors", {})["ktc"] = "ValueError: blocked"
+    rep = main.analyze(raw, today=TODAY)
+    assert [n for n, _ in rep["consensus"].dropped] == ["KeepTradeCut"]
+    render.write_site(rep, tmp_path)
+    for page in ("index.html", "league.html", "trades.html"):
+        html = (tmp_path / page).read_text()
+        assert "Values are missing a source today" in html
+        assert "KeepTradeCut was left out (ValueError: blocked)" in html
+
+
 @pytest.fixture(scope="module")
 def report():
     return main.analyze(build(), today=TODAY)
@@ -121,6 +140,7 @@ def test_site_builds(report, tmp_path):
     home = (tmp_path / "index.html").read_text()
     assert "Roster by consensus value" in home
     assert (tmp_path / "league.html").exists()
+    assert "Values are missing a source today" not in home
 
 
 def test_snapshot_round_trip(tmp_path):

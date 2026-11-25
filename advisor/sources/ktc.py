@@ -26,7 +26,13 @@ def extract(html):
     m = _JSON_TAG.search(html) or _ARRAY.search(html)
     if not m:
         raise ValueError("couldn't find player data on the KeepTradeCut page; its layout changed")
-    return json.loads(m.group(1))
+    rows = json.loads(m.group(1))
+    if not rows:
+        # Since Nov 2026 the page ships an empty playersArray and the browser
+        # fills it from a separate endpoint that refuses automated requests.
+        raise ValueError("the KeepTradeCut page no longer includes its player list "
+                         "(it now loads separately and blocks automated readers)")
+    return rows
 
 
 def parse(rows, names, ktc_to_sleeper, today=None):
