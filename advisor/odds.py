@@ -6,6 +6,14 @@ Sleeper's rest-of-season points per game. Projections are rescaled so the
 league average matches what teams have actually scored, then blended with
 each team's own scoring so far. Weekly scores vary around that mean by the
 spread seen in this league's real weekly scores.
+
+Points already scored in the week being played count as banked: only the
+starters who haven't scored yet are projected, and that week's spread shrinks
+with the share of the projection still to come.
+
+Playoff spots follow the league's divisions when it has them: each division
+sends its best records (wins, then points for) in equal shares. Otherwise the
+best records league-wide get in.
 """
 
 import random
@@ -25,6 +33,8 @@ class Odds:
     this_week: dict = field(default_factory=dict)  # roster id -> expected points this week
     sd: float = 0.0
     weeks_left: int = 0
+    banked: dict = field(default_factory=dict)  # roster id -> points already scored this week
+    divisions: dict = field(default_factory=dict)  # roster id -> division number, when the league has them
 
 
 def call(prob, week, trade_deadline):
@@ -87,6 +97,20 @@ def simulate(data, league_teams, week_proj, current_week, seed=0):
     residuals = [p - statistics.mean(pts) for pts in actual.values() if len(pts) >= 2 for p in pts]
     out.sd = max(15.0, statistics.pstdev(residuals) if len(residuals) > 4 else 25.0)
 
+    # The week being played: bank what's scored, project only who's left.
+    week_sd = {rid: out.sd for rid in by_id}
+    live = in_progress(data.matchups.get(current_week, []), week_proj.points)
+    if live:
+        for rid, (scored, left, total) in live.items():
+            if rid not in out.this_week:
+                continue
+            share = left / total if total else 1.0
+            out.this_week[rid] = scored + out.this_week[rid] * share
+            week_sd[rid] = out.sd * share ** 0.5
+        out.banked = {rid: v[0] for rid, v in live.items()}
+
+    divisions = division_of(data.rosters, league)
+
     rng = random.Random(seed)
     made = {rid: 0 for rid in by_id}
     total_wins = {rid: 0.0 for rid in by_id}
@@ -94,21 +118,68 @@ def simulate(data, league_teams, week_proj, current_week, seed=0):
         wins = {rid: t.wins + 0.5 * t.ties for rid, t in by_id.items()}
         pf = {rid: t.points_for for rid, t in by_id.items()}
         for week in weeks:
-            means = out.this_week if week == current_week else out.weekly_mean
+            now = week == current_week
+            means = out.this_week if now else out.weekly_mean
             for a, b in sched.get(week, []):
-                sa = rng.gauss(means[a], out.sd)
-                sb = rng.gauss(means[b], out.sd)
+                sa = rng.gauss(means[a], week_sd[a] if now else out.sd)
+                sb = rng.gauss(means[b], week_sd[b] if now else out.sd)
                 pf[a] += sa
                 pf[b] += sb
                 if sa > sb:
                     wins[a] += 1
                 else:
                     wins[b] += 1
-        ranked = sorted(by_id, key=lambda rid: (wins[rid], pf[rid]), reverse=True)
-        for rid in ranked[:playoff_teams]:
+        for rid in qualifiers(by_id, wins, pf, playoff_teams, divisions):
             made[rid] += 1
         for rid in by_id:
             total_wins[rid] += wins[rid]
+    out.divisions = divisions
     out.playoff = {rid: made[rid] / config.SIMULATIONS for rid in by_id}
     out.wins = {rid: total_wins[rid] / config.SIMULATIONS for rid in by_id}
+    return out
+
+
+def division_of(rosters, league):
+    """roster id -> division, or {} when the league doesn't split into divisions."""
+    count = int((league.get("settings") or {}).get("divisions") or 0)
+    if count < 2:
+        return {}
+    out = {r["roster_id"]: (r.get("settings") or {}).get("division") for r in rosters}
+    return out if all(out.values()) and len(set(out.values())) > 1 else {}
+
+
+def qualifiers(teams, wins, pf, playoff_teams, divisions):
+    """The roster ids that make the playoffs: the best records (wins, then
+    points for) in each division in equal shares, or league-wide without
+    divisions."""
+    def best(ids, n):
+        return sorted(ids, key=lambda rid: (wins[rid], pf[rid]), reverse=True)[:n]
+
+    if not divisions:
+        return best(teams, playoff_teams)
+    groups = {}
+    for rid in teams:
+        groups.setdefault(divisions[rid], []).append(rid)
+    share, extra = divmod(playoff_teams, len(groups))
+    out = [rid for ids in groups.values() for rid in best(ids, share)]
+    # Spots that don't split evenly go to the best remaining records.
+    return out + best([rid for rid in teams if rid not in out], extra)
+
+
+def in_progress(rows, projected):
+    """For a week underway: roster id -> (points scored, projected points still
+    to come, projected points in all) for its set starters. A starter who
+    hasn't scored yet is taken as not having played. None until anyone scores."""
+    if not any((m.get("points") or 0) > 0 for m in rows):
+        return None
+    out = {}
+    for m in rows:
+        pts = m.get("players_points") or {}
+        starters = [p for p in m.get("starters") or [] if p and p != "0"]
+        waiting = [p for p in starters if not pts.get(p)]
+        total = sum(projected(p) for p in starters)
+        left = sum(projected(p) for p in waiting)
+        if not total:  # no projections: go by how many starters are still to play
+            total, left = len(starters) or 1, len(waiting) if starters else 1
+        out[m["roster_id"]] = (m.get("points") or 0.0, left, total)
     return out

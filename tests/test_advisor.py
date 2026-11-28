@@ -676,3 +676,60 @@ def test_a_profile_missing_from_the_league_is_skipped(tmp_path, monkeypatch):
     main.main()
     assert (tmp_path / "site" / "oscar" / "index.html").exists() and not (tmp_path / "site" / "jawsh").exists()
     assert "Team not found" in (tmp_path / "site" / "index.html").read_text()
+
+
+def test_playoff_spots_split_by_division():
+    from advisor.odds import qualifiers
+    wins = {1: 10, 2: 9, 3: 8, 4: 7, 5: 3, 6: 2, 7: 1, 8: 0}
+    pf = {rid: 100.0 for rid in wins}
+    divisions = {1: 1, 2: 1, 3: 1, 4: 1, 5: 2, 6: 2, 7: 2, 8: 2}
+    # The top 4 overall all play in division 1, but each division sends two.
+    assert sorted(qualifiers(list(wins), wins, pf, 4, divisions)) == [1, 2, 5, 6]
+    assert sorted(qualifiers(list(wins), wins, pf, 4, {})) == [1, 2, 3, 4]
+
+
+def test_no_divisions_means_league_wide():
+    from advisor.odds import division_of
+    rosters = [{"roster_id": 1, "settings": {"division": 1}}, {"roster_id": 2, "settings": {"division": 2}}]
+    assert division_of(rosters, {"settings": {"divisions": 2}}) == {1: 1, 2: 2}
+    assert division_of(rosters, {"settings": {}}) == {}
+    assert division_of([{"roster_id": 1, "settings": {}}] + rosters[1:], {"settings": {"divisions": 2}}) == {}
+
+
+def test_division_odds_add_up():
+    raw = build()
+    raw["sleeper"]["league"]["settings"].update(divisions=2, playoff_teams=8)
+    for r in raw["sleeper"]["rosters"]:
+        r["settings"]["division"] = 1 if r["roster_id"] <= 8 else 2
+    o = main.analyze(raw, today=TODAY)["odds"]
+    assert sum(o.playoff.values()) == pytest.approx(8)
+    for div in (1, 2):
+        assert sum(p for rid, p in o.playoff.items() if o.divisions[rid] == div) == pytest.approx(4)
+
+
+def test_points_already_scored_this_week_count():
+    from advisor.odds import in_progress
+    rows = [
+        {"roster_id": 1, "matchup_id": 1, "points": 30.0, "starters": ["a", "b", "0"], "players_points": {"a": 30.0, "b": 0}},
+        {"roster_id": 2, "matchup_id": 1, "points": 0.0, "starters": ["c", "d"], "players_points": {}},
+    ]
+    proj = {"a": 20.0, "b": 10.0, "c": 15.0, "d": 15.0}.get
+    assert in_progress(rows, proj) == {1: (30.0, 10.0, 30.0), 2: (0.0, 30.0, 30.0)}
+    assert in_progress([dict(r, points=0.0) for r in rows], proj) is None
+
+
+def test_live_lead_raises_odds():
+    raw = build()
+    week = raw["sleeper"]["state"]["week"]
+    rows = raw["sleeper"]["matchups"][week]
+    base = main.analyze(build(), today=TODAY)["odds"]
+    team = min(base.playoff, key=lambda rid: abs(base.playoff[rid] - 0.5))
+    for m in rows:
+        done = m["roster_id"] == team
+        m["starters"] = ["p1"]
+        m["points"] = 400.0 if done else 0.0
+        m["players_points"] = {"p1": 400.0} if done else {}
+    o = main.analyze(raw, today=TODAY)["odds"]
+    assert o.banked[team] == 400.0
+    assert o.this_week[team] >= 400.0
+    assert o.playoff[team] > base.playoff[team]
