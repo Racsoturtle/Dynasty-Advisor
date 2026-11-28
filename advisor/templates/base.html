@@ -74,6 +74,7 @@ tr.me td { background: var(--tint); }
 .pill.good { color: var(--good); border-color: currentColor; }
 .pill.bad { color: var(--bad); border-color: currentColor; }
 .pill.warn { color: var(--warn); border-color: currentColor; }
+.source-warning { border-color: var(--warn); border-left: 4px solid var(--warn); margin-bottom: 12px; }
 .muted { color: var(--muted); }
 .small { font-size: 13px; }
 .call { padding: 14px 16px; margin-bottom: 16px; border-left: 4px solid var(--accent); }
@@ -180,6 +181,11 @@ window.Live = (function () {
 </script>
 <main><div class="wrap">
 <div class="card pad small" id="live-banner" hidden></div>
+{% if consensus.dropped %}
+<div class="card pad small source-warning"><strong>Values are missing a source today.</strong>
+  {% for name, reason in consensus.dropped %}{{ name }} was left out ({{ reason }}). {% endfor %}
+  Every value is an average of the sources that loaded, so team totals and trade edges can move sharply even though no rosters changed. Compare numbers only with days that used the same sources.</div>
+{% endif %}
 {% block body %}{% endblock %}
 </div></main>
 <footer><div class="wrap">
