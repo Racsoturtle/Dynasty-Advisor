@@ -1,0 +1,20 @@
+name: Temporary standings probe
+on:
+  push:
+    branches: [claude/project-thread-t4uxvn]
+    paths: [probe/standings_probe.py, .github/workflows/probe-standings.yml]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - run: mkdir -p probe/out && (python probe/standings_probe.py > probe/out/standings.json 2> probe/out/err.txt || true); tail -c 3000 probe/out/err.txt
+      - name: Push results
+        run: |
+          git config user.name probe && git config user.email probe@example.com
+          git add probe/out && git commit -qm "Standings probe results [skip ci]" && git push -q origin HEAD:claude/project-thread-t4uxvn
